@@ -3,6 +3,8 @@
   "private": true,
   "devDependencies": {
     "@types/jest": "27.4.0",
+    "@typescript-eslint/eslint-plugin": "5.10.2",
+    "@typescript-eslint/parser": "5.10.2",
     "eslint": "7.19.0",
     "eslint-config-airbnb-base": "14.2.1",
     "eslint-import-resolver-alias": "1.1.2",
@@ -18,14 +20,10 @@
   "scripts": {
     "dev": "tsc --watch",
     "test": "jest",
-    "lint": "eslint ./",
-    "lint:fix": "eslint ./ --fix",
-    "pretty": "pretty-quick"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn lint:fix && pretty-quick --staged"
-    }
+    "lint": "eslint ./packages",
+    "lint:fix": "eslint ./packages --fix",
+    "pretty": "pretty-quick",
+    "precommit": "yarn lint:fix && pretty-quick --staged"
   },
   "dependencies": {
     "@kiner/octopus-datasource": "file:packages/datasource",

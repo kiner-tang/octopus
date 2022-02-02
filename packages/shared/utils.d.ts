@@ -1,13 +1,17 @@
 /**
+ * 空函数
+ */
+export declare const noop: () => void;
+/**
  * 判断传入的是否是函数
  * @param fn
  * @returns
  */
-export declare const isFunction: (fn: any) => boolean;
+export declare const isFunction: (fn: unknown) => boolean;
 /**
  * 注入函数类型
  */
-export declare type ProxyInjectFn = (...args: any[]) => any;
+export declare type ProxyInjectFn = (...args: unknown[]) => unknown;
 /**
  * 代理原始对象并注入指定代码实现特定逻辑
  * @param target 原始对象

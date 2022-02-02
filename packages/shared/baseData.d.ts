@@ -40,9 +40,15 @@ export declare type AppLifecycle = {
     onThemeChange: AppLifecycleIndexSet;
 };
 /**
+ * APP 各生命周期名称
+ */
+export declare type AppLifecycleName = keyof AppLifecycle;
+/**
  * Page 生命周期统计指标集
  */
-export declare type PageLifecycleIndexSet = {};
+export declare type PageLifecycleIndexSet = {
+    time: number;
+};
 /**
  * Page 各个生命周期手机的统计指标集
  */
@@ -64,7 +70,9 @@ export declare type PageLifecycle = {
 /**
  * 用户行为统计指标集
  */
-export declare type UserBehaviorIndexSet = {};
+export declare type UserBehaviorIndexSet = {
+    time: number;
+};
 /** 用户行为统计指标 */
 export declare type UserBehavior = {
     /** 点击事件 */
@@ -89,7 +97,9 @@ export declare type UserBehavior = {
 /**
  * 应用性能指标集
  */
-export declare type AppPerformanceIndexSet = {};
+export declare type AppPerformanceIndexSet = {
+    time: number;
+};
 /**
  * 应用性能指标
  */

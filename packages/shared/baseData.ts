@@ -40,11 +40,17 @@ export type AppLifecycle = {
     onUnhandledRejection: AppLifecycleIndexSet,
     onThemeChange: AppLifecycleIndexSet,
 };
+/**
+ * APP 各生命周期名称
+ */
+export type AppLifecycleName = keyof AppLifecycle;
 
 /**
  * Page 生命周期统计指标集
  */
- export type PageLifecycleIndexSet = {};
+ export type PageLifecycleIndexSet = {
+     time: number
+ };
 /**
  * Page 各个生命周期手机的统计指标集
  */
@@ -67,7 +73,9 @@ export type PageLifecycle = {
 /**
  * 用户行为统计指标集
  */
-export type UserBehaviorIndexSet = {};
+export type UserBehaviorIndexSet = {
+    time: number
+};
 /** 用户行为统计指标 */
 export type UserBehavior = {
     /** 点击事件 */
@@ -93,7 +101,9 @@ export type UserBehavior = {
 /**
  * 应用性能指标集
  */
-export type AppPerformanceIndexSet = {};
+export type AppPerformanceIndexSet = {
+    time: number
+};
 /**
  * 应用性能指标
  */

@@ -1,12 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.shortid = exports.guid = exports.proxy = exports.isFunction = void 0;
+exports.shortid = exports.guid = exports.proxy = exports.isFunction = exports.noop = void 0;
+/**
+ * 空函数
+ */
+var noop = function () { };
+exports.noop = noop;
 /**
  * 判断传入的是否是函数
  * @param fn
  * @returns
  */
-var isFunction = function (fn) { return typeof fn === "function"; };
+var isFunction = function (fn) { return typeof fn === 'function'; };
 exports.isFunction = isFunction;
 /**
  * 代理原始对象并注入指定代码实现特定逻辑
@@ -16,7 +21,7 @@ exports.isFunction = isFunction;
  * @returns
  */
 function proxy(target, inject, propNameList) {
-    if (inject === void 0) { inject = function () { }; }
+    if (inject === void 0) { inject = exports.noop; }
     if (propNameList === void 0) { propNameList = Object.keys(target); }
     propNameList.forEach(function (propName) {
         var val = target[propName];
@@ -36,7 +41,7 @@ function proxy(target, inject, propNameList) {
 exports.proxy = proxy;
 function random(c) {
     var r = (Math.random() * 16) | 0;
-    var v = c === "x" ? r : (r & 0x3) | 0x8;
+    var v = c === 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
 }
 var guidSet = new Set();
@@ -47,8 +52,9 @@ var shortGuidSet = new Set();
  */
 function guid() {
     var curId;
-    while (guidSet.has((curId = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, random))))
+    while (guidSet.has((curId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, random))))
         ;
+    guidSet.add(curId);
     return curId;
 }
 exports.guid = guid;
@@ -58,8 +64,9 @@ exports.guid = guid;
  */
 function shortid() {
     var curId;
-    while (guidSet.has((curId = "xxxx-4xxx-yxxx".replace(/[xy]/g, random))))
+    while (shortGuidSet.has((curId = 'xxxx-4xxx-yxxx'.replace(/[xy]/g, random))))
         ;
+    shortGuidSet.add(curId);
     return curId;
 }
 exports.shortid = shortid;
