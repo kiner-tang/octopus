@@ -1,8 +1,8 @@
-import { BaseApp } from "@/shared/baseApp";
+import { BaseApp, guid, shortid } from "@kiner/octopus-shared";
 
 
-describe("🔫 数据源 Datasource", () => {
-  it("🧼 [BaseApp] 管道数据流 Pipeline 数据流向与处理", (done) => {
+describe("🪛 [packages/shared/baseData] 公共分包基类", () => {
+  it("🔩 [baseData/BaseApp] 管道数据流 Pipeline 数据流向与处理", (done) => {
     type UserInfo = {
       name: string;
       age?: number;
@@ -66,7 +66,7 @@ describe("🔫 数据源 Datasource", () => {
       .pipe(new Output())
       .pipe(new End());
   });
-  it("🧼 [BaseApp] 事件的订阅发布", () => {
+  it("🔩 [baseData/BaseApp] 事件的订阅发布", () => {
     type UserInfo = {
       name: string;
       age?: number;

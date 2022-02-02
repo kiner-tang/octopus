@@ -1,7 +1,7 @@
 /**
  * App 生命周期统计指标集
  */
-export type AppLifecycleIndexSet = {
+export declare type AppLifecycleIndexSet = {
     /** 触发该生命周期的时间 */
     time: number;
     /** 如果是 onError 则记录错误对战*/
@@ -9,67 +9,64 @@ export type AppLifecycleIndexSet = {
     /** 页面找不到的相关信息 */
     pageNotFountInfo?: {
         /** 不存在页面的路径 (代码包路径) */
-        path: string,
+        path: string;
         /** 打开不存在页面的 query 参数 */
-        query: Record<string, any>,
+        query: Record<string, any>;
         /** 是否本次启动的首个页面（例如从分享等入口进来，首个页面是开发者配置的分享页面） */
         isEntryPage: boolean;
-    },
+    };
     /** 未处理的 Promise 拒绝事件相关信息 */
     unhandledRejectionInfo?: {
         /** 拒绝原因，一般是一个 Error 对象 */
         reason: string;
         /** 被拒绝的 Promise 对象 */
         promise: PromiseLike<any>;
-    },
+    };
     /** 主题改变事件信息 */
     themeChangeInfo?: {
         theme: string;
-    }
+    };
 };
-
 /**
  * APP 各个生命周期收集的统计指标集
  */
-export type AppLifecycle = {
-    onLaunch: AppLifecycleIndexSet,
-    onShow: AppLifecycleIndexSet,
-    onHide: AppLifecycleIndexSet,
-    onError: AppLifecycleIndexSet,
-    onPageNotFound: AppLifecycleIndexSet,
-    onUnhandledRejection: AppLifecycleIndexSet,
-    onThemeChange: AppLifecycleIndexSet,
+export declare type AppLifecycle = {
+    onLaunch: AppLifecycleIndexSet;
+    onShow: AppLifecycleIndexSet;
+    onHide: AppLifecycleIndexSet;
+    onError: AppLifecycleIndexSet;
+    onPageNotFound: AppLifecycleIndexSet;
+    onUnhandledRejection: AppLifecycleIndexSet;
+    onThemeChange: AppLifecycleIndexSet;
 };
-
 /**
  * Page 生命周期统计指标集
  */
- export type PageLifecycleIndexSet = {};
+export declare type PageLifecycleIndexSet = {};
 /**
  * Page 各个生命周期手机的统计指标集
  */
-export type PageLifecycle = {
-    onLoad: PageLifecycleIndexSet,
-    onShow: PageLifecycleIndexSet,
-    onHide: PageLifecycleIndexSet,
-    onReady: PageLifecycleIndexSet,
-    onReachBottom: PageLifecycleIndexSet,
-    onPullDownRefresh: PageLifecycleIndexSet,
-    onShareAppMessage: PageLifecycleIndexSet,
-    onShareTimeline: PageLifecycleIndexSet,
-    onAddToFavorites: PageLifecycleIndexSet,
-    onPageScroll: PageLifecycleIndexSet,
-    onResize: PageLifecycleIndexSet,
-    onTabItemTap: PageLifecycleIndexSet,
-    onSaveExitState: PageLifecycleIndexSet,
+export declare type PageLifecycle = {
+    onLoad: PageLifecycleIndexSet;
+    onShow: PageLifecycleIndexSet;
+    onHide: PageLifecycleIndexSet;
+    onReady: PageLifecycleIndexSet;
+    onReachBottom: PageLifecycleIndexSet;
+    onPullDownRefresh: PageLifecycleIndexSet;
+    onShareAppMessage: PageLifecycleIndexSet;
+    onShareTimeline: PageLifecycleIndexSet;
+    onAddToFavorites: PageLifecycleIndexSet;
+    onPageScroll: PageLifecycleIndexSet;
+    onResize: PageLifecycleIndexSet;
+    onTabItemTap: PageLifecycleIndexSet;
+    onSaveExitState: PageLifecycleIndexSet;
 };
-
 /**
  * 用户行为统计指标集
  */
-export type UserBehaviorIndexSet = {};
+export declare type UserBehaviorIndexSet = {};
 /** 用户行为统计指标 */
-export type UserBehavior = {
+export declare type UserBehavior = {
     /** 点击事件 */
     tap: UserBehaviorIndexSet;
     /** 滚动事件 */
@@ -89,15 +86,14 @@ export type UserBehavior = {
     /** 手指触摸后，超过350ms再离开事件 */
     longtap: UserBehaviorIndexSet;
 };
-
 /**
  * 应用性能指标集
  */
-export type AppPerformanceIndexSet = {};
+export declare type AppPerformanceIndexSet = {};
 /**
  * 应用性能指标
  */
-export type AppPerformance = {
+export declare type AppPerformance = {
     /** 路由性能 */
     route: AppPerformanceIndexSet;
     /** 小程序启动耗时 */
@@ -110,12 +106,11 @@ export type AppPerformance = {
     firstContentfulPaint: AppPerformanceIndexSet;
     /** 注入脚本耗时 */
     evaluateScript: AppPerformanceIndexSet;
-}
-
+};
 /**
  * 需要收集的统计指标
  */
-export type BaseData = {
+export declare type BaseData = {
     /** app 生命周期 */
     appLifecycle: Partial<AppLifecycle>;
     /** 页面生命周期 */
