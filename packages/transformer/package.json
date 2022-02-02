@@ -1,0 +1,23 @@
+{
+  "name": "@kiner/octopus-transformer",
+  "version": "0.0.1",
+  "description": "章鱼埋点的数据整理分包，将 datasource 收集上来的数据源进行整理成统一数据格式",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kiner-tang/octopus.git"
+  },
+  "keywords": [
+    "octopus",
+    "transformer"
+  ],
+  "author": "kinertang <1127031143@qq.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kiner-tang/octopus/issues"
+  },
+  "homepage": "https://github.com/kiner-tang/octopus#readme"
+}

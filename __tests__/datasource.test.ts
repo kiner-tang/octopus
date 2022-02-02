@@ -1,4 +1,4 @@
-import { BaseApp } from "@/shared/inner";
+import { BaseApp } from "@/shared/baseApp";
 
 
 describe("🔫 数据源 Datasource", () => {

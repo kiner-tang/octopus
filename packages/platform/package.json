@@ -1,0 +1,23 @@
+{
+  "name": "@kiner/octopus-platform",
+  "version": "0.0.1",
+  "description": "章鱼埋点的快平台处理分包,为不同平台提供统一的调用接口,方便跨平台场景接入",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kiner-tang/octopus.git"
+  },
+  "keywords": [
+    "octopus",
+    "platform"
+  ],
+  "author": "kinertang <1127031143@qq.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kiner-tang/octopus/issues"
+  },
+  "homepage": "https://github.com/kiner-tang/octopus#readme"
+}

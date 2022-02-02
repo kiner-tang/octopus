@@ -1,0 +1,23 @@
+{
+  "name": "@kiner/octopus-transporter",
+  "version": "0.0.1",
+  "description": "章鱼埋点的上报通道分包，用于将整理后的统一数据源通过指定上报通道发送出去",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kiner-tang/octopus.git"
+  },
+  "keywords": [
+    "octopus",
+    "transporter"
+  ],
+  "author": "kinertang <1127031143@qq.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kiner-tang/octopus/issues"
+  },
+  "homepage": "https://github.com/kiner-tang/octopus#readme"
+}
