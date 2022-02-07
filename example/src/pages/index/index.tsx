@@ -100,6 +100,10 @@ class Index extends Component {
     counterStore.incrementAsync()
   }
 
+  doError() {
+    console.log(a + b);
+  }
+
   render () {
     const { counterStore: { counter } } = this.props.store
     return (
@@ -111,6 +115,7 @@ class Index extends Component {
         <Button onClick={this.incrementAsync}>Add Async</Button>
         <Button onClick={this.uploadFile}>上传文件测试</Button>
         <Button onClick={this.downloadFile}>下载文件测试</Button>
+        <Button onClick={this.doError}>触发报错</Button>
         <Text>{counter}</Text>
         <Input placeholder='请输入你的姓名' id="input" />
         <Detail />

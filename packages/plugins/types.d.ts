@@ -35,6 +35,5 @@ declare global {
         createInnerAudioContext: WechatMiniprogram.Wx['createInnerAudioContext'];
         request: WechatMiniprogram.Wx['request'];
         uploadFile: WechatMiniprogram.Wx["uploadFile"];
-        downloadFile: WechatMiniprogram.Wx["downloadFile"];
     }
 }

@@ -1,5 +1,5 @@
 import { CodeGenInfo } from './codeGen';
-import { camelize, camelizeRE, capitalize, isFunction, noop, proxy, upperCamelize } from '@kiner/octopus-shared';
+import { camelize, camelizeRE, capitalize, firstEventSendDelay, isFunction, noop, proxy, upperCamelize } from '@kiner/octopus-shared';
 import pkg from '../package.json';
 import {
   apiProxySymbol,
@@ -10,9 +10,25 @@ import {
   injectSymbol,
   libFilePath,
   libName,
+  performanceSymbol,
   TaroOctopusPluginsOptions,
   wxLibName,
 } from './common';
+
+
+/**
+ * 监听全局报错
+ */
+ export const catchGlobalError = `
+ wx.onError((e) => {
+   _es.${injectEventName}({
+     type: "globalCatchError",
+     subType: "globalCatchError",
+     errorMsg: e.split('\\n')[2],
+     oriEvent: e
+   });
+ });
+`;
 
 /**
  * 模块代码模版
@@ -39,15 +55,21 @@ const fragment = `
       '10004':	'格式错误',
       '-1':	'未知错误',
     };
+    ${catchGlobalError}
     ${helpersSymbol}
     ${exportSymbol}
     ${injectSymbol}
     ${apiProxySymbol}
+    ${performanceSymbol}
   }
 }
 ]);
 `;
 
+
+/**
+ * 通用事件收集方法代码
+ */
 const octopusEventCollectionCore = `
     function(e) {
        var _es = exports;
@@ -55,11 +77,12 @@ const octopusEventCollectionCore = `
        var subType = type;
        var errorMsg = "";
        var { data } = _es.getActivePage();
+       var datasource;
        if(!type && e.errMsg === "MediaError") {
          type = "error",
          subType = 'audioLoadError'
          errorMsg = '['+e.errMsg+'] ' + _es.audioErrorCodeMap[String(e.errCode)];
-         var datasource = [
+         datasource = [
           {
             touchElem: {},
             pageData: data,
@@ -71,7 +94,7 @@ const octopusEventCollectionCore = `
          ]
         _es.logger('触发目标元素事件['+type+': '+subType+']', datasource);
        } else if(type === "requestFail") {
-        var datasource = [
+        datasource = [
           {
             touchElem: {},
             pageData: data,
@@ -82,6 +105,30 @@ const octopusEventCollectionCore = `
           }
          ]
         _es.logger('网络请求失败['+type+': '+e.subType+']', datasource);
+       } else if(type === "performance") {
+        datasource = [
+          {
+            touchElem: {},
+            pageData: data,
+            type,
+            subType: e.subType,
+            oriEvent: e,
+            performance: e.performance
+          }
+         ]
+        _es.logger('小程序性能监控['+type+': '+e.subType+']', datasource);
+       } else if(type === "globalCatchError") {
+        datasource = [
+          {
+            touchElem: {},
+            pageData: data,
+            type,
+            subType: e.subType,
+            errorMsg: e.errorMsg,
+            oriEvent: e
+          }
+         ]
+        _es.logger('全局报错监听['+type+': '+e.subType+']', datasource);
        } else {
         var eventList = _es.config.pluginOptions.registerEventList;
         var loadErrorEventList = _es.config.pluginOptions.loadErrorEventList;
@@ -136,7 +183,7 @@ const octopusEventCollectionCore = `
                hitTargets.push(target);
              }
            });
-           var datasource = hitTargets;
+           datasource = hitTargets;
            // 不是用户触发的,就没有所谓的事件冒泡,因此只需要返回当前触发事件的元素即可
            if(!e._userTap) datasource = datasource.slice(hitTargets.length - 1);
            _es.logger('触发目标元素事件['+e.type+': '+subType+']', datasource);
@@ -382,13 +429,15 @@ export function createWxModuleSourceFragment(
   core: string,
   exportSources: Record<string, any> = {},
   helpers: Record<string, any> = {},
-  apiProxyEntryStr = ''
+  apiProxyEntryStr = '',
+  performanceStr = '',
 ): string {
   return fragment
     .replace(injectSymbol, core)
     .replace(exportSymbol, createExportObjectSource(exportSources))
     .replace(helpersSymbol, createExportObjectSource(helpers))
-    .replace(apiProxySymbol, apiProxyEntryStr);
+    .replace(apiProxySymbol, apiProxyEntryStr)
+    .replace(performanceSymbol, performanceStr);
 }
 
 /**
@@ -522,13 +571,34 @@ export const helpers: Record<string, any> = {
   noop: getFunctionStr(noop),
   proxy: getFunctionStr(proxy),
 };
+/**
+ * 收集和监听页面性能指标相关代码
+ */
+export const performanceCollectCode = `
+  var _es = exports;
+  var performance = wx.getPerformance();
+  var observer = performance.createObserver((entryList) => {
+    _es.${injectEventName}({
+      type: "performance",
+      subType: "performance",
+      performance: entryList
+    })
+  })
+  observer.observe({ entryTypes: ['render', 'script', 'navigation'] })
+`;
 
 /**
  * 生成库文件代码
  * @returns
  */
 function createLibSource(config: TaroOctopusPluginsOptions) {
-  return createWxModuleSourceFragment(injectLibInWxApi, initExportSources(config), helpers, apiProxyEntry());
+  return createWxModuleSourceFragment(
+    injectLibInWxApi,
+    initExportSources(config),
+    helpers,
+    apiProxyEntry(),
+    performanceCollectCode
+  );
 }
 /**
  * 需要注入的库文件
