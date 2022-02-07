@@ -4,7 +4,7 @@
 export type AppLifecycleIndexSet = {
     /** 触发该生命周期的时间 */
     time: number;
-    /** 如果是 onError 则记录错误对战*/
+    /** 如果是 onError 则记录错误堆栈 */
     err?: string;
     /** 页面找不到的相关信息 */
     pageNotFountInfo?: {

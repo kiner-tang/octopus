@@ -1,4 +1,19 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -36,16 +51,21 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BaseApp = void 0;
+exports.Output = exports.PlatformType = exports.BaseApp = void 0;
+var logger_1 = require("./logger");
 /**
  * 一个实现了管道数据流和时间的订阅发布接口的应用基础类，项目中其他类基本都需要集成此类
  */
 var BaseApp = /** @class */ (function () {
-    function BaseApp() {
+    function BaseApp(appName) {
+        if (appName === void 0) { appName = "__DEFAULT_APP_NAME__"; }
+        this.appName = appName;
+        this.showInnerLog = process.env.NODE_ENV === 'development' || false;
         /**
          * 注册的事件列表，用事件名加以管理
          */
         this.handlers = {};
+        this.logger = new logger_1.Logger(appName);
     }
     /**
      * 接受到数据后，使用 resolveData 处理获得新书局后，将新数据推送到下一节管道
@@ -103,8 +123,30 @@ var BaseApp = /** @class */ (function () {
      * @returns
      */
     BaseApp.prototype.resolveData = function (data) {
+        if (this.showInnerLog) {
+            this.logger.log('数据处理完毕', data);
+        }
         return data;
     };
     return BaseApp;
 }());
 exports.BaseApp = BaseApp;
+/**
+ * 支持平台类型
+ */
+var PlatformType;
+(function (PlatformType) {
+    PlatformType["wx"] = "wx";
+})(PlatformType = exports.PlatformType || (exports.PlatformType = {}));
+var Output = /** @class */ (function (_super) {
+    __extends(Output, _super);
+    function Output(namespace) {
+        return _super.call(this, namespace || "OUTPUT") || this;
+    }
+    Output.prototype.resolveData = function (data) {
+        this.logger.log("当前数据", data);
+        return data;
+    };
+    return Output;
+}(BaseApp));
+exports.Output = Output;

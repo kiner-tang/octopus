@@ -1,0 +1,40 @@
+{
+  "name": "@kiner/octopus-plugins",
+  "version": "0.0.1",
+  "description": "章鱼埋点的 taro 插件分包，通过此插件的功能将章鱼埋点与小程序连接起来，也为我们获取数据源提供了基础能力",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kiner-tang/octopus.git"
+  },
+  "keywords": [
+    "octopus",
+    "plugins"
+  ],
+  "author": "kinertang <1127031143@qq.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kiner-tang/octopus/issues"
+  },
+  "homepage": "https://github.com/kiner-tang/octopus#readme",
+  "dependencies": {
+    "@babel/core": "7.15.0",
+    "@babel/generator": "7.12.15",
+    "@babel/parser": "7.12.16",
+    "@babel/preset-typescript": "7.15.0",
+    "@babel/traverse": "7.12.13",
+    "@babel/types": "7.15.0",
+    "@tarojs/service": "^3.4.1",
+    "@wxmini/wxml-generator": "1.0.1",
+    "@wxmini/wxml-parser": "1.0.1",
+    "cheerio": "1.0.0-rc.10"
+  },
+  "devDependencies": {
+    "@types/cheerio": "0.22.30",
+    "@types/webpack-sources": "3.2.0",
+    "webpack-sources": "3.2.3"
+  }
+}

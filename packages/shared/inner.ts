@@ -1,7 +1,9 @@
+import { Logger } from "./logger";
+
 /**
  * 基础管道数据流结构
  */
-export type Pipeline<T = unknown> = {
+export type Pipeline<T = any> = {
   /**
    * 实现该方法可以将数据通过管道一层层传递下去
    * @param data 
@@ -25,7 +27,7 @@ export type Pipeline<T = unknown> = {
 /**
  * 事件类型
  */
-export type EventLike<T = unknown> = {
+export type EventLike<T = any> = {
   eventName: string;
   detail: T;
 };
@@ -54,9 +56,14 @@ export type Emitter<T> = {
 /**
  * 一个实现了管道数据流和时间的订阅发布接口的应用基础类，项目中其他类基本都需要集成此类
  */
-export class BaseApp<P = unknown, K = unknown>
+export class BaseApp<P = any, K = any>
   implements Pipeline<P>, Emitter<K>
 {
+  protected logger: Logger;
+  protected showInnerLog = process.env.NODE_ENV === 'development' || false;
+  constructor(private appName: string = "__DEFAULT_APP_NAME__") {
+    this.logger = new Logger(appName);
+  }
   /**
    * 注册的事件列表，用事件名加以管理
    */
@@ -110,6 +117,27 @@ export class BaseApp<P = unknown, K = unknown>
    * @returns 
    */
   resolveData(data: P[]): P[] | Promise<P[]> {
+    if(this.showInnerLog) {
+      this.logger.log('数据处理完毕', data);
+    }
     return data;
+  }
+}
+
+/**
+ * 支持平台类型
+ */
+export enum PlatformType {
+  wx = 'wx'
+}
+
+
+export class Output extends BaseApp<any> {
+  constructor(namespace?: string) {
+      super(namespace || "OUTPUT");
+  }
+  resolveData(data: any[]): any[] | Promise<any[]> {
+      this.logger.log("当前数据", data);
+      return data;
   }
 }

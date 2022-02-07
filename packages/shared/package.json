@@ -19,5 +19,18 @@
   "bugs": {
     "url": "https://github.com/kiner-tang/octopus/issues"
   },
-  "homepage": "https://github.com/kiner-tang/octopus#readme"
+  "homepage": "https://github.com/kiner-tang/octopus#readme",
+  "devDependencies": {
+    "@types/fs-extra": "9.0.13",
+    "@types/lodash": "4.14.178",
+    "@types/shelljs": "0.8.11",
+    "@types/source-map": "0.5.7"
+  },
+  "dependencies": {
+    "fs-extra": "10.0.0",
+    "lodash": "4.17.21",
+    "reverse-sourcemap": "1.0.4",
+    "shelljs": "0.8.5",
+    "source-map": "0.7.3"
+  }
 }
