@@ -36,7 +36,7 @@ exports.apiProxySymbol = "/////////apiProxy/////////";
 exports.injectSymbol = "/////////inject/////////";
 exports.exportSymbol = "/////////exports/////////";
 exports.helpersSymbol = "/////////helpers/////////";
-exports.buildInView = "cover-image,cover-view,match-media,movable-area,movable-view,page-container,scroll-view,share-element,swiper,swiper-item,view,icon,progress,rich-text,text,button,checkbox,checkbox-group,editor,form,input,keyboard-accessory,label,picker,picker-view,picker-view-column,radio,radio-groupslider,switch,textarea,navigator,audio,camera,image,live-player,live-pusher,video,voip-room,map,canvas,ad,ad-custom,official-account,open-data,web-view,aria-component";
+exports.buildInView = 'cover-image,cover-view,match-media,movable-area,movable-view,page-container,scroll-view,share-element,swiper,swiper-item,view,icon,progress,rich-text,text,button,checkbox,checkbox-group,editor,form,input,keyboard-accessory,label,picker,picker-view,picker-view-column,radio,radio-groupslider,switch,textarea,navigator,audio,camera,image,live-player,live-pusher,video,voip-room,map,canvas,ad,ad-custom,official-account,open-data,web-view,aria-component';
 exports.injectClassName = "".concat(exports.libName, "-inject-class");
 exports.wxLibName = "wx.".concat(exports.libName);
 /**
@@ -80,17 +80,17 @@ exports.buildInLoadErrorEventNameStr = Object.keys(BuildInLoadErrorEventName);
  * taro 内部编译后模块名到微信内置部分组件的映射
  */
 exports.taroModule2wxComponent = {
-    a: "button",
-    b: "cover-image",
-    c: "image",
-    d: "input",
-    e: "text",
-    f: "video",
-    g: "view",
+    a: 'button',
+    b: 'cover-image',
+    c: 'image',
+    d: 'input',
+    e: 'text',
+    f: 'video',
+    g: 'view',
 };
 /**
  * 需要捕获加载失败事件的组件
  */
-exports.needCatchLoadErrorComponents = "b,c,f";
+exports.needCatchLoadErrorComponents = 'b,c,f';
 exports.needCatchLoadErrorComponentsList = exports.needCatchLoadErrorComponents.split(',');
-exports.componentReactPath = "./node_modules/@tarojs/plugin-platform-weapp/dist/components-react.js";
+exports.componentReactPath = './node_modules/@tarojs/plugin-platform-weapp/dist/components-react.js';

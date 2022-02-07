@@ -10,16 +10,17 @@ export declare function createExportObjectSource(exportSources: Record<string, a
  * 注入到小程序中的 api 代理
  */
 export declare const apiProxySourceList: Record<string, any>;
+export declare const apiProxyList: string[];
 /**
  * api 代理入口代码
  */
-export declare const apiProxyEntry: string;
+export declare function apiProxyEntry(): string;
 /**
  * 模块代码框架
  * @param core
  * @returns
  */
-export declare function createWxModuleSourceFragment(core: string, exportSources?: Record<string, any>, helpers?: Record<string, any>, apiProxyEntry?: string): string;
+export declare function createWxModuleSourceFragment(core: string, exportSources?: Record<string, any>, helpers?: Record<string, any>, apiProxyEntryStr?: string): string;
 /**
  * 注入微信开发者工具库，方便开发者在微信开发者工具中调用
  * @type {string}

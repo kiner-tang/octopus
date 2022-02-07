@@ -62,6 +62,35 @@ export declare type TaroOctopusPluginsOptions = {
      */
     loadErrorEventList: string[];
     /**
+     * 需要监听的网络请求
+     */
+    networkApi?: {
+        /**
+         * http 接口请求
+         */
+        request?: {
+            /**
+             * 当接口调用成功，但业务异常时，
+             * 用这个方法判断接口是否请求成功，用户可以传入此方法对请求结果进行校验
+             */
+            isSuccess?: <T = unknown>(responseData: T, res: WechatMiniprogram.RequestSuccessCallbackResult<string | WechatMiniprogram.IAnyObject | ArrayBuffer>, options: WechatMiniprogram.RequestOption<string | WechatMiniprogram.IAnyObject | ArrayBuffer>) => boolean | Promise<boolean>;
+        } | boolean;
+        uploadFile?: {
+            /**
+             * 当接口调用成功，但业务异常时，
+             * 用这个方法判断接口是否请求成功，用户可以传入此方法对请求结果进行校验
+             */
+            isSuccess?: <T = unknown>(responseData: T, res: WechatMiniprogram.UploadFileSuccessCallbackResult, options: WechatMiniprogram.UploadFileOption) => boolean | Promise<boolean>;
+        } | boolean;
+        downloadFile?: {
+            /**
+             * 当接口调用成功，但业务异常时，
+             * 用这个方法判断接口是否请求成功，用户可以传入此方法对请求结果进行校验
+             */
+            isSuccess?: <T = unknown>(responseData: T, options: WechatMiniprogram.DownloadFileOption) => boolean | Promise<boolean>;
+        } | boolean;
+    };
+    /**
      * 上报通道选项
      */
     transporterOptions: {
@@ -122,10 +151,10 @@ export declare const buildInEventNameStr: string[];
  * 内置加载失败事件
  */
 export declare enum BuildInLoadErrorEventName {
-    "image" = "image",
-    "coverImage" = "coverImage",
-    "video" = "video",
-    "audio" = "audio"
+    'image' = "image",
+    'coverImage' = "coverImage",
+    'video' = "video",
+    'audio' = "audio"
 }
 /**
  * 内置加载失败事件名称字符串数组

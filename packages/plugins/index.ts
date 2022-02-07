@@ -29,6 +29,15 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
       BuildInEventName.longpress,
       BuildInEventName.scroll,
     ],
+    networkApi: {
+      request: {
+        isSuccess: async (data) => {
+          return !!data;
+        }
+      },
+      uploadFile: true,
+      downloadFile: true,
+    },
     loadErrorEventList: buildInLoadErrorEventNameStr,
     transporterOptions: {
       env: 'production',
@@ -43,6 +52,16 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
     mode: CollectMode.default,
     registerEventList: buildInEventNameStr,
     loadErrorEventList: buildInLoadErrorEventNameStr,
+    networkApi: {
+      request: {
+        isSuccess: async (data) => {
+          console.log("isSuccess: ", data);
+          return !!data;
+        }
+      },
+      uploadFile: true,
+      downloadFile: true,
+    },
     transporterOptions: {
       env: 'production',
     },

@@ -70,6 +70,18 @@ const octopusEventCollectionCore = `
           }
          ]
         _es.logger('触发目标元素事件['+type+': '+subType+']', datasource);
+       } else if(type === "requestFail") {
+        var datasource = [
+          {
+            touchElem: {},
+            pageData: data,
+            type,
+            subType: e.subType,
+            errorMsg: e.errorMsg,
+            oriEvent: e,
+          }
+         ]
+        _es.logger('网络请求失败['+type+': '+e.subType+']', datasource);
        } else {
         var eventList = _es.config.pluginOptions.registerEventList;
         var loadErrorEventList = _es.config.pluginOptions.loadErrorEventList;
@@ -148,17 +160,173 @@ export function createExportObjectSource(exportSources: Record<string, any>): st
     .join('\n');
 }
 
-
 /**
  * 注入到小程序中的 api 代理
  */
- export const apiProxySourceList: Record<string, any> = {
+export const apiProxySourceList: Record<string, any> = {
   // request
-  // upload
-  // download
+  proxyRequest: `
+    function proxyRequest() {
+      var _es = exports;
+      var config = _es.config.pluginOptions.networkApi.request;
+      var listen = !!config;
+      var isSuccess = function (){return true};
+      if(listen && config.isSuccess) {
+        isSuccess = config.isSuccess;
+      }
+      var oriApi = wx.request;
+      _es.request = function (options) {
+        var oriFailFn = options.fail || _es.noop;
+        var oriSuccessFn = options.success || _es.noop;
+        options.fail = function(res) {
+          listen && _es.${injectEventName}({
+            detail: res,
+            type: "requestFail",
+            subType: "requestFail",
+            requestOptions: options,
+            errorMsg: res.errMsg
+          });
+          oriFailFn(res);
+        }
+        options.success = function(res) {
+          if(res.statusCode === 200) {
+            if(!isSuccess(res.data, res, options)) {
+              listen && _es.${injectEventName}({
+                detail: res,
+                type: "requestFail",
+                subType: "businessFail",
+                requestOptions: options,
+                errorMsg: res.errMsg
+              })
+            }
+          } else {
+            listen && _es.${injectEventName}({
+              detail: res,
+              type: "requestFail",
+              subType: "businessFail",
+              requestOptions: options,
+              errorMsg: res.errMsg
+            })
+          }
+          oriSuccessFn(res);
+        }
+        oriApi(options);
+        return function destroy() {
+          _es.request = oriApi;
+        }
+      }
+    }
+  `,
+  // proxyUploadFile
+  proxyUploadFile: `
+    function proxyUploadFile() {
+      var _es = exports;
+      var config = _es.config.pluginOptions.networkApi.uploadFile;
+      var listen = !!config;
+      var isSuccess = function (){return true};
+      if(listen && config.isSuccess) {
+        isSuccess = config.isSuccess
+      }
+      var oriApi = wx.uploadFile;
+      _es.uploadFile = function (options) {
+        var oriFailFn = options.fail || _es.noop;
+        var oriSuccessFn = options.success || _es.noop;
+        options.fail = function(res) {
+          listen && _es.${injectEventName}({
+            detail: res,
+            type: "requestFail",
+            subType: "uploadFail",
+            requestOptions: options,
+            errorMsg: res.errMsg
+          });
+          oriFailFn(res);
+        }
+        options.success = function(res) {
+          if(res.statusCode === 200) {
+            if(!isSuccess(res.data, res, options)) {
+              listen && _es.${injectEventName}({
+                detail: res,
+                type: "requestFail",
+                subType: "uploadFail",
+                requestOptions: options,
+                errorMsg: res.errMsg
+              })
+            }
+          } else {
+            listen && _es.${injectEventName}({
+              detail: res,
+              type: "requestFail",
+              subType: "uploadFail",
+              requestOptions: options,
+              errorMsg: res.errMsg
+            })
+          }
+          oriSuccessFn(res);
+        }
+        oriApi(options);
+        return function destroy() {
+          _es.uploadFile = oriApi;
+        }
+      }
+    }
+  `,
+  // downloadFile
+  proxyDownloadFile: `
+    function proxyDownloadFile() {
+      var _es = exports;
+      var config = _es.config.pluginOptions.networkApi.downloadFile;
+      var listen = !!config;
+      var isSuccess = function (){return true};
+      if(listen && config.isSuccess) {
+        isSuccess = config.isSuccess
+      }
+      var oriApi = wx.downloadFile;
+      _es.downloadFile = function (options) {
+        var oriFailFn = options.fail || _es.noop;
+        var oriSuccessFn = options.success || _es.noop;
+        options.fail = function(res) {
+          listen && _es.${injectEventName}({
+            detail: res,
+            type: "requestFail",
+            subType: "downloadFail",
+            requestOptions: options,
+            errorMsg: res.errMsg
+          });
+          oriFailFn(res);
+        }
+        options.success = function(res) {
+          if(res.statusCode === 200) {
+            if(!isSuccess(res.data, res, options)) {
+              listen && _es.${injectEventName}({
+                detail: res,
+                type: "requestFail",
+                subType: "downloadFail",
+                requestOptions: options,
+                errorMsg: res.errMsg
+              })
+            }
+          } else {
+            listen && _es.${injectEventName}({
+              detail: res,
+              type: "requestFail",
+              subType: "downloadFail",
+              requestOptions: options,
+              errorMsg: res.errMsg
+            })
+          }
+          oriSuccessFn(res);
+        }
+        oriApi(options);
+        return function destroy() {
+          _es.downloadFile = oriApi;
+        }
+      }
+    }
+  `,
   // websocket
+  // todo
   // createInnerAudioContext
-  "proxyCreateInnerAudioContext": `
+  proxyCreateInnerAudioContext: `
     function proxyCreateInnerAudioContext() {
       var _es = exports;
       var oriApi = wx.createInnerAudioContext;
@@ -178,23 +346,32 @@ export function createExportObjectSource(exportSources: Record<string, any>): st
         _es.createInnerAudioContext = oriApi;
       }
     }
-  `
+  `,
 };
+
+export const apiProxyList = Object.keys(apiProxySourceList);
+
 /**
  * api 代理入口代码
  */
-export const apiProxyEntry = `
+export function apiProxyEntry(): string {
+  return `
   exports.destroyProxyApi = (function(){
-    ${Object.keys(apiProxySourceList).map(api => {
-      return `var ${api} = (${apiProxySourceList[api]})()`;
-    }).join("\n")}
+    ${apiProxyList
+      .map((api) => {
+        return `var ${api} = (${apiProxySourceList[api]})()`;
+      })
+      .join('\n')}
     return function destroy() {
-      ${Object.keys(apiProxySourceList).map(api => {
-        return `${api}()`
-      }).join('\n')}
+      ${apiProxyList
+        .map((api) => {
+          return `${api}()`;
+        })
+        .join('\n')}
     }
   })();
 `;
+}
 
 /**
  * 模块代码框架
@@ -205,13 +382,13 @@ export function createWxModuleSourceFragment(
   core: string,
   exportSources: Record<string, any> = {},
   helpers: Record<string, any> = {},
-  apiProxyEntry = "",
+  apiProxyEntryStr = ''
 ): string {
   return fragment
     .replace(injectSymbol, core)
     .replace(exportSymbol, createExportObjectSource(exportSources))
     .replace(helpersSymbol, createExportObjectSource(helpers))
-    .replace(apiProxySymbol, apiProxyEntry);
+    .replace(apiProxySymbol, apiProxyEntryStr);
 }
 
 /**
@@ -351,7 +528,7 @@ export const helpers: Record<string, any> = {
  * @returns
  */
 function createLibSource(config: TaroOctopusPluginsOptions) {
-  return createWxModuleSourceFragment(injectLibInWxApi, initExportSources(config), helpers, apiProxyEntry);
+  return createWxModuleSourceFragment(injectLibInWxApi, initExportSources(config), helpers, apiProxyEntry());
 }
 /**
  * 需要注入的库文件

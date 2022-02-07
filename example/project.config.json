@@ -4,7 +4,7 @@
   "description": "octopus 章鱼埋点的示例 taro 项目",
   "appid": "touristappid",
   "setting": {
-    "urlCheck": true,
+    "urlCheck": false,
     "es6": false,
     "postcss": false,
     "minified": false

@@ -26,12 +26,57 @@ class Index extends Component {
   componentWillMount () { }
 
   componentDidMount () {
-    const audio = wx.octopusLib.createInnerAudioContext();
-    audio.src = "https://www.baidu.com/1.mp3";
-    audio.play();
-    audio.onError((err) => {
-      console.log("播放背景音乐失败", err);
+    setTimeout(() => {
+      const audio = wx.octopusLib.createInnerAudioContext();
+      audio.src = "https://www.baidu.com/1.mp3";
+      audio.play();
+      audio.onError((err) => {
+        console.log("播放背景音乐失败", err);
+      });
+    }, 1000);
+    wx.octopusLib.request({
+      url: "https://www.baidu.com/xxx.png",
+      fail: (options) => {
+        console.log('请求失败---->', options, options.errMsg)
+      },
+      success: (res => {
+        console.log('请求成功---->', res);
+      })
+    });
+    wx.octopusLib.request({
+      url: "https://raw.githubusercontent.com/paazmaya/shuji/master/package.json",
+      fail: (options) => {
+        console.log('请求失败---->', options, options.errMsg)
+      },
+      success: (res => {
+        console.log('请求成功---->', res);
+      })
+    });
+  }
+
+  uploadFile() {
+    wx.chooseImage({
+      count: 1,
+      sourceType: ["album"],
+      success: res => {
+        wx.octopusLib.uploadFile({
+          filePath: res.tempFilePaths[0],
+          name: "file",
+          url: "https://www.xxx.com/upload.json",
+          fail: res => {
+            console.log("上传失败：", res);
+          }
+        })
+      }
     })
+  }
+  downloadFile() {
+    wx.octopusLib.downloadFile({
+      url: "https://www.baidu.com/xxx.png",
+      fail: res => {
+        console.log("下载失败：", res)
+      }
+    });
   }
 
   componentWillUnmount () { }
@@ -64,6 +109,8 @@ class Index extends Component {
         <Button onClick={this.increment}>+</Button>
         <Button onClick={this.decrement}>-</Button>
         <Button onClick={this.incrementAsync}>Add Async</Button>
+        <Button onClick={this.uploadFile}>上传文件测试</Button>
+        <Button onClick={this.downloadFile}>下载文件测试</Button>
         <Text>{counter}</Text>
         <Input placeholder='请输入你的姓名' id="input" />
         <Detail />

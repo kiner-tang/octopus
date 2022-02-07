@@ -33,5 +33,8 @@ declare global {
         getTextBySid: (sid: string, data?: Record<string, unknown>) => string;
         collectDataEvent: (e: WechatMiniprogram.CustomEvent<any>) => any;
         createInnerAudioContext: WechatMiniprogram.Wx['createInnerAudioContext'];
+        request: WechatMiniprogram.Wx['request'];
+        uploadFile: WechatMiniprogram.Wx["uploadFile"];
+        downloadFile: WechatMiniprogram.Wx["downloadFile"];
     }
 }
