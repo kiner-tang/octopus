@@ -59,15 +59,19 @@ export type TaroOctopusPluginsOptions = {
   /**
    * 需要收集数据的事件列表
    */
-  registerEventList: string[];
+  registerEventList: BuildInEventKey[];
   /**
    * 需要监听的资源加载失败事件列表
    */
-  loadErrorEventList: string[];
+  loadErrorEventList: BuildInLoadErrorEventNameKey[];
   /**
-   * 页面 api 监听
+   * 页面生命周期函数监听
    */
-  pageApiEventList: string[];
+  pageLifecycleEventList: PageAPIKey[];
+  /**
+   * app生命周期函数监听
+   */
+  appLifecycleEventList: AppAPIKey[];
   /**
    * 需要监听的网络请求
    */
@@ -197,7 +201,7 @@ export type BuildInEventKey =
 /**
  * 内置监听事件名称字符串数组
  */
-export const buildInEventNameStr = Object.keys(BuildInEventName);
+export const buildInEventNameStr: BuildInEventKey[] = Object.keys(BuildInEventName) as BuildInEventKey[];
 
 export enum PageAPI {
   onPageScroll = "onPageScroll",
@@ -205,14 +209,35 @@ export enum PageAPI {
   onShareTimeline = "onShareTimeline",
   onAddToFavorites = "onAddToFavorites",
   onTabItemTap = "onTabItemTap",
+  onShow = "onShow",
+  onHide = "onShow",
 }
-export const pageApiStr = Object.keys(PageAPI);
+export const pageApiStr = Object.keys(PageAPI) as PageAPIKey[];
 export type PageAPIKey =
 | "onPageScroll"
 | "onShareAppMessage"
 | "onShareTimeline"
 | "onAddToFavorites"
-| "onTabItemTap";
+| "onTabItemTap"
+| "onHide"
+| "onShow";
+
+export enum AppAPI {
+  onLaunch = "onLaunch",
+  onThemeChange = "onThemeChange",
+  onUnhandledRejection = "onUnhandledRejection",
+  onShow = "onShow",
+  onHide = "onHide",
+  onPageNotFound = "onPageNotFound",
+}
+export const appApiStr = Object.keys(AppAPI) as AppAPIKey[];
+export type AppAPIKey =
+| "onLaunch"
+| "onThemeChange"
+| "onUnhandledRejection"
+| "onShow"
+| "onHide"
+| "onPageNotFound"
 
 /**
  * 内置加载失败事件
@@ -223,10 +248,15 @@ export enum BuildInLoadErrorEventName {
   'video' = 'video',
   'audio' = 'audio',
 }
+export type BuildInLoadErrorEventNameKey =
+| "image"
+| "coverImage"
+| "video"
+| "audio";
 /**
  * 内置加载失败事件名称字符串数组
  */
-export const buildInLoadErrorEventNameStr = Object.keys(BuildInLoadErrorEventName);
+export const buildInLoadErrorEventNameStr = Object.keys(BuildInLoadErrorEventName) as BuildInLoadErrorEventNameKey[];
 
 /**
  * taro 内部编译后模块名到微信内置部分组件的映射

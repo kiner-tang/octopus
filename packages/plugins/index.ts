@@ -2,6 +2,8 @@ import { IPluginContext } from '@tarojs/service';
 import { deepMergeOptions, Logger, Output } from '@kiner/octopus-shared';
 import { AstCreator } from './core/astCreator';
 import {
+  AppAPI,
+  appApiStr,
   BuildInEventName,
   buildInEventNameStr,
   buildInLoadErrorEventNameStr,
@@ -40,11 +42,18 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
       downloadFile: true,
     },
     loadErrorEventList: buildInLoadErrorEventNameStr,
-    pageApiEventList: [
+    pageLifecycleEventList: [
       PageAPI.onShareTimeline,
       PageAPI.onShareAppMessage,
       PageAPI.onTabItemTap,
-      PageAPI.onAddToFavorites
+      PageAPI.onAddToFavorites,
+      PageAPI.onShow,
+      PageAPI.onHide,
+    ],
+    appLifecycleEventList: [
+      AppAPI.onLaunch,
+      AppAPI.onPageNotFound,
+      AppAPI.onUnhandledRejection
     ],
     transporterOptions: {
       env: 'production',
@@ -58,7 +67,8 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
     },
     mode: CollectMode.default,
     registerEventList: buildInEventNameStr,
-    pageApiEventList: pageApiStr,
+    pageLifecycleEventList: pageApiStr,
+    appLifecycleEventList: appApiStr,
     loadErrorEventList: buildInLoadErrorEventNameStr,
     networkApi: {
       request: {
@@ -83,7 +93,8 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
     mode: CollectMode.default,
     registerEventList: [],
     loadErrorEventList: [],
-    pageApiEventList: [],
+    pageLifecycleEventList: [],
+    appLifecycleEventList: [],
     transporterOptions: {
       env: 'production',
     },
@@ -97,7 +108,8 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
     mode: CollectMode.default,
     registerEventList: [],
     loadErrorEventList: [],
-    pageApiEventList: [],
+    pageLifecycleEventList: [],
+    appLifecycleEventList: [],
     transporterOptions: {
       env: 'production',
     },

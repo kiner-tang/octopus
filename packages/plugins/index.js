@@ -82,11 +82,18 @@ var taroOctopusPluginsDefaultOptions = (_a = {},
             downloadFile: true,
         },
         loadErrorEventList: common_1.buildInLoadErrorEventNameStr,
-        pageApiEventList: [
+        pageLifecycleEventList: [
             common_1.PageAPI.onShareTimeline,
             common_1.PageAPI.onShareAppMessage,
             common_1.PageAPI.onTabItemTap,
-            common_1.PageAPI.onAddToFavorites
+            common_1.PageAPI.onAddToFavorites,
+            common_1.PageAPI.onShow,
+            common_1.PageAPI.onHide,
+        ],
+        appLifecycleEventList: [
+            common_1.AppAPI.onLaunch,
+            common_1.AppAPI.onPageNotFound,
+            common_1.AppAPI.onUnhandledRejection
         ],
         transporterOptions: {
             env: 'production',
@@ -100,7 +107,8 @@ var taroOctopusPluginsDefaultOptions = (_a = {},
         },
         mode: common_1.CollectMode.default,
         registerEventList: common_1.buildInEventNameStr,
-        pageApiEventList: common_1.pageApiStr,
+        pageLifecycleEventList: common_1.pageApiStr,
+        appLifecycleEventList: common_1.appApiStr,
         loadErrorEventList: common_1.buildInLoadErrorEventNameStr,
         networkApi: {
             request: {
@@ -127,7 +135,8 @@ var taroOctopusPluginsDefaultOptions = (_a = {},
         mode: common_1.CollectMode.default,
         registerEventList: [],
         loadErrorEventList: [],
-        pageApiEventList: [],
+        pageLifecycleEventList: [],
+        appLifecycleEventList: [],
         transporterOptions: {
             env: 'production',
         },
@@ -141,7 +150,8 @@ var taroOctopusPluginsDefaultOptions = (_a = {},
         mode: common_1.CollectMode.default,
         registerEventList: [],
         loadErrorEventList: [],
-        pageApiEventList: [],
+        pageLifecycleEventList: [],
+        appLifecycleEventList: [],
         transporterOptions: {
             env: 'production',
         },

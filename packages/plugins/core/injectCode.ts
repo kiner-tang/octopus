@@ -127,7 +127,7 @@ const octopusEventCollectionCore = `
           }
          ]
         _es.logger('全局报错监听['+type+': '+e.subType+']', datasource);
-       } else if(type === "pageApi") {
+       } else if(type === "pageApi" || type === "appApi") {
         datasource = [
           {
             ...datasource,
@@ -393,71 +393,70 @@ export const apiProxySourceList: Record<string, any> = {
       }
     }
   `,
-  // page onPageScroll、onShareAppMessage、onShareTimeline、onAddToFavorites、onTabItemTap
+  // app onLaunch,onShow,onHide,onPageNotFount,onUnhandledRejection,onThemeChange
+  proxyApp: `
+  function proxyApp() {
+    var _es = exports;
+    var eventList = _es.config.pluginOptions.appLifecycleEventList;
+    var oriApi = App;
+    App = function(options) {
+      ["onLaunch","onThemeChange","onUnhandledRejection","onShow","onHide","onPageNotFound"].forEach(method => {
+        var oriFn = options[method];
+        options[method] = function(opt) {
+          if(!_es.eventHelper[method]) {
+            _es.eventHelper[method] = 0;
+          }
+          if(Math.abs(_es.eventHelper[method] - Date.now()) >= _es.throttleTime) {
+            eventList.includes(method) && _es.${injectEventName}({
+              type: "appApi",
+              subType: method,
+              detail: opt
+            });
+            _es.eventHelper[method] = Date.now();
+          }
+          return oriFn && oriFn.call(this,opt);
+        }
+        return oriApi(options);
+      });
+    }
+    return function destroy() {
+      App = oriApi;
+    }
+  }
+  `,
+  // page onPageScroll,onShareAppMessage,onShareTimeline,onAddToFavorites,onTabItemTap,onShow,onHide
   proxyPage: `
     function proxyPage() {
       var _es = exports;
-      var eventList = _es.config.pluginOptions.pageApiEventList;
+      var eventList = _es.config.pluginOptions.pageLifecycleEventList;
       var oriApi = Page;
       Page = function(options) {
-        var oriOnPageScroll = options.onPageScroll;
-        var oriOnShareAppMessage = options.onShareAppMessage;
-        var oriOnShareTimeline = options.onShareTimeline;
-        var oriOnAddToFavorites = options.onAddToFavorites;
-        var oriOnTabItemTap = options.onTabItemTap;
-        console.log(oriOnPageScroll.toString())
-        options.onPageScroll = function(opt) {
-          eventList.includes("onPageScroll") && _es.${injectEventName}({
-            type: "pageApi",
-            subType: "pageScroll",
-            detail: opt
-          });
-          return oriOnPageScroll && oriOnPageScroll.call(this,opt);
-        }
-        options.onShareAppMessage = function(opt) {
-          if(!oriOnShareAppMessage){
-            console.warn("🐙 请先在页面上配置'onShareAppMessage'");
+        ["onShow","onHide","onPageScroll","onTabItemTap"].forEach(method => {
+          var oriFn = options[method];
+          options[method] = function(opt) {
+            eventList.includes(method) && _es.${injectEventName}({
+              type: "pageApi",
+              subType: method,
+              detail: opt
+            });
+            return oriFn && oriFn.call(this,opt);
+          }
+        });
+        ["onShareAppMessage","onShareTimeline","onAddToFavorites"].forEach(method => {
+          var oriFn = options[method];
+          if(!oriFn){
+            console.warn("🐙 请先在页面上配置'"+method+"'");
             return;
           }
-          eventList.includes("onShareAppMessage") && _es.${injectEventName}({
-            type: "pageApi",
-            subType: "shareAppMessage",
-            detail: opt
-          });
-          return oriOnShareAppMessage.call(this, opt);
-        }
-        options.onShareTimeline = function(opt) {
-          if(!onShareTimeline){
-            console.warn("🐙 请先在页面上配置'onShareTimeline'");
-            return;
+          options[method] = function(opt) {
+            eventList.includes(method) && _es.${injectEventName}({
+              type: "pageApi",
+              subType: method,
+              detail: opt
+            });
+            return oriFn.call(this, opt);
           }
-          eventList.includes("onShareTimeline") && _es.${injectEventName}({
-            type: "pageApi",
-            subType: "shareTimeline",
-            detail: opt
-          });
-          return oriOnShareTimeline.call(this, opt);
-        }
-        options.onAddToFavorites = function(opt) {
-          if(!onAddToFavorites){
-            console.warn("🐙 请先在页面上配置'onAddToFavorites'");
-            return;
-          }
-          eventList.includes("onAddToFavorites") && _es.${injectEventName}({
-            type: "pageApi",
-            subType: "addFavorites",
-            detail: opt
-          });
-          return oriOnAddToFavorites.call(this, opt);
-        }
-        options.onTabItemTap = function(opt) {
-          eventList.includes("onTabItemTap") && _es.${injectEventName}({
-            type: "pageApi",
-            subType: "tabItemTap",
-            detail: opt
-          });
-          return oriOnTabItemTap && oriOnTabItemTap.call(this, opt);
-        }
+        });
         oriApi(options);
       }
       return function destroy() {

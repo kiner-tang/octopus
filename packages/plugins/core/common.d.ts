@@ -58,15 +58,19 @@ export declare type TaroOctopusPluginsOptions = {
     /**
      * 需要收集数据的事件列表
      */
-    registerEventList: string[];
+    registerEventList: BuildInEventKey[];
     /**
      * 需要监听的资源加载失败事件列表
      */
-    loadErrorEventList: string[];
+    loadErrorEventList: BuildInLoadErrorEventNameKey[];
     /**
-     * 页面 api 监听
+     * 页面生命周期函数监听
      */
-    pageApiEventList: string[];
+    pageLifecycleEventList: PageAPIKey[];
+    /**
+     * app生命周期函数监听
+     */
+    appLifecycleEventList: AppAPIKey[];
     /**
      * 需要监听的网络请求
      */
@@ -156,16 +160,28 @@ export declare type BuildInEventKey = "tap" | "click" | "touchstart" | "touchmov
 /**
  * 内置监听事件名称字符串数组
  */
-export declare const buildInEventNameStr: string[];
+export declare const buildInEventNameStr: BuildInEventKey[];
 export declare enum PageAPI {
     onPageScroll = "onPageScroll",
     onShareAppMessage = "onShareAppMessage",
     onShareTimeline = "onShareTimeline",
     onAddToFavorites = "onAddToFavorites",
-    onTabItemTap = "onTabItemTap"
+    onTabItemTap = "onTabItemTap",
+    onShow = "onShow",
+    onHide = "onShow"
 }
-export declare const pageApiStr: string[];
-export declare type PageAPIKey = "onPageScroll" | "onShareAppMessage" | "onShareTimeline" | "onAddToFavorites" | "onTabItemTap";
+export declare const pageApiStr: PageAPIKey[];
+export declare type PageAPIKey = "onPageScroll" | "onShareAppMessage" | "onShareTimeline" | "onAddToFavorites" | "onTabItemTap" | "onHide" | "onShow";
+export declare enum AppAPI {
+    onLaunch = "onLaunch",
+    onThemeChange = "onThemeChange",
+    onUnhandledRejection = "onUnhandledRejection",
+    onShow = "onShow",
+    onHide = "onHide",
+    onPageNotFound = "onPageNotFound"
+}
+export declare const appApiStr: AppAPIKey[];
+export declare type AppAPIKey = "onLaunch" | "onThemeChange" | "onUnhandledRejection" | "onShow" | "onHide" | "onPageNotFound";
 /**
  * 内置加载失败事件
  */
@@ -175,10 +191,11 @@ export declare enum BuildInLoadErrorEventName {
     'video' = "video",
     'audio' = "audio"
 }
+export declare type BuildInLoadErrorEventNameKey = "image" | "coverImage" | "video" | "audio";
 /**
  * 内置加载失败事件名称字符串数组
  */
-export declare const buildInLoadErrorEventNameStr: string[];
+export declare const buildInLoadErrorEventNameStr: BuildInLoadErrorEventNameKey[];
 /**
  * taro 内部编译后模块名到微信内置部分组件的映射
  */

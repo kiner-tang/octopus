@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.customParamsClassName = exports.ignoreClassName = exports.componentReactPath = exports.needCatchLoadErrorComponentsList = exports.needCatchLoadErrorComponents = exports.taroModule2wxComponent = exports.buildInLoadErrorEventNameStr = exports.BuildInLoadErrorEventName = exports.pageApiStr = exports.PageAPI = exports.buildInEventNameStr = exports.BuildInEventName = exports.wxLibName = exports.injectClassName = exports.buildInView = exports.performanceSymbol = exports.helpersSymbol = exports.exportSymbol = exports.injectSymbol = exports.apiProxySymbol = exports.injectEventName = exports.libName = exports.utilModuleName = exports.utilFilePath = exports.libFilePath = exports.defaultAstParserOption = exports.CollectMode = void 0;
+exports.customParamsClassName = exports.ignoreClassName = exports.componentReactPath = exports.needCatchLoadErrorComponentsList = exports.needCatchLoadErrorComponents = exports.taroModule2wxComponent = exports.buildInLoadErrorEventNameStr = exports.BuildInLoadErrorEventName = exports.appApiStr = exports.AppAPI = exports.pageApiStr = exports.PageAPI = exports.buildInEventNameStr = exports.BuildInEventName = exports.wxLibName = exports.injectClassName = exports.buildInView = exports.performanceSymbol = exports.helpersSymbol = exports.exportSymbol = exports.injectSymbol = exports.apiProxySymbol = exports.injectEventName = exports.libName = exports.utilModuleName = exports.utilFilePath = exports.libFilePath = exports.defaultAstParserOption = exports.CollectMode = void 0;
 /**
  * 事件收集力度模式类型
  */
@@ -74,8 +74,20 @@ var PageAPI;
     PageAPI["onShareTimeline"] = "onShareTimeline";
     PageAPI["onAddToFavorites"] = "onAddToFavorites";
     PageAPI["onTabItemTap"] = "onTabItemTap";
+    PageAPI["onShow"] = "onShow";
+    PageAPI["onHide"] = "onShow";
 })(PageAPI = exports.PageAPI || (exports.PageAPI = {}));
 exports.pageApiStr = Object.keys(PageAPI);
+var AppAPI;
+(function (AppAPI) {
+    AppAPI["onLaunch"] = "onLaunch";
+    AppAPI["onThemeChange"] = "onThemeChange";
+    AppAPI["onUnhandledRejection"] = "onUnhandledRejection";
+    AppAPI["onShow"] = "onShow";
+    AppAPI["onHide"] = "onHide";
+    AppAPI["onPageNotFound"] = "onPageNotFound";
+})(AppAPI = exports.AppAPI || (exports.AppAPI = {}));
+exports.appApiStr = Object.keys(AppAPI);
 /**
  * 内置加载失败事件
  */
