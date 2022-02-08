@@ -47,7 +47,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createPluginOptions = void 0;
+exports.defineConfig = exports.createPluginOptions = void 0;
 var octopus_shared_1 = require("@kiner/octopus-shared");
 var astCreator_1 = require("./core/astCreator");
 var common_1 = require("./core/common");
@@ -69,7 +69,6 @@ var taroOctopusPluginsDefaultOptions = (_a = {},
             common_1.BuildInEventName.focus,
             common_1.BuildInEventName.blur,
             common_1.BuildInEventName.longpress,
-            common_1.BuildInEventName.scroll,
         ],
         networkApi: {
             request: {
@@ -83,6 +82,12 @@ var taroOctopusPluginsDefaultOptions = (_a = {},
             downloadFile: true,
         },
         loadErrorEventList: common_1.buildInLoadErrorEventNameStr,
+        pageApiEventList: [
+            common_1.PageAPI.onShareTimeline,
+            common_1.PageAPI.onShareAppMessage,
+            common_1.PageAPI.onTabItemTap,
+            common_1.PageAPI.onAddToFavorites
+        ],
         transporterOptions: {
             env: 'production',
         },
@@ -95,6 +100,7 @@ var taroOctopusPluginsDefaultOptions = (_a = {},
         },
         mode: common_1.CollectMode.default,
         registerEventList: common_1.buildInEventNameStr,
+        pageApiEventList: common_1.pageApiStr,
         loadErrorEventList: common_1.buildInLoadErrorEventNameStr,
         networkApi: {
             request: {
@@ -121,6 +127,21 @@ var taroOctopusPluginsDefaultOptions = (_a = {},
         mode: common_1.CollectMode.default,
         registerEventList: [],
         loadErrorEventList: [],
+        pageApiEventList: [],
+        transporterOptions: {
+            env: 'production',
+        },
+    },
+    _a[common_1.CollectMode.manual] = {
+        debug: false,
+        complieOptions: {
+            include: [],
+            exclude: [],
+        },
+        mode: common_1.CollectMode.default,
+        registerEventList: [],
+        loadErrorEventList: [],
+        pageApiEventList: [],
         transporterOptions: {
             env: 'production',
         },
@@ -136,6 +157,15 @@ function createPluginOptions(updateOptions) {
     return updateOptions(taroOctopusPluginsDefaultOptions);
 }
 exports.createPluginOptions = createPluginOptions;
+/**
+ * 向外抛出的设置 plugin options 的方法，方便编辑器智能提示
+ * @param options
+ * @returns
+ */
+var defineConfig = function (options) {
+    return options;
+};
+exports.defineConfig = defineConfig;
 exports.default = (function (ctx, pluginOpts) {
     var logger = new octopus_shared_1.Logger('TaroPlugin');
     pluginOpts = (0, octopus_shared_1.deepMergeOptions)(taroOctopusPluginsDefaultOptions[pluginOpts.mode || common_1.CollectMode.default], pluginOpts);

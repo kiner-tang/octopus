@@ -6,6 +6,8 @@ import {
   buildInEventNameStr,
   buildInLoadErrorEventNameStr,
   CollectMode,
+  PageAPI,
+  pageApiStr,
   TaroOctopusPluginsOptions,
 } from './core/common';
 import { CodeGen } from './core/codeGen';
@@ -27,7 +29,6 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
       BuildInEventName.focus,
       BuildInEventName.blur,
       BuildInEventName.longpress,
-      BuildInEventName.scroll,
     ],
     networkApi: {
       request: {
@@ -39,6 +40,12 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
       downloadFile: true,
     },
     loadErrorEventList: buildInLoadErrorEventNameStr,
+    pageApiEventList: [
+      PageAPI.onShareTimeline,
+      PageAPI.onShareAppMessage,
+      PageAPI.onTabItemTap,
+      PageAPI.onAddToFavorites
+    ],
     transporterOptions: {
       env: 'production',
     },
@@ -51,6 +58,7 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
     },
     mode: CollectMode.default,
     registerEventList: buildInEventNameStr,
+    pageApiEventList: pageApiStr,
     loadErrorEventList: buildInLoadErrorEventNameStr,
     networkApi: {
       request: {
@@ -75,10 +83,25 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
     mode: CollectMode.default,
     registerEventList: [],
     loadErrorEventList: [],
+    pageApiEventList: [],
     transporterOptions: {
       env: 'production',
     },
   },
+  [CollectMode.manual]: {
+    debug: false,
+    complieOptions: {
+      include: [],
+      exclude: [],
+    },
+    mode: CollectMode.default,
+    registerEventList: [],
+    loadErrorEventList: [],
+    pageApiEventList: [],
+    transporterOptions: {
+      env: 'production',
+    },
+  }
 };
 /**
  * 对外提供的根据内置选项动态调整插件运行参数的方法
@@ -90,6 +113,14 @@ export function createPluginOptions(
   updateOptions: (buildInOptions: Record<CollectMode, TaroOctopusPluginsOptions>) => TaroOctopusPluginsOptions
 ) {
   return updateOptions(taroOctopusPluginsDefaultOptions);
+}
+/**
+ * 向外抛出的设置 plugin options 的方法，方便编辑器智能提示
+ * @param options
+ * @returns
+ */
+export const defineConfig = (options: Partial<TaroOctopusPluginsOptions>): Partial<TaroOctopusPluginsOptions> => {
+  return options;
 }
 
 export default (

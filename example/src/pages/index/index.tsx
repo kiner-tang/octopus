@@ -100,6 +100,32 @@ class Index extends Component {
     counterStore.incrementAsync()
   }
 
+  manual(e) {
+    wx.octopusLib.pushData({
+      type: "click",
+      subType: "customClickEvent",
+      customData: {
+        userInfo: {
+          uuid: "1234",
+          name: "testtest"
+        }
+      },
+      oriEvent: e
+    });
+  }
+  manualCustom() {
+    wx.octopusLib.pushData({
+      type: "custom",
+      subType: "customEvent",
+      customData: {
+        userInfo: {
+          name: "kiner",
+          age: 18
+        }
+      }
+    });
+  }
+
   doError() {
     console.log(a + b);
   }
@@ -122,6 +148,8 @@ class Index extends Component {
         <Button data-octopus-customData={{name: "kiner", age: 18}}>自定义用户参数</Button>
         <Button data-octopus-customData={{name: "kanger", age: 8, sex: '女'}}>自定义用户参数2</Button>
         <Button data-octopus-customData={{name: "zongheng", age: 3}}>自定义用户参数3</Button>
+        <Button onClick={this.manual}>手动埋点(内置事件名)</Button>
+        <Button onClick={this.manualCustom}>手动埋点(自定义事件名)</Button>
         <Text>{counter}</Text>
         <Input placeholder='请输入你的姓名' id="input" />
         <Detail />

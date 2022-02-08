@@ -1,3 +1,5 @@
+const { defineConfig } = require("@kiner/octopus-plugins");
+
 const config = {
   projectName: 'example',
   date: '2022-2-2',
@@ -10,14 +12,9 @@ const config = {
   sourceRoot: 'src',
   outputRoot: 'dist',
   plugins: [
-    ['@kiner/octopus-plugins', {
-      debug: true,
-      complieOptions: {
-        // 以下为默认参数，可以根据自己的需要进行跳帧
-        // include: [/pages\/.*\.(js|js\.map)$/, /app\.(js|js\.map)$/, 'base.wxml', 'taro.js'],
-        // exclude: []
-      }
-    }]
+    ['@kiner/octopus-plugins', defineConfig({
+      debug: true
+    })]
   ],
   defineConstants: {
   },

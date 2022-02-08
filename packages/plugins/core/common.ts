@@ -33,6 +33,8 @@ export enum CollectMode {
    * 自定义力度，插件将不会注入默认的收集事件，由用户通过自定义指定 complieOptions.include，complieOptions.exclude，registerEventList，loadErrorEventList 完成
    */
   custom = 'custom',
+  /** 如果不希望称触发自动埋点，而是希望通过 api 手动提交，则使用此模式 */
+  manual = 'manual'
 }
 
 /**
@@ -62,6 +64,10 @@ export type TaroOctopusPluginsOptions = {
    * 需要监听的资源加载失败事件列表
    */
   loadErrorEventList: string[];
+  /**
+   * 页面 api 监听
+   */
+  pageApiEventList: string[];
   /**
    * 需要监听的网络请求
    */
@@ -172,10 +178,41 @@ export enum BuildInEventName {
   longpress = 'longpress',
   longtap = 'longtap',
 }
+
+export type BuildInEventKey =
+| "tap"
+| "click"
+| "touchstart"
+| "touchmove"
+| "touchend"
+| "touchcancel"
+| "scroll"
+| "input"
+| "change"
+| "focus"
+| "blur"
+| "longpress"
+| "longtap"
+
 /**
  * 内置监听事件名称字符串数组
  */
 export const buildInEventNameStr = Object.keys(BuildInEventName);
+
+export enum PageAPI {
+  onPageScroll = "onPageScroll",
+  onShareAppMessage = "onShareAppMessage",
+  onShareTimeline = "onShareTimeline",
+  onAddToFavorites = "onAddToFavorites",
+  onTabItemTap = "onTabItemTap",
+}
+export const pageApiStr = Object.keys(PageAPI);
+export type PageAPIKey =
+| "onPageScroll"
+| "onShareAppMessage"
+| "onShareTimeline"
+| "onAddToFavorites"
+| "onTabItemTap";
 
 /**
  * 内置加载失败事件

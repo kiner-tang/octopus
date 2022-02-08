@@ -236,19 +236,19 @@ export class InjectCodeToCollectDatasource extends BaseApp<PluginPipelineData> {
       code,
       filePath: 'app.js',
       injectDepCb: (properties: ObjectProperty[]) => {
-        properties.push(
-          astObjectPropertyFn({
-            name: 'octopus_inject_code',
-            id: 'OctopusInjectCode',
-            body: [
-              expressionStatement(
-                astCallObjectMethod('console', 'log', [
-                  stringLiteral('🐙 可以在这里加入一些小程序启动时要执行的预处理代码'),
-                ])
-              ),
-            ],
-          })
-        );
+        // properties.push(
+        //   astObjectPropertyFn({
+        //     name: 'octopus_inject_code',
+        //     id: 'OctopusInjectCode',
+        //     body: [
+        //       expressionStatement(
+        //         astCallObjectMethod('console', 'log', [
+        //           stringLiteral('🐙 欢迎使用章鱼埋点'),
+        //         ])
+        //       ),
+        //     ],
+        //   })
+        // );
       },
       callDepCb: (body: Statement[]) => {
         body.unshift(
@@ -258,12 +258,12 @@ export class InjectCodeToCollectDatasource extends BaseApp<PluginPipelineData> {
               callExpression(identifier('__webpack_require__'), [stringLiteral(libFilePath)])
             ),
           ]),
-          variableDeclaration('var', [
-            variableDeclarator(
-              identifier('octopus_inject_code'),
-              callExpression(identifier('__webpack_require__'), [stringLiteral('octopus_inject_code')])
-            ),
-          ])
+          // variableDeclaration('var', [
+          //   variableDeclarator(
+          //     identifier('octopus_inject_code'),
+          //     callExpression(identifier('__webpack_require__'), [stringLiteral('octopus_inject_code')])
+          //   ),
+          // ])
         );
       },
     });

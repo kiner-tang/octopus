@@ -3,6 +3,7 @@ import { camelize, camelizeRE, capitalize, firstEventSendDelay, isFunction, noop
 import pkg from '../package.json';
 import {
   apiProxySymbol,
+  buildInEventNameStr,
   exportSymbol,
   helpersSymbol,
   injectClassName,
@@ -63,6 +64,7 @@ const fragment = `
     ${injectSymbol}
     ${apiProxySymbol}
     ${performanceSymbol}
+    exports.debug = exports.config.pluginOptions.debug;
   }
 }
 ]);
@@ -76,45 +78,43 @@ const octopusEventCollectionCore = `
     function(e) {
        var _es = exports;
        var type = e.type
-       var subType = type;
+       var subType = e.subType || type;
+       var isManual = !!e.manual;
        var errorMsg = "";
        var { data } = _es.getActivePage();
-       var datasource;
+       var datasource = {
+         type,
+         subType,
+         isManual,
+         pageData: data,
+         oriEvent: e,
+         touchElem: {},
+         customData: e.customData || {}
+       };
        if(!type && e.errMsg === "MediaError") {
          type = "error",
          subType = 'audioLoadError'
          errorMsg = '['+e.errMsg+'] ' + _es.audioErrorCodeMap[String(e.errCode)];
          datasource = [
           {
-            touchElem: {},
-            pageData: data,
-            type,
+            ...datasource,
             subType: subType,
             errorMsg,
-            oriEvent: e,
           }
          ]
         _es.logger('触发目标元素事件['+type+': '+subType+']', datasource);
        } else if(type === "requestFail") {
         datasource = [
           {
-            touchElem: {},
-            pageData: data,
-            type,
-            subType: e.subType,
+            ...datasource,
             errorMsg: e.errorMsg,
-            oriEvent: e,
           }
          ]
         _es.logger('网络请求失败['+type+': '+e.subType+']', datasource);
        } else if(type === "performance") {
         datasource = [
           {
-            touchElem: {},
-            pageData: data,
-            type,
-            subType: e.subType,
-            oriEvent: e,
+            ...datasource,
             performance: e.performance
           }
          ]
@@ -122,15 +122,35 @@ const octopusEventCollectionCore = `
        } else if(type === "globalCatchError") {
         datasource = [
           {
-            touchElem: {},
-            pageData: data,
-            type,
-            subType: e.subType,
+            ...datasource,
             errorMsg: e.errorMsg,
-            oriEvent: e
           }
          ]
         _es.logger('全局报错监听['+type+': '+e.subType+']', datasource);
+       } else if(type === "pageApi") {
+        datasource = [
+          {
+            ...datasource,
+            detail: e.detail,
+          }
+         ]
+        _es.logger('页面方法监听['+type+': '+e.subType+']', datasource);
+       } else if(isManual && e.__inner_call__ === undefined){
+        if(${JSON.stringify(buildInEventNameStr)}.includes(type) && e.oriEvent) {
+          _es.${injectEventName}({
+            ...e.oriEvent,
+            subType: e.subType,
+            __inner_call__: true
+          });
+        } else {
+          datasource = [
+            {
+              ...datasource,
+              customData: e.customData,
+            }
+           ]
+          _es.logger('手动调用api['+type+': '+e.subType+']', datasource);
+        }
        } else {
         var eventList = _es.config.pluginOptions.registerEventList;
         var loadErrorEventList = _es.config.pluginOptions.loadErrorEventList;
@@ -165,7 +185,7 @@ const octopusEventCollectionCore = `
           y: e.mpEvent.target.offsetTop
         }
         var curEleData = _es.getViewDataBySid(sid, data.root.cn);
-        if(curEleData.cl === "${ignoreClassName}") return;
+        if(curEleData.cl === "${ignoreClassName}" && !e.__inner_call__) return;
         var text = _es.getTextBySid(sid, curEleData);
         _es.getBoundingClientRect(".${injectClassName}").then(async (res) => {
            res.boundingClientRect.forEach(async (item) => {
@@ -173,15 +193,13 @@ const octopusEventCollectionCore = `
              var dataset = item.dataset;
              if(isHit){
                var target = {
+                 ...datasource,
                  touchElem: e._userTap ? item : {},
                  dataset,
-                 pageData: data,
                  elemData: curEleData,
                  text: text,
                  type: type,
-                 subType: subType,
                  errorMsg,
-                 oriEvent: e,
                  curEleSid: sid,
                  customData
                }
@@ -375,6 +393,78 @@ export const apiProxySourceList: Record<string, any> = {
       }
     }
   `,
+  // page onPageScroll、onShareAppMessage、onShareTimeline、onAddToFavorites、onTabItemTap
+  proxyPage: `
+    function proxyPage() {
+      var _es = exports;
+      var eventList = _es.config.pluginOptions.pageApiEventList;
+      var oriApi = Page;
+      Page = function(options) {
+        var oriOnPageScroll = options.onPageScroll;
+        var oriOnShareAppMessage = options.onShareAppMessage;
+        var oriOnShareTimeline = options.onShareTimeline;
+        var oriOnAddToFavorites = options.onAddToFavorites;
+        var oriOnTabItemTap = options.onTabItemTap;
+        console.log(oriOnPageScroll.toString())
+        options.onPageScroll = function(opt) {
+          eventList.includes("onPageScroll") && _es.${injectEventName}({
+            type: "pageApi",
+            subType: "pageScroll",
+            detail: opt
+          });
+          return oriOnPageScroll && oriOnPageScroll.call(this,opt);
+        }
+        options.onShareAppMessage = function(opt) {
+          if(!oriOnShareAppMessage){
+            console.warn("🐙 请先在页面上配置'onShareAppMessage'");
+            return;
+          }
+          eventList.includes("onShareAppMessage") && _es.${injectEventName}({
+            type: "pageApi",
+            subType: "shareAppMessage",
+            detail: opt
+          });
+          return oriOnShareAppMessage.call(this, opt);
+        }
+        options.onShareTimeline = function(opt) {
+          if(!onShareTimeline){
+            console.warn("🐙 请先在页面上配置'onShareTimeline'");
+            return;
+          }
+          eventList.includes("onShareTimeline") && _es.${injectEventName}({
+            type: "pageApi",
+            subType: "shareTimeline",
+            detail: opt
+          });
+          return oriOnShareTimeline.call(this, opt);
+        }
+        options.onAddToFavorites = function(opt) {
+          if(!onAddToFavorites){
+            console.warn("🐙 请先在页面上配置'onAddToFavorites'");
+            return;
+          }
+          eventList.includes("onAddToFavorites") && _es.${injectEventName}({
+            type: "pageApi",
+            subType: "addFavorites",
+            detail: opt
+          });
+          return oriOnAddToFavorites.call(this, opt);
+        }
+        options.onTabItemTap = function(opt) {
+          eventList.includes("onTabItemTap") && _es.${injectEventName}({
+            type: "pageApi",
+            subType: "tabItemTap",
+            detail: opt
+          });
+          return oriOnTabItemTap && oriOnTabItemTap.call(this, opt);
+        }
+        oriApi(options);
+      }
+      return function destroy() {
+        Page = oriApi;
+      }
+    }
+  `,
   // websocket
   // todo
   // createInnerAudioContext
@@ -513,6 +603,7 @@ const initExportSources = (config: TaroOctopusPluginsOptions) => ({
     return {};
   }),
   logger: getFunctionStr(function (msg, ...rest) {
+    if(!exports.debug) return;
     const label = '[' + exports.config.loggerNamespace + ':Plugin] ' + msg;
     console.groupCollapsed(label);
     rest.forEach((item) => {
@@ -588,6 +679,21 @@ const initExportSources = (config: TaroOctopusPluginsOptions) => ({
       if(target) return target.join("┘");
     };
     return "";
+  }
+  `,
+  // todo 通过 api 手动添加埋点事件
+  pushData: `
+  function pushData(data) {
+    var _es = exports;
+    var {type, oriEvent} = data;
+    if(${JSON.stringify(buildInEventNameStr)}.includes(type) && !oriEvent) {
+      console.warn("🐙 手动的触发事件类型: "+type+" 为内部事件, 你需要在调用时将原始事件对象通过 oriEvent 字段传入");
+      return;
+    }
+    _es.${injectEventName}({
+      ...data,
+      manual: true
+    });
   }
   `,
   [injectEventName]: octopusEventCollectionCore,

@@ -7,6 +7,12 @@ import { CollectMode, TaroOctopusPluginsOptions } from './core/common';
  * @returns
  */
 export declare function createPluginOptions(updateOptions: (buildInOptions: Record<CollectMode, TaroOctopusPluginsOptions>) => TaroOctopusPluginsOptions): TaroOctopusPluginsOptions;
+/**
+ * 向外抛出的设置 plugin options 的方法，方便编辑器智能提示
+ * @param options
+ * @returns
+ */
+export declare const defineConfig: (options: Partial<TaroOctopusPluginsOptions>) => Partial<TaroOctopusPluginsOptions>;
 declare const _default: (ctx: IPluginContext, pluginOpts: TaroOctopusPluginsOptions) => void;
 export default _default;
 export * from "./types";

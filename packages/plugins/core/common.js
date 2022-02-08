@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.customParamsClassName = exports.ignoreClassName = exports.componentReactPath = exports.needCatchLoadErrorComponentsList = exports.needCatchLoadErrorComponents = exports.taroModule2wxComponent = exports.buildInLoadErrorEventNameStr = exports.BuildInLoadErrorEventName = exports.buildInEventNameStr = exports.BuildInEventName = exports.wxLibName = exports.injectClassName = exports.buildInView = exports.performanceSymbol = exports.helpersSymbol = exports.exportSymbol = exports.injectSymbol = exports.apiProxySymbol = exports.injectEventName = exports.libName = exports.utilModuleName = exports.utilFilePath = exports.libFilePath = exports.defaultAstParserOption = exports.CollectMode = void 0;
+exports.customParamsClassName = exports.ignoreClassName = exports.componentReactPath = exports.needCatchLoadErrorComponentsList = exports.needCatchLoadErrorComponents = exports.taroModule2wxComponent = exports.buildInLoadErrorEventNameStr = exports.BuildInLoadErrorEventName = exports.pageApiStr = exports.PageAPI = exports.buildInEventNameStr = exports.BuildInEventName = exports.wxLibName = exports.injectClassName = exports.buildInView = exports.performanceSymbol = exports.helpersSymbol = exports.exportSymbol = exports.injectSymbol = exports.apiProxySymbol = exports.injectEventName = exports.libName = exports.utilModuleName = exports.utilFilePath = exports.libFilePath = exports.defaultAstParserOption = exports.CollectMode = void 0;
 /**
  * 事件收集力度模式类型
  */
@@ -18,6 +18,8 @@ var CollectMode;
      * 自定义力度，插件将不会注入默认的收集事件，由用户通过自定义指定 complieOptions.include，complieOptions.exclude，registerEventList，loadErrorEventList 完成
      */
     CollectMode["custom"] = "custom";
+    /** 如果不希望称触发自动埋点，而是希望通过 api 手动提交，则使用此模式 */
+    CollectMode["manual"] = "manual";
 })(CollectMode = exports.CollectMode || (exports.CollectMode = {}));
 exports.defaultAstParserOption = {
     sourceType: 'module',
@@ -65,6 +67,15 @@ var BuildInEventName;
  * 内置监听事件名称字符串数组
  */
 exports.buildInEventNameStr = Object.keys(BuildInEventName);
+var PageAPI;
+(function (PageAPI) {
+    PageAPI["onPageScroll"] = "onPageScroll";
+    PageAPI["onShareAppMessage"] = "onShareAppMessage";
+    PageAPI["onShareTimeline"] = "onShareTimeline";
+    PageAPI["onAddToFavorites"] = "onAddToFavorites";
+    PageAPI["onTabItemTap"] = "onTabItemTap";
+})(PageAPI = exports.PageAPI || (exports.PageAPI = {}));
+exports.pageApiStr = Object.keys(PageAPI);
 /**
  * 内置加载失败事件
  */
