@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.componentReactPath = exports.needCatchLoadErrorComponentsList = exports.needCatchLoadErrorComponents = exports.taroModule2wxComponent = exports.buildInLoadErrorEventNameStr = exports.BuildInLoadErrorEventName = exports.buildInEventNameStr = exports.BuildInEventName = exports.wxLibName = exports.injectClassName = exports.buildInView = exports.performanceSymbol = exports.helpersSymbol = exports.exportSymbol = exports.injectSymbol = exports.apiProxySymbol = exports.injectEventName = exports.libName = exports.libFilePath = exports.defaultAstParserOption = exports.CollectMode = void 0;
+exports.customParamsClassName = exports.ignoreClassName = exports.componentReactPath = exports.needCatchLoadErrorComponentsList = exports.needCatchLoadErrorComponents = exports.taroModule2wxComponent = exports.buildInLoadErrorEventNameStr = exports.BuildInLoadErrorEventName = exports.buildInEventNameStr = exports.BuildInEventName = exports.wxLibName = exports.injectClassName = exports.buildInView = exports.performanceSymbol = exports.helpersSymbol = exports.exportSymbol = exports.injectSymbol = exports.apiProxySymbol = exports.injectEventName = exports.libName = exports.utilModuleName = exports.utilFilePath = exports.libFilePath = exports.defaultAstParserOption = exports.CollectMode = void 0;
 /**
  * 事件收集力度模式类型
  */
@@ -30,6 +30,8 @@ exports.defaultAstParserOption = {
     ],
 };
 exports.libFilePath = './octopusLib.js';
+exports.utilFilePath = './octopusUtil.wxs';
+exports.utilModuleName = 'octopus';
 exports.libName = 'octopusLib';
 exports.injectEventName = 'collectDataEvent';
 exports.apiProxySymbol = "/////////apiProxy/////////";
@@ -95,3 +97,5 @@ exports.taroModule2wxComponent = {
 exports.needCatchLoadErrorComponents = 'b,c,f';
 exports.needCatchLoadErrorComponentsList = exports.needCatchLoadErrorComponents.split(',');
 exports.componentReactPath = './node_modules/@tarojs/plugin-platform-weapp/dist/components-react.js';
+exports.ignoreClassName = 'octopus-ignore';
+exports.customParamsClassName = 'octopus-customData';

@@ -10,26 +10,31 @@ import {
   ObjectProperty,
   FunctionExpression,
   Identifier,
+  objectProperty,
 } from '@babel/types';
 import { BaseApp, noop, obj2querystr } from '@kiner/octopus-shared';
 import { load } from 'cheerio';
 import type { CheerioAPI, Element } from 'cheerio';
+import codeGen from '@babel/generator';
 import traverse from '@babel/traverse';
 import {
   buildInView,
   componentReactPath,
+  customParamsClassName,
   injectClassName,
   injectEventName,
   libFilePath,
   libName,
   needCatchLoadErrorComponents,
   PluginPipelineData,
+  utilModuleName,
   wxLibName,
 } from './common';
-import { astObjectPropertyFn, astCallObjectMethod, matchHTMLText } from './utils';
+import { astObjectPropertyFn, astCallObjectMethod } from './utils';
 import { injectLibFiles } from './injectCode';
 import { CodeGenInfo } from './codeGen';
 import { objectExpression } from '@babel/types';
+import { utilFilePath } from '.';
 
 export class InjectCodeToCollectDatasource extends BaseApp<PluginPipelineData> {
   constructor() {
@@ -40,6 +45,7 @@ export class InjectCodeToCollectDatasource extends BaseApp<PluginPipelineData> {
    * @param $
    */
   patchCodeInitWxml($: CheerioAPI) {
+    $._root.firstChild;
     $(buildInView)
       .addClass(injectClassName)
       .map((idx: number, item: Element) => {
@@ -47,11 +53,6 @@ export class InjectCodeToCollectDatasource extends BaseApp<PluginPipelineData> {
         item.attribs['data-attrs'] = obj2querystr(item.attribs);
         return item;
       });
-    // 在 taro 中，caver-image 报错会触发统一事件 eventHandler, 而 image 不会，因此，image 单独捕获 error 事件
-    // $('image').map((idx: number, item: Element) => {
-    //   item.attribs["binderror"]
-    //   return item;
-    // });
   }
   /**
    * 由于 cheerio 输出的属性字符串会将 ' 转换成 &apos; ，因此再完成补丁输出源码前需要转换回来
@@ -70,7 +71,7 @@ export class InjectCodeToCollectDatasource extends BaseApp<PluginPipelineData> {
     filePaths.forEach((path) => {
       const wxml = code[path];
 
-      const $ = load(`<view id="wxmlWrapper">${wxml}</view>`, {
+      const $ = load(`<view id="wxmlWrapper"><wxs module="${utilModuleName}" src="${utilFilePath}"/>\n${wxml}</view>`, {
         xml: true,
         xmlMode: true,
       });
@@ -87,6 +88,7 @@ export class InjectCodeToCollectDatasource extends BaseApp<PluginPipelineData> {
     callDepCb = noop,
     eventHandler = noop,
     loadErrorHandler = noop,
+    customData = noop,
   }: {
     code: PluginPipelineData['asts']['js'];
     filePath: string;
@@ -94,11 +96,12 @@ export class InjectCodeToCollectDatasource extends BaseApp<PluginPipelineData> {
     callDepCb?: (body: Statement[]) => void;
     eventHandler?: (body: Statement[]) => void;
     loadErrorHandler?: (body: Statement[], eventObjName: string) => void;
+    customData?: (data: string) => void;
   }): void {
     const appJs = code[filePath];
     let flag = 0;
     traverse(appJs?.[0], {
-      enter(path) {
+      enter: (path) => {
         // 依赖注入
         if (path.isArrayExpression() && flag <= 1) {
           // 代码中第 2 个数组定义
@@ -169,6 +172,44 @@ export class InjectCodeToCollectDatasource extends BaseApp<PluginPipelineData> {
               }
             },
           });
+        }
+        // 查找指定 class 类名的组件属性
+        if(path.isStringLiteral() && path.node.value.includes(customParamsClassName)) {
+          if(path.parentPath.isObjectProperty()) {
+            const value = path.parentPath.node.value as ObjectExpression;
+            const parentChildren = path.parentPath?.parentPath?.parentPath?.parentPath;
+            if(parentChildren?.isArrayExpression()) {
+              const arrContainer = (parentChildren.node.elements as object[]);
+              // const itemCnt = arrContainer.length;
+              const curIdx = arrContainer.findIndex(item => item === path?.parentPath?.parentPath?.parentPath?.node);
+              // console.log(`总共有${itemCnt}个元素,当前索引为: ${curIdx}`);
+              traverse(appJs?.[0], {
+                enter(_path) {
+                  if(_path.isIdentifier() && _path.node.name === "cn") {
+                    if(_path?.parentPath?.parentPath?.isObjectExpression()) {
+                      const properties = _path.parentPath.parentPath.node.properties;
+                      let customDataProp = properties.find(item => item.type === "ObjectProperty" && (item.key as any).name === "customData");
+                      if(!customDataProp) {
+                        customDataProp = objectProperty(identifier("customData"), objectExpression([
+                          objectProperty(identifier(String(curIdx)), value)
+                        ]));
+                        properties.push(customDataProp);
+                      } else {
+                        if(customDataProp.type === "ObjectProperty") {
+                          if(customDataProp.value.type === "ObjectExpression") {
+                            if(customDataProp.value.properties.find(item => item.type === "ObjectProperty" && (item.key as any).name === String(curIdx))) return;
+                            customDataProp.value.properties.push(objectProperty(identifier(String(curIdx)), value));
+                          }
+                        }
+                      }
+                      // console.log("页面数据", );
+                    }
+                  }
+                }
+              });
+              // customData((new Function(`return ${code.code.replace(/\\n/g, '')}`))())
+            }
+          }
         }
       },
     });
@@ -241,6 +282,16 @@ export class InjectCodeToCollectDatasource extends BaseApp<PluginPipelineData> {
         filePath: filePath,
         loadErrorHandler(body: Statement[], eventObjName: string) {
           body.unshift(expressionStatement(astCallObjectMethod(wxLibName, injectEventName, [identifier(eventObjName)])));
+        },
+      });
+    });
+    // 注入 image 加载失败监听代码
+    Object.keys(code).forEach((filePath) => {
+      this._traverseJs({
+        code,
+        filePath: filePath,
+        customData(data: string) {
+          console.log(filePath, data);
         },
       });
     });

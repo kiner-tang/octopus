@@ -26,6 +26,8 @@ var traverse_1 = __importDefault(require("@babel/traverse"));
 var common_1 = require("./common");
 var utils_1 = require("./utils");
 var injectCode_1 = require("./injectCode");
+var types_2 = require("@babel/types");
+var _1 = require(".");
 var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
     __extends(InjectCodeToCollectDatasource, _super);
     function InjectCodeToCollectDatasource() {
@@ -36,6 +38,7 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
      * @param $
      */
     InjectCodeToCollectDatasource.prototype.patchCodeInitWxml = function ($) {
+        $._root.firstChild;
         $(common_1.buildInView)
             .addClass(common_1.injectClassName)
             .map(function (idx, item) {
@@ -43,11 +46,6 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
             item.attribs['data-attrs'] = (0, octopus_shared_1.obj2querystr)(item.attribs);
             return item;
         });
-        // 在 taro 中，caver-image 报错会触发统一事件 eventHandler, 而 image 不会，因此，image 单独捕获 error 事件
-        // $('image').map((idx: number, item: Element) => {
-        //   item.attribs["binderror"]
-        //   return item;
-        // });
     };
     /**
      * 由于 cheerio 输出的属性字符串会将 ' 转换成 &apos; ，因此再完成补丁输出源码前需要转换回来
@@ -66,7 +64,7 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
         var filePaths = Object.keys(code);
         filePaths.forEach(function (path) {
             var wxml = code[path];
-            var $ = (0, cheerio_1.load)("<view id=\"wxmlWrapper\">".concat(wxml, "</view>"), {
+            var $ = (0, cheerio_1.load)("<view id=\"wxmlWrapper\"><wxs module=\"".concat(common_1.utilModuleName, "\" src=\"").concat(_1.utilFilePath, "\"/>\n").concat(wxml, "</view>"), {
                 xml: true,
                 xmlMode: true,
             });
@@ -75,12 +73,12 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
         });
     };
     InjectCodeToCollectDatasource.prototype._traverseJs = function (_a) {
-        var code = _a.code, filePath = _a.filePath, _b = _a.injectDepCb, injectDepCb = _b === void 0 ? octopus_shared_1.noop : _b, _c = _a.callDepCb, callDepCb = _c === void 0 ? octopus_shared_1.noop : _c, _d = _a.eventHandler, eventHandler = _d === void 0 ? octopus_shared_1.noop : _d, _e = _a.loadErrorHandler, loadErrorHandler = _e === void 0 ? octopus_shared_1.noop : _e;
+        var code = _a.code, filePath = _a.filePath, _b = _a.injectDepCb, injectDepCb = _b === void 0 ? octopus_shared_1.noop : _b, _c = _a.callDepCb, callDepCb = _c === void 0 ? octopus_shared_1.noop : _c, _d = _a.eventHandler, eventHandler = _d === void 0 ? octopus_shared_1.noop : _d, _e = _a.loadErrorHandler, loadErrorHandler = _e === void 0 ? octopus_shared_1.noop : _e, _f = _a.customData, customData = _f === void 0 ? octopus_shared_1.noop : _f;
         var appJs = code[filePath];
         var flag = 0;
         (0, traverse_1.default)(appJs === null || appJs === void 0 ? void 0 : appJs[0], {
             enter: function (path) {
-                var _a, _b;
+                var _a, _b, _c, _d, _e;
                 // 依赖注入
                 if (path.isArrayExpression() && flag <= 1) {
                     // 代码中第 2 个数组定义
@@ -147,6 +145,47 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
                         },
                     });
                 }
+                // 查找指定 class 类名的组件属性
+                if (path.isStringLiteral() && path.node.value.includes(common_1.customParamsClassName)) {
+                    if (path.parentPath.isObjectProperty()) {
+                        var value_1 = path.parentPath.node.value;
+                        var parentChildren = (_e = (_d = (_c = path.parentPath) === null || _c === void 0 ? void 0 : _c.parentPath) === null || _d === void 0 ? void 0 : _d.parentPath) === null || _e === void 0 ? void 0 : _e.parentPath;
+                        if (parentChildren === null || parentChildren === void 0 ? void 0 : parentChildren.isArrayExpression()) {
+                            var arrContainer = parentChildren.node.elements;
+                            // const itemCnt = arrContainer.length;
+                            var curIdx_1 = arrContainer.findIndex(function (item) { var _a, _b, _c; return item === ((_c = (_b = (_a = path === null || path === void 0 ? void 0 : path.parentPath) === null || _a === void 0 ? void 0 : _a.parentPath) === null || _b === void 0 ? void 0 : _b.parentPath) === null || _c === void 0 ? void 0 : _c.node); });
+                            // console.log(`总共有${itemCnt}个元素,当前索引为: ${curIdx}`);
+                            (0, traverse_1.default)(appJs === null || appJs === void 0 ? void 0 : appJs[0], {
+                                enter: function (_path) {
+                                    var _a, _b;
+                                    if (_path.isIdentifier() && _path.node.name === "cn") {
+                                        if ((_b = (_a = _path === null || _path === void 0 ? void 0 : _path.parentPath) === null || _a === void 0 ? void 0 : _a.parentPath) === null || _b === void 0 ? void 0 : _b.isObjectExpression()) {
+                                            var properties = _path.parentPath.parentPath.node.properties;
+                                            var customDataProp = properties.find(function (item) { return item.type === "ObjectProperty" && item.key.name === "customData"; });
+                                            if (!customDataProp) {
+                                                customDataProp = (0, types_1.objectProperty)((0, types_1.identifier)("customData"), (0, types_2.objectExpression)([
+                                                    (0, types_1.objectProperty)((0, types_1.identifier)(String(curIdx_1)), value_1)
+                                                ]));
+                                                properties.push(customDataProp);
+                                            }
+                                            else {
+                                                if (customDataProp.type === "ObjectProperty") {
+                                                    if (customDataProp.value.type === "ObjectExpression") {
+                                                        if (customDataProp.value.properties.find(function (item) { return item.type === "ObjectProperty" && item.key.name === String(curIdx_1); }))
+                                                            return;
+                                                        customDataProp.value.properties.push((0, types_1.objectProperty)((0, types_1.identifier)(String(curIdx_1)), value_1));
+                                                    }
+                                                }
+                                            }
+                                            // console.log("页面数据", );
+                                        }
+                                    }
+                                }
+                            });
+                            // customData((new Function(`return ${code.code.replace(/\\n/g, '')}`))())
+                        }
+                    }
+                }
             },
         });
     };
@@ -204,6 +243,16 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
                 filePath: filePath,
                 loadErrorHandler: function (body, eventObjName) {
                     body.unshift((0, types_1.expressionStatement)((0, utils_1.astCallObjectMethod)(common_1.wxLibName, common_1.injectEventName, [(0, types_1.identifier)(eventObjName)])));
+                },
+            });
+        });
+        // 注入 image 加载失败监听代码
+        Object.keys(code).forEach(function (filePath) {
+            _this._traverseJs({
+                code: code,
+                filePath: filePath,
+                customData: function (data) {
+                    console.log(filePath, data);
                 },
             });
         });

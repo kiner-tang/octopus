@@ -30,10 +30,13 @@ declare global {
         getActivePage: () => Record<string, unknown>;
         logger: (msg: string, ...args: any[]) => void;
         getViewDataBySid: (sid: string, cn: Record<string, unknown>[]) => Record<string, unknown>;
+        flatCn: <T extends Record<string, unknown>>(cn: T[]) => T[];
+        getCustomDataBySid: <T extends Record<string, unknown>>(sid: string, cn: Record<string, unknown>[]) => T;
         getTextBySid: (sid: string, data?: Record<string, unknown>) => string;
         collectDataEvent: (e: WechatMiniprogram.CustomEvent<any>) => any;
         createInnerAudioContext: WechatMiniprogram.Wx['createInnerAudioContext'];
         request: WechatMiniprogram.Wx['request'];
         uploadFile: WechatMiniprogram.Wx["uploadFile"];
+        downloadFile: WechatMiniprogram.Wx["downloadFile"];
     }
 }

@@ -138,6 +138,8 @@ export const defaultAstParserOption: ParserOptions = {
 };
 
 export const libFilePath = './octopusLib.js';
+export const utilFilePath = './octopusUtil.wxs';
+export const utilModuleName = 'octopus';
 export const libName = 'octopusLib';
 export const injectEventName = 'collectDataEvent';
 
@@ -209,3 +211,6 @@ export const needCatchLoadErrorComponents = 'b,c,f';
 export const needCatchLoadErrorComponentsList = needCatchLoadErrorComponents.split(',');
 
 export const componentReactPath = './node_modules/@tarojs/plugin-platform-weapp/dist/components-react.js';
+
+export const ignoreClassName = 'octopus-ignore';
+export const customParamsClassName = 'octopus-customData';

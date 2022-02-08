@@ -116,6 +116,8 @@ export declare type PluginPipelineData = {
 };
 export declare const defaultAstParserOption: ParserOptions;
 export declare const libFilePath = "./octopusLib.js";
+export declare const utilFilePath = "./octopusUtil.wxs";
+export declare const utilModuleName = "octopus";
 export declare const libName = "octopusLib";
 export declare const injectEventName = "collectDataEvent";
 export declare const apiProxySymbol = "/////////apiProxy/////////";
@@ -171,3 +173,5 @@ export declare const taroModule2wxComponent: Record<string, string>;
 export declare const needCatchLoadErrorComponents = "b,c,f";
 export declare const needCatchLoadErrorComponentsList: string[];
 export declare const componentReactPath = "./node_modules/@tarojs/plugin-platform-weapp/dist/components-react.js";
+export declare const ignoreClassName = "octopus-ignore";
+export declare const customParamsClassName = "octopus-customData";

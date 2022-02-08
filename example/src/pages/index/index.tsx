@@ -33,25 +33,25 @@ class Index extends Component {
       audio.onError((err) => {
         console.log("播放背景音乐失败", err);
       });
+      wx.octopusLib.request({
+        url: "https://www.baidu.com/xxx.png",
+        fail: (options) => {
+          console.log('请求失败---->', options, options.errMsg)
+        },
+        success: (res => {
+          console.log('请求成功---->', res);
+        })
+      });
+      wx.octopusLib.request({
+        url: "https://raw.githubusercontent.com/paazmaya/shuji/master/package.json",
+        fail: (options) => {
+          console.log('请求失败---->', options, options.errMsg)
+        },
+        success: (res => {
+          console.log('请求成功---->', res);
+        })
+      });
     }, 1000);
-    wx.octopusLib.request({
-      url: "https://www.baidu.com/xxx.png",
-      fail: (options) => {
-        console.log('请求失败---->', options, options.errMsg)
-      },
-      success: (res => {
-        console.log('请求成功---->', res);
-      })
-    });
-    wx.octopusLib.request({
-      url: "https://raw.githubusercontent.com/paazmaya/shuji/master/package.json",
-      fail: (options) => {
-        console.log('请求失败---->', options, options.errMsg)
-      },
-      success: (res => {
-        console.log('请求成功---->', res);
-      })
-    });
   }
 
   uploadFile() {
@@ -116,11 +116,17 @@ class Index extends Component {
         <Button onClick={this.uploadFile}>上传文件测试</Button>
         <Button onClick={this.downloadFile}>下载文件测试</Button>
         <Button onClick={this.doError}>触发报错</Button>
+        <Button className='octopus-ignore' onClick={(e) => {
+          console.log('-=-=-=->', e);
+        }}>忽略事件</Button>
+        <Button data-octopus-customData={{name: "kiner", age: 18}}>自定义用户参数</Button>
+        <Button data-octopus-customData={{name: "kanger", age: 8, sex: '女'}}>自定义用户参数2</Button>
+        <Button data-octopus-customData={{name: "zongheng", age: 3}}>自定义用户参数3</Button>
         <Text>{counter}</Text>
         <Input placeholder='请输入你的姓名' id="input" />
         <Detail />
-        <Image src="https://www.baidu.com/a.png"/>
-        <CoverImage src="https://www.baidu.com/b.png" onError={(error) => {
+        <Image src="https://www.baidu.com/a.png" data-octopus-customData={{uid: "111111", name: 'ddddd'}}/>
+        <CoverImage src="https://www.baidu.com/b.png" data-octopus-customData={{uid: "2222222", name: 'ddddd'}} onError={(error) => {
           console.log('CoverImage加载失败', error);
         }} />
         <Video src="https://www.baidu.com/c.mp4" onError={() => {

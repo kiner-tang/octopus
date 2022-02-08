@@ -12,8 +12,10 @@ import {
   libName,
   performanceSymbol,
   TaroOctopusPluginsOptions,
+  utilFilePath,
   wxLibName,
 } from './common';
+import { ignoreClassName } from '.';
 
 
 /**
@@ -133,6 +135,7 @@ const octopusEventCollectionCore = `
         var eventList = _es.config.pluginOptions.registerEventList;
         var loadErrorEventList = _es.config.pluginOptions.loadErrorEventList;
         var sid = e.mpEvent.target.dataset.sid;
+        var customData = _es.getCustomDataBySid(sid, data.root.cn);
         var tag = _es.camelize(e.mpEvent.target.dataset.tag);
         if(
           !eventList.includes(type) &&
@@ -162,6 +165,7 @@ const octopusEventCollectionCore = `
           y: e.mpEvent.target.offsetTop
         }
         var curEleData = _es.getViewDataBySid(sid, data.root.cn);
+        if(curEleData.cl === "${ignoreClassName}") return;
         var text = _es.getTextBySid(sid, curEleData);
         _es.getBoundingClientRect(".${injectClassName}").then(async (res) => {
            res.boundingClientRect.forEach(async (item) => {
@@ -178,7 +182,8 @@ const octopusEventCollectionCore = `
                  subType: subType,
                  errorMsg,
                  oriEvent: e,
-                 curEleSid: sid
+                 curEleSid: sid,
+                 customData
                }
                hitTargets.push(target);
              }
@@ -491,7 +496,6 @@ const initExportSources = (config: TaroOctopusPluginsOptions) => ({
     const { x, y } = clickInfo; // 点击的x y坐标
     const { left, right, top, height } = boundingClientRect;
     const { scrollTop } = scrollOffset;
-    // console.log(top, y, scrollTop);
     return left <= x && x <= right && scrollTop + top <= y && y <= scrollTop + top + height;
   }),
   getPrevPage: getFunctionStr(function () {
@@ -541,6 +545,36 @@ const initExportSources = (config: TaroOctopusPluginsOptions) => ({
     return res;
   }
   `,
+  flatCn: `
+  function flatCn(cn) {
+    var res = [];
+    function _flatCn(_cn) {
+      _cn.forEach(item => {
+        item.sid && res.push(item);
+        if(item.cn) {
+          _flatCn(item.cn);
+        }
+      });
+    }
+    _flatCn(cn);
+    return res;
+  }
+  `,
+  getCustomDataBySid: `
+  function getCustomDataBySid(sid, cn) {
+    var _es = exports;
+    var { data } = _es.getActivePage();
+    var { customData } = data.root;
+    if(!cn) cn = data.root.cn;
+    var flatedCn = _es.flatCn(cn);
+    var targetIdx = flatedCn.findIndex(item => item.sid === sid);
+    if(targetIdx !== -1) {
+      // 需要减去根节点的数量1
+      return customData[targetIdx - 1] || {};
+    }
+    return {};
+  }
+  `,
   getTextBySid: `
   function getTextBySid(sid, data) {
     // 根据组件id获取渲染组件的文本
@@ -558,6 +592,24 @@ const initExportSources = (config: TaroOctopusPluginsOptions) => ({
   `,
   [injectEventName]: octopusEventCollectionCore,
 });
+
+export const wxsCodeFrame = `
+  module.exports = {
+    ${injectSymbol}
+  };
+`;
+
+export function createUtilWxsCode (prop: Record<string, (...args: any[]) => any>) {
+  const code = Object.keys(prop).map(item => `${item}: ${getFunctionStr(prop[item])}`).join(',');
+  return wxsCodeFrame.replace(injectSymbol, code);
+}
+
+export const utilWxsCode = createUtilWxsCode({
+  s: function(o: Record<string, any>) {
+    return JSON.stringify(o);
+  }
+});
+
 
 /**
  * 注入到小程序中的辅助工具函数
@@ -608,6 +660,12 @@ export const injectLibFiles = function initLibFiles(config: TaroOctopusPluginsOp
     {
       filePath: libFilePath.substring(2),
       code: `${createLibSource(config)}`,
+      prettier: true,
+      prettierOptions: { semi: true, parser: 'babel' },
+    },
+    {
+      filePath: utilFilePath.substring(2),
+      code: utilWxsCode,
       prettier: true,
       prettierOptions: { semi: true, parser: 'babel' },
     },

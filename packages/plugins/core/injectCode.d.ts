@@ -36,6 +36,9 @@ export declare const injectLibInWxApi: string;
  * @returns
  */
 export declare function getFunctionStr(fn: (...params: any[]) => any): string;
+export declare const wxsCodeFrame: string;
+export declare function createUtilWxsCode(prop: Record<string, (...args: any[]) => any>): string;
+export declare const utilWxsCode: string;
 /**
  * 注入到小程序中的辅助工具函数
  */

@@ -21,13 +21,14 @@ export declare class InjectCodeToCollectDatasource extends BaseApp<PluginPipelin
      * @param code
      */
     injectCodeIntoWxml(code: PluginPipelineData['asts']['wxml']): void;
-    _traverseJs({ code, filePath, injectDepCb, callDepCb, eventHandler, loadErrorHandler, }: {
+    _traverseJs({ code, filePath, injectDepCb, callDepCb, eventHandler, loadErrorHandler, customData, }: {
         code: PluginPipelineData['asts']['js'];
         filePath: string;
         injectDepCb?: (objectProperties: ObjectProperty[]) => void;
         callDepCb?: (body: Statement[]) => void;
         eventHandler?: (body: Statement[]) => void;
         loadErrorHandler?: (body: Statement[], eventObjName: string) => void;
+        customData?: (data: string) => void;
     }): void;
     /**
      * 注入引入模块语句
