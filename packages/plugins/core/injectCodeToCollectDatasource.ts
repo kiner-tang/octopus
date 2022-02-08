@@ -12,10 +12,9 @@ import {
   Identifier,
   objectProperty,
 } from '@babel/types';
-import { BaseApp, noop, obj2querystr } from '@kiner/octopus-shared';
+import { BaseApp, noop, obj2querystr, CodeGenInfo } from '@kiner/octopus-shared';
 import { load } from 'cheerio';
 import type { CheerioAPI, Element } from 'cheerio';
-import codeGen from '@babel/generator';
 import traverse from '@babel/traverse';
 import {
   buildInView,
@@ -32,7 +31,6 @@ import {
 } from './common';
 import { astObjectPropertyFn, astCallObjectMethod } from './utils';
 import { injectLibFiles } from './injectCode';
-import { CodeGenInfo } from './codeGen';
 import { objectExpression } from '@babel/types';
 import { utilFilePath } from '.';
 

@@ -51,7 +51,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Output = exports.PlatformType = exports.BaseApp = void 0;
+exports.BuildInLoadErrorEventName = exports.AppAPI = exports.PageAPI = exports.BuildInEventName = exports.CollectMode = exports.Output = exports.PlatformType = exports.BaseApp = void 0;
 var logger_1 = require("./logger");
 /**
  * 一个实现了管道数据流和时间的订阅发布接口的应用基础类，项目中其他类基本都需要集成此类
@@ -150,3 +150,71 @@ var Output = /** @class */ (function (_super) {
     return Output;
 }(BaseApp));
 exports.Output = Output;
+/**
+ * 事件收集力度模式类型
+ */
+var CollectMode;
+(function (CollectMode) {
+    /**
+     * 默认力度，插件会给出一个常用的事件收集力度的配置，用这个配置可以满足大部分需求的数据收集力度需求
+     */
+    CollectMode["default"] = "default";
+    /**
+     * 全量力度，将会收集插件支持的所有事件的信息，适合一些复杂的事件分析需求
+     */
+    CollectMode["all"] = "all";
+    /**
+     * 自定义力度，插件将不会注入默认的收集事件，由用户通过自定义指定 complieOptions.include，complieOptions.exclude，registerEventList，loadErrorEventList 完成
+     */
+    CollectMode["custom"] = "custom";
+    /** 如果不希望称触发自动埋点，而是希望通过 api 手动提交，则使用此模式 */
+    CollectMode["manual"] = "manual";
+})(CollectMode = exports.CollectMode || (exports.CollectMode = {}));
+/**
+ * 内置监听事件列表
+ */
+var BuildInEventName;
+(function (BuildInEventName) {
+    BuildInEventName["tap"] = "tap";
+    BuildInEventName["click"] = "click";
+    BuildInEventName["touchstart"] = "touchstart";
+    BuildInEventName["touchmove"] = "touchmove";
+    BuildInEventName["touchend"] = "touchend";
+    BuildInEventName["touchcancel"] = "touchcancel";
+    BuildInEventName["scroll"] = "scroll";
+    BuildInEventName["input"] = "input";
+    BuildInEventName["change"] = "change";
+    BuildInEventName["focus"] = "focus";
+    BuildInEventName["blur"] = "blur";
+    BuildInEventName["longpress"] = "longpress";
+    BuildInEventName["longtap"] = "longtap";
+})(BuildInEventName = exports.BuildInEventName || (exports.BuildInEventName = {}));
+var PageAPI;
+(function (PageAPI) {
+    PageAPI["onPageScroll"] = "onPageScroll";
+    PageAPI["onShareAppMessage"] = "onShareAppMessage";
+    PageAPI["onShareTimeline"] = "onShareTimeline";
+    PageAPI["onAddToFavorites"] = "onAddToFavorites";
+    PageAPI["onTabItemTap"] = "onTabItemTap";
+    PageAPI["onShow"] = "onShow";
+    PageAPI["onHide"] = "onShow";
+})(PageAPI = exports.PageAPI || (exports.PageAPI = {}));
+var AppAPI;
+(function (AppAPI) {
+    AppAPI["onLaunch"] = "onLaunch";
+    AppAPI["onThemeChange"] = "onThemeChange";
+    AppAPI["onUnhandledRejection"] = "onUnhandledRejection";
+    AppAPI["onShow"] = "onShow";
+    AppAPI["onHide"] = "onHide";
+    AppAPI["onPageNotFound"] = "onPageNotFound";
+})(AppAPI = exports.AppAPI || (exports.AppAPI = {}));
+/**
+ * 内置加载失败事件
+ */
+var BuildInLoadErrorEventName;
+(function (BuildInLoadErrorEventName) {
+    BuildInLoadErrorEventName["image"] = "image";
+    BuildInLoadErrorEventName["coverImage"] = "coverImage";
+    BuildInLoadErrorEventName["video"] = "video";
+    BuildInLoadErrorEventName["audio"] = "audio";
+})(BuildInLoadErrorEventName = exports.BuildInLoadErrorEventName || (exports.BuildInLoadErrorEventName = {}));

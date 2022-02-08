@@ -1,6 +1,5 @@
-import { BaseApp } from "@kiner/octopus-shared";
+import { BaseApp, PluginPipelineData } from "@kiner/octopus-shared";
 import { ConcatSource } from "webpack-sources";
-import { PluginPipelineData } from "./common";
 
 export class FsManager extends BaseApp<PluginPipelineData> {
     constructor() {

@@ -2,7 +2,7 @@
 
 /// <reference path="./wx-typings/types/index.d.ts" />
 
-import { BuildInEventKey, TaroOctopusPluginsOptions } from './core/common';
+import { TaroOctopusPluginsOptions, BuildInEventKey } from "./inner";
 
 declare global {
   export interface GetBoundingClientRect {

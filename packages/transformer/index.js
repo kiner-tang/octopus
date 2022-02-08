@@ -15,17 +15,13 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppLifecycleWorker = void 0;
+exports.Transformer = void 0;
 var octopus_shared_1 = require("@kiner/octopus-shared");
-var AppLifecycleWorker = /** @class */ (function (_super) {
-    __extends(AppLifecycleWorker, _super);
-    function AppLifecycleWorker() {
-        var _this = _super.call(this) || this;
-        _this.push([{
-                appLifecycle: {}
-            }]);
-        return _this;
+var Transformer = /** @class */ (function (_super) {
+    __extends(Transformer, _super);
+    function Transformer() {
+        return _super.call(this, "Transformer") || this;
     }
-    return AppLifecycleWorker;
+    return Transformer;
 }(octopus_shared_1.BaseApp));
-exports.AppLifecycleWorker = AppLifecycleWorker;
+exports.Transformer = Transformer;

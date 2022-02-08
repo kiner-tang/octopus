@@ -1,5 +1,4 @@
-import { CodeGenInfo } from './codeGen';
-import { camelize, camelizeRE, capitalize, firstEventSendDelay, isFunction, noop, proxy, upperCamelize } from '@kiner/octopus-shared';
+import { camelize, camelizeRE, capitalize, CodeGenInfo, firstEventSendDelay, isFunction, noop, proxy, TaroOctopusPluginsOptions, upperCamelize } from '@kiner/octopus-shared';
 import pkg from '../package.json';
 import {
   apiProxySymbol,
@@ -12,7 +11,6 @@ import {
   libFilePath,
   libName,
   performanceSymbol,
-  TaroOctopusPluginsOptions,
   utilFilePath,
   wxLibName,
 } from './common';

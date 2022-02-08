@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { ParserOptions, parse } from '@babel/parser';
+import { parse } from '@babel/parser';
 import { File } from '@babel/types';
-import { BaseApp, filterObjectKey, getSourceCodeFromMap, pathExcludeIgnore } from '@kiner/octopus-shared';
+import { BaseApp, filterObjectKey, PluginPipelineData, TaroOctopusPluginsOptions, pathExcludeIgnore } from '@kiner/octopus-shared';
 import { IPluginsObject } from '@tarojs/service/src/utils/types';
-import { defaultAstParserOption, PluginPipelineData, Root, TaroOctopusPluginsOptions, WXMLInfo, WxmlNode } from './common';
+import { defaultAstParserOption } from './common';
 
 
 /**

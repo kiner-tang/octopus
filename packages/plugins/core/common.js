@@ -1,26 +1,17 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.customParamsClassName = exports.ignoreClassName = exports.componentReactPath = exports.needCatchLoadErrorComponentsList = exports.needCatchLoadErrorComponents = exports.taroModule2wxComponent = exports.buildInLoadErrorEventNameStr = exports.BuildInLoadErrorEventName = exports.appApiStr = exports.AppAPI = exports.pageApiStr = exports.PageAPI = exports.buildInEventNameStr = exports.BuildInEventName = exports.wxLibName = exports.injectClassName = exports.buildInView = exports.performanceSymbol = exports.helpersSymbol = exports.exportSymbol = exports.injectSymbol = exports.apiProxySymbol = exports.injectEventName = exports.libName = exports.utilModuleName = exports.utilFilePath = exports.libFilePath = exports.defaultAstParserOption = exports.CollectMode = void 0;
-/**
- * 事件收集力度模式类型
- */
-var CollectMode;
-(function (CollectMode) {
-    /**
-     * 默认力度，插件会给出一个常用的事件收集力度的配置，用这个配置可以满足大部分需求的数据收集力度需求
-     */
-    CollectMode["default"] = "default";
-    /**
-     * 全量力度，将会收集插件支持的所有事件的信息，适合一些复杂的事件分析需求
-     */
-    CollectMode["all"] = "all";
-    /**
-     * 自定义力度，插件将不会注入默认的收集事件，由用户通过自定义指定 complieOptions.include，complieOptions.exclude，registerEventList，loadErrorEventList 完成
-     */
-    CollectMode["custom"] = "custom";
-    /** 如果不希望称触发自动埋点，而是希望通过 api 手动提交，则使用此模式 */
-    CollectMode["manual"] = "manual";
-})(CollectMode = exports.CollectMode || (exports.CollectMode = {}));
+exports.customParamsClassName = exports.ignoreClassName = exports.componentReactPath = exports.needCatchLoadErrorComponentsList = exports.needCatchLoadErrorComponents = exports.taroModule2wxComponent = exports.buildInLoadErrorEventNameStr = exports.appApiStr = exports.pageApiStr = exports.buildInEventNameStr = exports.wxLibName = exports.injectClassName = exports.buildInView = exports.performanceSymbol = exports.helpersSymbol = exports.exportSymbol = exports.injectSymbol = exports.apiProxySymbol = exports.injectEventName = exports.libName = exports.utilModuleName = exports.utilFilePath = exports.libFilePath = exports.defaultAstParserOption = void 0;
+var octopus_shared_1 = require("@kiner/octopus-shared");
 exports.defaultAstParserOption = {
     sourceType: 'module',
     plugins: [
@@ -45,63 +36,15 @@ exports.buildInView = 'cover-image,cover-view,match-media,movable-area,movable-v
 exports.injectClassName = "".concat(exports.libName, "-inject-class");
 exports.wxLibName = "wx.".concat(exports.libName);
 /**
- * 内置监听事件列表
- */
-var BuildInEventName;
-(function (BuildInEventName) {
-    BuildInEventName["tap"] = "tap";
-    BuildInEventName["click"] = "click";
-    BuildInEventName["touchstart"] = "touchstart";
-    BuildInEventName["touchmove"] = "touchmove";
-    BuildInEventName["touchend"] = "touchend";
-    BuildInEventName["touchcancel"] = "touchcancel";
-    BuildInEventName["scroll"] = "scroll";
-    BuildInEventName["input"] = "input";
-    BuildInEventName["change"] = "change";
-    BuildInEventName["focus"] = "focus";
-    BuildInEventName["blur"] = "blur";
-    BuildInEventName["longpress"] = "longpress";
-    BuildInEventName["longtap"] = "longtap";
-})(BuildInEventName = exports.BuildInEventName || (exports.BuildInEventName = {}));
-/**
  * 内置监听事件名称字符串数组
  */
-exports.buildInEventNameStr = Object.keys(BuildInEventName);
-var PageAPI;
-(function (PageAPI) {
-    PageAPI["onPageScroll"] = "onPageScroll";
-    PageAPI["onShareAppMessage"] = "onShareAppMessage";
-    PageAPI["onShareTimeline"] = "onShareTimeline";
-    PageAPI["onAddToFavorites"] = "onAddToFavorites";
-    PageAPI["onTabItemTap"] = "onTabItemTap";
-    PageAPI["onShow"] = "onShow";
-    PageAPI["onHide"] = "onShow";
-})(PageAPI = exports.PageAPI || (exports.PageAPI = {}));
-exports.pageApiStr = Object.keys(PageAPI);
-var AppAPI;
-(function (AppAPI) {
-    AppAPI["onLaunch"] = "onLaunch";
-    AppAPI["onThemeChange"] = "onThemeChange";
-    AppAPI["onUnhandledRejection"] = "onUnhandledRejection";
-    AppAPI["onShow"] = "onShow";
-    AppAPI["onHide"] = "onHide";
-    AppAPI["onPageNotFound"] = "onPageNotFound";
-})(AppAPI = exports.AppAPI || (exports.AppAPI = {}));
-exports.appApiStr = Object.keys(AppAPI);
-/**
- * 内置加载失败事件
- */
-var BuildInLoadErrorEventName;
-(function (BuildInLoadErrorEventName) {
-    BuildInLoadErrorEventName["image"] = "image";
-    BuildInLoadErrorEventName["coverImage"] = "coverImage";
-    BuildInLoadErrorEventName["video"] = "video";
-    BuildInLoadErrorEventName["audio"] = "audio";
-})(BuildInLoadErrorEventName = exports.BuildInLoadErrorEventName || (exports.BuildInLoadErrorEventName = {}));
+exports.buildInEventNameStr = Object.keys(octopus_shared_1.BuildInEventName);
+exports.pageApiStr = Object.keys(octopus_shared_1.PageAPI);
+exports.appApiStr = Object.keys(octopus_shared_1.AppAPI);
 /**
  * 内置加载失败事件名称字符串数组
  */
-exports.buildInLoadErrorEventNameStr = Object.keys(BuildInLoadErrorEventName);
+exports.buildInLoadErrorEventNameStr = Object.keys(octopus_shared_1.BuildInLoadErrorEventName);
 /**
  * taro 内部编译后模块名到微信内置部分组件的映射
  */
@@ -122,3 +65,4 @@ exports.needCatchLoadErrorComponentsList = exports.needCatchLoadErrorComponents.
 exports.componentReactPath = './node_modules/@tarojs/plugin-platform-weapp/dist/components-react.js';
 exports.ignoreClassName = 'octopus-ignore';
 exports.customParamsClassName = 'octopus-customData';
+__exportStar(require("@kiner/octopus-shared/inner"), exports);

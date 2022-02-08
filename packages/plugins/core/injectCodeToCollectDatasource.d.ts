@@ -1,8 +1,7 @@
 import { Statement, ObjectProperty } from '@babel/types';
-import { BaseApp } from '@kiner/octopus-shared';
+import { BaseApp, CodeGenInfo } from '@kiner/octopus-shared';
 import type { CheerioAPI } from 'cheerio';
 import { PluginPipelineData } from './common';
-import { CodeGenInfo } from './codeGen';
 export declare class InjectCodeToCollectDatasource extends BaseApp<PluginPipelineData> {
     constructor();
     /**

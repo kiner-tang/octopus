@@ -1,7 +1,6 @@
 import { File } from '@babel/types';
-import { BaseApp } from '@kiner/octopus-shared';
+import { BaseApp, PluginPipelineData, TaroOctopusPluginsOptions } from '@kiner/octopus-shared';
 import { IPluginsObject } from '@tarojs/service/src/utils/types';
-import { PluginPipelineData, TaroOctopusPluginsOptions } from './common';
 /**
  * 根据单个 js 文件代码生成 ast 对象数组
  * @param fileName 文件名

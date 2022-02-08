@@ -1,5 +1,4 @@
-import { BaseApp } from "@kiner/octopus-shared";
-import { PluginPipelineData } from "./common";
+import { BaseApp, PluginPipelineData } from "@kiner/octopus-shared";
 import prettier from 'prettier';
 
 export class PrettierFactory extends BaseApp<PluginPipelineData> {

@@ -1,5 +1,5 @@
 import { IPluginContext } from '@tarojs/service';
-import { deepMergeOptions, Logger, Output } from '@kiner/octopus-shared';
+import { deepMergeOptions, Logger, Output, TaroOctopusPluginsOptions } from '@kiner/octopus-shared';
 import { AstCreator } from './core/astCreator';
 import {
   AppAPI,
@@ -10,7 +10,6 @@ import {
   CollectMode,
   PageAPI,
   pageApiStr,
-  TaroOctopusPluginsOptions,
 } from './core/common';
 import { CodeGen } from './core/codeGen';
 import { InjectCodeToCollectDatasource } from './core/injectCodeToCollectDatasource';
@@ -36,7 +35,7 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
       request: {
         isSuccess: async (data) => {
           return !!data;
-        }
+        },
       },
       uploadFile: true,
       downloadFile: true,
@@ -50,11 +49,7 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
       PageAPI.onShow,
       PageAPI.onHide,
     ],
-    appLifecycleEventList: [
-      AppAPI.onLaunch,
-      AppAPI.onPageNotFound,
-      AppAPI.onUnhandledRejection
-    ],
+    appLifecycleEventList: [AppAPI.onLaunch, AppAPI.onPageNotFound, AppAPI.onUnhandledRejection],
     transporterOptions: {
       env: 'production',
     },
@@ -73,9 +68,9 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
     networkApi: {
       request: {
         isSuccess: async (data) => {
-          console.log("isSuccess: ", data);
+          console.log('isSuccess: ', data);
           return !!data;
-        }
+        },
       },
       uploadFile: true,
       downloadFile: true,
@@ -113,7 +108,7 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
     transporterOptions: {
       env: 'production',
     },
-  }
+  },
 };
 /**
  * 对外提供的根据内置选项动态调整插件运行参数的方法
@@ -133,14 +128,11 @@ export function createPluginOptions(
  */
 export const defineConfig = (options: Partial<TaroOctopusPluginsOptions>): Partial<TaroOctopusPluginsOptions> => {
   return options;
-}
+};
 
-export default (
-  ctx: IPluginContext,
-  pluginOpts: TaroOctopusPluginsOptions
-) => {
+export default (ctx: IPluginContext, pluginOpts: TaroOctopusPluginsOptions) => {
   const logger = new Logger('TaroPlugin');
-  pluginOpts = deepMergeOptions(taroOctopusPluginsDefaultOptions[pluginOpts.mode || CollectMode.default], pluginOpts);
+  pluginOpts = deepMergeOptions(taroOctopusPluginsDefaultOptions[(pluginOpts.mode || CollectMode.default) as CollectMode], pluginOpts);
   Logger.showLog = pluginOpts.debug;
   logger.log('当前插件选项', pluginOpts);
   ctx.modifyBuildAssets(({ assets }) => {
@@ -159,5 +151,5 @@ export default (
   });
 };
 
-export * from "./types";
-export * from "./core";
+export * from '@kiner/octopus-shared/types';
+export * from './core';

@@ -1,23 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-import { BaseApp } from "@kiner/octopus-shared";
-import { PluginPipelineData } from "./common";
-import generate, { GeneratorOptions, GeneratorResult } from "@babel/generator";
+import { BaseApp, CodeGenInfo, CodeGenOptionInfo, PluginPipelineData } from "@kiner/octopus-shared";
+import generate, { GeneratorOptions } from "@babel/generator";
 import { Node } from "@babel/types";
-import prettier from "prettier";
 
-export type CodeGenInfo = {
-    filePath: string,
-    code: string,
-    prettier?: boolean,
-    prettierOptions?: prettier.Options
-}
-
-export type CodeGenOptionInfo = {
-    filePath: string,
-    ast: Node
-}
 
 export const baseOption: (info: CodeGenOptionInfo) => GeneratorOptions = (info: CodeGenOptionInfo) => ({
     retainLines: false,
@@ -50,7 +37,7 @@ export function genCodeFormAst(asts: PluginPipelineData["asts"]) {
     Object.keys(asts.js).forEach(baseFilePath => {
         const fileAsts = asts.js[baseFilePath];
         fileAsts.forEach(file => {
-            const info = genJSCodeFromAst(file, (file.extra?.fileName as string) || baseFilePath);
+            const info = genJSCodeFromAst(file as Node, (file.extra?.fileName as string) || baseFilePath);
             infos.push(info);
         });
     });

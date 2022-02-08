@@ -1,5 +1,4 @@
-import { CodeGenInfo } from './codeGen';
-import { TaroOctopusPluginsOptions } from './common';
+import { CodeGenInfo, TaroOctopusPluginsOptions } from '@kiner/octopus-shared';
 /**
  * 监听全局报错
  */

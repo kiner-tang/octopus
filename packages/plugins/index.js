@@ -76,7 +76,7 @@ var taroOctopusPluginsDefaultOptions = (_a = {},
                     return __generator(this, function (_a) {
                         return [2 /*return*/, !!data];
                     });
-                }); }
+                }); },
             },
             uploadFile: true,
             downloadFile: true,
@@ -90,11 +90,7 @@ var taroOctopusPluginsDefaultOptions = (_a = {},
             common_1.PageAPI.onShow,
             common_1.PageAPI.onHide,
         ],
-        appLifecycleEventList: [
-            common_1.AppAPI.onLaunch,
-            common_1.AppAPI.onPageNotFound,
-            common_1.AppAPI.onUnhandledRejection
-        ],
+        appLifecycleEventList: [common_1.AppAPI.onLaunch, common_1.AppAPI.onPageNotFound, common_1.AppAPI.onUnhandledRejection],
         transporterOptions: {
             env: 'production',
         },
@@ -114,10 +110,10 @@ var taroOctopusPluginsDefaultOptions = (_a = {},
             request: {
                 isSuccess: function (data) { return __awaiter(void 0, void 0, void 0, function () {
                     return __generator(this, function (_a) {
-                        console.log("isSuccess: ", data);
+                        console.log('isSuccess: ', data);
                         return [2 /*return*/, !!data];
                     });
-                }); }
+                }); },
             },
             uploadFile: true,
             downloadFile: true,
@@ -178,7 +174,7 @@ var defineConfig = function (options) {
 exports.defineConfig = defineConfig;
 exports.default = (function (ctx, pluginOpts) {
     var logger = new octopus_shared_1.Logger('TaroPlugin');
-    pluginOpts = (0, octopus_shared_1.deepMergeOptions)(taroOctopusPluginsDefaultOptions[pluginOpts.mode || common_1.CollectMode.default], pluginOpts);
+    pluginOpts = (0, octopus_shared_1.deepMergeOptions)(taroOctopusPluginsDefaultOptions[(pluginOpts.mode || common_1.CollectMode.default)], pluginOpts);
     octopus_shared_1.Logger.showLog = pluginOpts.debug;
     logger.log('当前插件选项', pluginOpts);
     ctx.modifyBuildAssets(function (_a) {
@@ -197,5 +193,5 @@ exports.default = (function (ctx, pluginOpts) {
             .pipe(new octopus_shared_1.Output('文件输出到目标目录'));
     });
 });
-__exportStar(require("./types"), exports);
+__exportStar(require("@kiner/octopus-shared/types"), exports);
 __exportStar(require("./core"), exports);

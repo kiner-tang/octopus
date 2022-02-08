@@ -1,5 +1,6 @@
 import { IPluginContext } from '@tarojs/service';
-import { CollectMode, TaroOctopusPluginsOptions } from './core/common';
+import { TaroOctopusPluginsOptions } from '@kiner/octopus-shared';
+import { CollectMode } from './core/common';
 /**
  * 对外提供的根据内置选项动态调整插件运行参数的方法
  * 开发者可以根据需要在原始插件参数的基础上进行修改
@@ -15,5 +16,5 @@ export declare function createPluginOptions(updateOptions: (buildInOptions: Reco
 export declare const defineConfig: (options: Partial<TaroOctopusPluginsOptions>) => Partial<TaroOctopusPluginsOptions>;
 declare const _default: (ctx: IPluginContext, pluginOpts: TaroOctopusPluginsOptions) => void;
 export default _default;
-export * from "./types";
-export * from "./core";
+export * from '@kiner/octopus-shared/types';
+export * from './core';
