@@ -1,5 +1,14 @@
-import { camelize, camelizeRE, capitalize, CodeGenInfo, firstEventSendDelay, isFunction, noop, proxy, TaroOctopusPluginsOptions, upperCamelize } from '@kiner/octopus-shared';
-import pkg from '../package.json';
+import {
+  camelize,
+  camelizeRE,
+  capitalize,
+  CodeGenInfo,
+  isFunction,
+  noop,
+  proxy,
+  TaroOctopusPluginsOptions,
+  upperCamelize,
+} from '@kiner/octopus-shared';
 import {
   apiProxySymbol,
   buildInEventNameStr,
@@ -12,15 +21,17 @@ import {
   libName,
   performanceSymbol,
   utilFilePath,
+  version,
   wxLibName,
 } from './common';
-import { ignoreClassName } from '.';
-
+import { ignoreClassName, injectDepsSymbol, transformerPath } from '.';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 
 /**
  * 监听全局报错
  */
- export const catchGlobalError = `
+export const catchGlobalError = `
  wx.onError((e) => {
    _es.${injectEventName}({
      type: "globalCatchError",
@@ -63,11 +74,15 @@ const fragment = `
     ${apiProxySymbol}
     ${performanceSymbol}
     exports.debug = exports.config.pluginOptions.debug;
-  }
+  },
+  ${injectDepsSymbol}
 }
 ]);
 `;
 
+export const depsTpl = (name: string, content: string) => `"${name}": function(module, exports, __webpack_require__){
+  ${content}
+}`;
 
 /**
  * 通用事件收集方法代码
@@ -89,6 +104,10 @@ const octopusEventCollectionCore = `
          touchElem: {},
          customData: e.customData || {}
        };
+       function collect(ds, ...log) {
+        _es.logger(...log);
+        _es.transformer(datasource, _es.config.pluginOptions);
+       }
        if(!type && e.errMsg === "MediaError") {
          type = "error",
          subType = 'audioLoadError'
@@ -96,11 +115,12 @@ const octopusEventCollectionCore = `
          datasource = [
           {
             ...datasource,
+            type,
             subType: subType,
             errorMsg,
           }
          ]
-        _es.logger('触发目标元素事件['+type+': '+subType+']', datasource);
+         collect(datasource, '触发目标元素事件['+type+': '+subType+']', datasource);
        } else if(type === "requestFail") {
         datasource = [
           {
@@ -108,7 +128,7 @@ const octopusEventCollectionCore = `
             errorMsg: e.errorMsg,
           }
          ]
-        _es.logger('网络请求失败['+type+': '+e.subType+']', datasource);
+         collect(datasource, '网络请求失败['+type+': '+e.subType+']', datasource);
        } else if(type === "performance") {
         datasource = [
           {
@@ -116,7 +136,7 @@ const octopusEventCollectionCore = `
             performance: e.performance
           }
          ]
-        _es.logger('小程序性能监控['+type+': '+e.subType+']', datasource);
+         collect(datasource, '小程序性能监控['+type+': '+e.subType+']', datasource);
        } else if(type === "globalCatchError") {
         datasource = [
           {
@@ -124,7 +144,7 @@ const octopusEventCollectionCore = `
             errorMsg: e.errorMsg,
           }
          ]
-        _es.logger('全局报错监听['+type+': '+e.subType+']', datasource);
+         collect(datasource, '全局报错监听['+type+': '+e.subType+']', datasource);
        } else if(type === "pageApi" || type === "appApi") {
         datasource = [
           {
@@ -132,7 +152,7 @@ const octopusEventCollectionCore = `
             detail: e.detail,
           }
          ]
-        _es.logger('页面方法监听['+type+': '+e.subType+']', datasource);
+         collect(datasource, '页面方法监听['+type+': '+e.subType+']', datasource);
        } else if(isManual && e.__inner_call__ === undefined){
         if(${JSON.stringify(buildInEventNameStr)}.includes(type) && e.oriEvent) {
           _es.${injectEventName}({
@@ -147,7 +167,7 @@ const octopusEventCollectionCore = `
               customData: e.customData,
             }
            ]
-          _es.logger('手动调用api['+type+': '+e.subType+']', datasource);
+           collect(datasource, '手动调用api['+type+': '+e.subType+']', datasource);
         }
        } else {
         var eventList = _es.config.pluginOptions.registerEventList;
@@ -207,7 +227,7 @@ const octopusEventCollectionCore = `
            datasource = hitTargets;
            // 不是用户触发的,就没有所谓的事件冒泡,因此只需要返回当前触发事件的元素即可
            if(!e._userTap) datasource = datasource.slice(hitTargets.length - 1);
-           _es.logger('触发目标元素事件['+e.type+': '+subType+']', datasource);
+           collect(datasource, '触发目标元素事件['+e.type+': '+subType+']', datasource);
          });
        }
     }
@@ -512,6 +532,39 @@ export function apiProxyEntry(): string {
 `;
 }
 
+const fnMap: Record<string, (...args: any[]) => any> = {};
+
+export function injectDeps(name: string, content: string) {
+  return `
+  "${name}": function(
+    module,
+    exports,
+    __webpack_require__
+  ) {
+    ${content}
+  }
+  `;
+}
+
+export const depsSource = () =>
+  [
+    injectDeps(transformerPath, readFileSync(resolve(__dirname, transformerPath), 'utf-8')),
+    ...Object.keys(fnMap).map((filePath) => {
+      const keys = filePath.split('_');
+      const fnName = keys[keys.length - 1];
+      return injectDeps(
+        filePath,
+        `
+      "use strict";
+      Object.defineProperty(exports, "__esModule", {
+        value: true
+      });
+      exports.${fnName} = ${fnMap[filePath].toString()}
+      `
+      );
+    }),
+  ].join(',\n');
+
 /**
  * 模块代码框架
  * @param core
@@ -522,14 +575,16 @@ export function createWxModuleSourceFragment(
   exportSources: Record<string, any> = {},
   helpers: Record<string, any> = {},
   apiProxyEntryStr = '',
-  performanceStr = '',
+  performanceStr = ''
 ): string {
   return fragment
     .replace(injectSymbol, core)
     .replace(exportSymbol, createExportObjectSource(exportSources))
     .replace(helpersSymbol, createExportObjectSource(helpers))
     .replace(apiProxySymbol, apiProxyEntryStr)
-    .replace(performanceSymbol, performanceStr);
+    .replace(performanceSymbol, performanceStr)
+    .replace(injectDepsSymbol, depsSource())
+    .replace(/'(__webpack_require__.*)'/g, '$1');
 }
 
 /**
@@ -540,13 +595,14 @@ export const injectLibInWxApi = `
 
 const timer = setInterval(()=>{
 
-  if(wx&&!${wxLibName}){
+  if(wx){
     clearInterval(timer);
-
-    ${wxLibName} = {
-      version: '${pkg.version}',
-      ...exports
-    };
+    if(!${wxLibName}) {
+      ${wxLibName} = {
+        version: '${version}',
+        ...exports
+      };
+    }
   }
 
 },60);
@@ -559,142 +615,172 @@ const timer = setInterval(()=>{
 export function getFunctionStr(fn: (...params: any[]) => any) {
   return fn.toString();
 }
+
+export function getObjectFn(
+  obj: Record<string, any>,
+  fnKeyPath: Record<string, (...args: any[]) => any>,
+  keypath: string[] = []
+) {
+  Object.keys(obj).forEach((key) => {
+    keypath.push(key);
+    if (typeof obj[key] === 'function') {
+      const curKeyPath = keypath.join('_');
+      fnKeyPath[curKeyPath] = obj[key];
+      obj[key] = curKeyPath;
+    } else if (typeof obj[key] === 'object') {
+      obj[key] = getObjectFn(obj[key], fnKeyPath, keypath);
+    }
+    keypath.pop();
+  });
+}
 /**
  * 对外导出的属性和方法
  */
-const initExportSources = (config: TaroOctopusPluginsOptions) => ({
-  config: {
-    version: pkg.version,
-    libName,
-    libFilePath,
-    loggerNamespace: 'OCTOPUS',
-    pluginOptions: config,
-  },
-  getBoundingClientRect: getFunctionStr(function (element) {
-    return new Promise((reslove) => {
-      const query = wx.createSelectorQuery();
-      query.selectAll(element).boundingClientRect();
-      query.selectViewport().scrollOffset();
-      query.exec((res) => reslove({ boundingClientRect: res[0], scrollOffset: res[1] }));
-    });
-  }),
-  isClickTrackArea: getFunctionStr(function (clickInfo, boundingClientRect, scrollOffset) {
-    if (!boundingClientRect) return false;
-    const { x, y } = clickInfo; // 点击的x y坐标
-    const { left, right, top, height } = boundingClientRect;
-    const { scrollTop } = scrollOffset;
-    return left <= x && x <= right && scrollTop + top <= y && y <= scrollTop + top + height;
-  }),
-  getPrevPage: getFunctionStr(function () {
-    const curPages = getCurrentPages();
-    if (curPages.length > 1) {
-      return curPages[curPages.length - 2];
-    }
-    return {};
-  }),
-  getActivePage: getFunctionStr(function () {
-    const curPages = getCurrentPages();
-    if (curPages.length) {
-      return curPages[curPages.length - 1];
-    }
-    return {};
-  }),
-  logger: getFunctionStr(function (msg, ...rest) {
-    if(!exports.debug) return;
-    const label = '[' + exports.config.loggerNamespace + ':Plugin] ' + msg;
-    console.groupCollapsed(label);
-    rest.forEach((item) => {
-      console.log(item);
-    });
-    console.groupEnd();
-  }),
-  getViewDataBySid: `
-  function getViewDataBySid(sid, cn) {
-    // 根据组件id获取渲染组件的相关信息
-    var _es = exports;
-    var res = null;
-    var source = cn;
-    if(!source) {
-      var { data } = _es.getActivePage();
-      source = data.root.cn;
-    }
-    for(var i=0;i<source.length;i++) {
-      var item = source[i];
-      if(item.sid === sid) {
-        return item
+const initExportSources = (config: TaroOctopusPluginsOptions) => {
+  const pluginConfig = { ...config };
+
+  getObjectFn({ ...pluginConfig }, fnMap);
+  // console.log(pluginConfig);
+  return {
+    config: {
+      version: version,
+      libName,
+      libFilePath,
+      loggerNamespace: 'OCTOPUS',
+      pluginOptions: config,
+    },
+    getBoundingClientRect: getFunctionStr(function (element) {
+      return new Promise((reslove) => {
+        const query = wx.createSelectorQuery();
+        query.selectAll(element).boundingClientRect();
+        query.selectViewport().scrollOffset();
+        query.exec((res) => reslove({ boundingClientRect: res[0], scrollOffset: res[1] }));
+      });
+    }),
+    isClickTrackArea: getFunctionStr(function (clickInfo, boundingClientRect, scrollOffset) {
+      if (!boundingClientRect) return false;
+      const { x, y } = clickInfo; // 点击的x y坐标
+      const { left, right, top, height } = boundingClientRect;
+      const { scrollTop } = scrollOffset;
+      return left <= x && x <= right && scrollTop + top <= y && y <= scrollTop + top + height;
+    }),
+    getPrevPage: getFunctionStr(function () {
+      const curPages = getCurrentPages();
+      if (curPages.length > 1) {
+        return curPages[curPages.length - 2];
       }
-      if(item.cn) {
-        var ret = _es.getViewDataBySid(sid, item.cn);
-        if(ret) {
-          return ret;
+      return {};
+    }),
+    getActivePage: getFunctionStr(function () {
+      const curPages = getCurrentPages();
+      if (curPages.length) {
+        return curPages[curPages.length - 1];
+      }
+      return {};
+    }),
+    logger: getFunctionStr(function (msg, ...rest) {
+      if (!exports.debug) return;
+      const label = '[' + exports.config.loggerNamespace + ':Plugin] ' + msg;
+      console.groupCollapsed(label);
+      rest.forEach((item) => {
+        console.log(item);
+      });
+      console.groupEnd();
+    }),
+    getViewDataBySid: `
+    function getViewDataBySid(sid, cn) {
+      // 根据组件id获取渲染组件的相关信息
+      var _es = exports;
+      var res = null;
+      var source = cn;
+      if(!source) {
+        var { data } = _es.getActivePage();
+        source = data.root.cn;
+      }
+      for(var i=0;i<source.length;i++) {
+        var item = source[i];
+        if(item.sid === sid) {
+          return item
         }
-      }
-    }
-    return res;
-  }
-  `,
-  flatCn: `
-  function flatCn(cn) {
-    var res = [];
-    function _flatCn(_cn) {
-      _cn.forEach(item => {
-        item.sid && res.push(item);
         if(item.cn) {
-          _flatCn(item.cn);
+          var ret = _es.getViewDataBySid(sid, item.cn);
+          if(ret) {
+            return ret;
+          }
         }
+      }
+      return res;
+    }
+    `,
+    flatCn: `
+    function flatCn(cn) {
+      var res = [];
+      function _flatCn(_cn) {
+        _cn.forEach(item => {
+          item.sid && res.push(item);
+          if(item.cn) {
+            _flatCn(item.cn);
+          }
+        });
+      }
+      _flatCn(cn);
+      return res;
+    }
+    `,
+    getCustomDataBySid: `
+    function getCustomDataBySid(sid, cn) {
+      var _es = exports;
+      var { data } = _es.getActivePage();
+      var { customData } = data.root;
+      if(!cn) cn = data.root.cn;
+      var flatedCn = _es.flatCn(cn);
+      var targetIdx = flatedCn.findIndex(item => item.sid === sid);
+      if(targetIdx !== -1) {
+        // 需要减去根节点的数量1
+        return customData[targetIdx - 1] || {};
+      }
+      return {};
+    }
+    `,
+    getTextBySid: `
+    function getTextBySid(sid, data) {
+      // 根据组件id获取渲染组件的文本
+      var _es = exports;
+      var source = data;
+      if(!source) {
+        source = _es.getViewDataBySid(sid);
+      }
+      let target;
+      if(target = (source.cn||[]).filter(item => !!item.v).map(item => item.v)) {
+        if(target) return target.join("┘");
+      };
+      return "";
+    }
+    `,
+    // todo 通过 api 手动添加埋点事件
+    pushData: `
+    function pushData(data) {
+      var _es = exports;
+      var {type, oriEvent} = data;
+      if(${JSON.stringify(buildInEventNameStr)}.includes(type) && !oriEvent) {
+        console.warn("🐙 手动的触发事件类型: "+type+" 为内部事件, 你需要在调用时将原始事件对象通过 oriEvent 字段传入");
+        return;
+      }
+      _es.${injectEventName}({
+        ...data,
+        manual: true
       });
     }
-    _flatCn(cn);
-    return res;
-  }
-  `,
-  getCustomDataBySid: `
-  function getCustomDataBySid(sid, cn) {
-    var _es = exports;
-    var { data } = _es.getActivePage();
-    var { customData } = data.root;
-    if(!cn) cn = data.root.cn;
-    var flatedCn = _es.flatCn(cn);
-    var targetIdx = flatedCn.findIndex(item => item.sid === sid);
-    if(targetIdx !== -1) {
-      // 需要减去根节点的数量1
-      return customData[targetIdx - 1] || {};
-    }
-    return {};
-  }
-  `,
-  getTextBySid: `
-  function getTextBySid(sid, data) {
-    // 根据组件id获取渲染组件的文本
-    var _es = exports;
-    var source = data;
-    if(!source) {
-      source = _es.getViewDataBySid(sid);
-    }
-    let target;
-    if(target = (source.cn||[]).filter(item => !!item.v).map(item => item.v)) {
-      if(target) return target.join("┘");
-    };
-    return "";
-  }
-  `,
-  // todo 通过 api 手动添加埋点事件
-  pushData: `
-  function pushData(data) {
-    var _es = exports;
-    var {type, oriEvent} = data;
-    if(${JSON.stringify(buildInEventNameStr)}.includes(type) && !oriEvent) {
-      console.warn("🐙 手动的触发事件类型: "+type+" 为内部事件, 你需要在调用时将原始事件对象通过 oriEvent 字段传入");
-      return;
-    }
-    _es.${injectEventName}({
-      ...data,
-      manual: true
-    });
-  }
-  `,
-  [injectEventName]: octopusEventCollectionCore,
-});
+    `,
+    [injectEventName]: octopusEventCollectionCore,
+    transformer: `
+      function transformer(datasource, pluginOptions) {
+        var {Transformer} = __webpack_require__("${transformerPath}");
+        return new Transformer(datasource[0], pluginOptions);
+      }
+    `,
+  };
+};
 
 export const wxsCodeFrame = `
   module.exports = {
@@ -702,17 +788,18 @@ export const wxsCodeFrame = `
   };
 `;
 
-export function createUtilWxsCode (prop: Record<string, (...args: any[]) => any>) {
-  const code = Object.keys(prop).map(item => `${item}: ${getFunctionStr(prop[item])}`).join(',');
+export function createUtilWxsCode(prop: Record<string, (...args: any[]) => any>) {
+  const code = Object.keys(prop)
+    .map((item) => `${item}: ${getFunctionStr(prop[item])}`)
+    .join(',');
   return wxsCodeFrame.replace(injectSymbol, code);
 }
 
 export const utilWxsCode = createUtilWxsCode({
-  s: function(o: Record<string, any>) {
+  s: function (o: Record<string, any>) {
     return JSON.stringify(o);
-  }
+  },
 });
-
 
 /**
  * 注入到小程序中的辅助工具函数
@@ -747,13 +834,8 @@ export const performanceCollectCode = `
  * @returns
  */
 function createLibSource(config: TaroOctopusPluginsOptions) {
-  return createWxModuleSourceFragment(
-    injectLibInWxApi,
-    initExportSources(config),
-    helpers,
-    apiProxyEntry(),
-    performanceCollectCode
-  );
+  const source = initExportSources(config);
+  return createWxModuleSourceFragment(injectLibInWxApi, source, helpers, apiProxyEntry(), performanceCollectCode);
 }
 /**
  * 需要注入的库文件

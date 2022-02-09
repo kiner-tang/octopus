@@ -1,3 +1,5 @@
+export declare function fitNum(num: number, len?: number): string;
+export declare function timeFormat(date: Date): string;
 export declare enum LoggerLevel {
     all = 4,
     error = 3,

@@ -1,23 +1,5 @@
-import { BaseApp, TaroOctopusPluginsOptions } from "@kiner/octopus-shared";
-export declare type Datasource = {
-    datasource: {
-        type: string;
-        subType: string;
-        isManual: boolean;
-        pageData: Record<string, any>;
-        oriEvent: WechatMiniprogram.CustomEvent<any>;
-        touchElem: Record<string, any>;
-        customData: Record<string, any>;
-        errorMsg?: string;
-        performance?: Record<string, any>;
-        detail: Record<string, any>;
-        dataset: Record<string, any>;
-        elemData: Record<string, any>;
-        text: Record<string, any>;
-        curEleSid: Record<string, any>;
-    };
-    pluginOptions: TaroOctopusPluginsOptions;
-};
+import { BaseApp, Datasource } from '@kiner/octopus-shared/inner';
 export declare class Transformer extends BaseApp<Datasource> {
-    constructor();
+    constructor(datasource: Datasource['datasource'], pluginOptions: Datasource['pluginOptions']);
+    resolveData(data: Datasource[]): Promise<Datasource[]>;
 }

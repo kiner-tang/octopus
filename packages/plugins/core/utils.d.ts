@@ -1,4 +1,4 @@
-import { Identifier, ObjectProperty, Pattern, RestElement, Expression, SpreadElement, JSXNamespacedName, ArgumentPlaceholder, Statement } from '@babel/types';
+import { Identifier, ObjectProperty, Pattern, RestElement, Expression, SpreadElement, JSXNamespacedName, ArgumentPlaceholder, Statement, File } from '@babel/types';
 /**
  * 生成对象属性
  */
@@ -20,3 +20,8 @@ export declare function astObjectPropertyFn({ name, id, params, body, generator,
  */
 export declare function astCallObjectMethod(objName: string, methodName: string, params: (Expression | SpreadElement | JSXNamespacedName | ArgumentPlaceholder)[]): import("@babel/types").CallExpression;
 export declare const matchHTMLText: RegExp;
+/**
+ * 创建一个AST对象
+ * @param tplPath 可选，根据本地模版文件直接创建AST对象
+ */
+export declare function createBaseAst(tplPath?: string, exportFileName?: string): File;

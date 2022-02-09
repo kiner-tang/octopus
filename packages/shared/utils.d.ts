@@ -1,4 +1,4 @@
-import { PlatformType } from '.';
+import { IncludeOrExclude, PlatformType } from './inner';
 /**
  * 空函数
  */
@@ -39,7 +39,6 @@ export declare function shortid(): string;
  * @returns
  */
 export declare function runByFnNameWithPlatform(platform: PlatformType, fnName: string, ...rest: any[]): Promise<any>;
-export declare type IncludeOrExclude = (RegExp | string)[];
 export declare function isPathValid(path: string, include?: IncludeOrExclude, exclude?: IncludeOrExclude): boolean;
 /**
  * 根据 include 和 exclude 挑选出符合条件的路径数组
@@ -50,8 +49,6 @@ export declare function isPathValid(path: string, include?: IncludeOrExclude, ex
  */
 export declare function pathExcludeIgnore(paths: string[], include?: IncludeOrExclude, exclude?: IncludeOrExclude): string[];
 export declare function filterObjectKey(obj: Record<string, any>, paths: string[]): Record<string, any>;
-export declare function fitNum(num: number, len?: number): string;
-export declare function timeFormat(date: Date): string;
 export declare type Source = {
     source: string;
     filePath: string;
@@ -90,3 +87,4 @@ export declare const capitalize: (str: string) => string;
  * 将以-连接的字符串转化成大驼峰形式
  */
 export declare const upperCamelize: (str: string) => string;
+export declare function readFileFromDir(path: string, callback: (path: string) => void, ext?: string, include?: string[]): void;

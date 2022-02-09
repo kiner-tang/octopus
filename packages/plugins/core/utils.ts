@@ -15,7 +15,12 @@ import {
   JSXNamespacedName,
   ArgumentPlaceholder,
   Statement,
+  File
 } from '@babel/types';
+
+import { readFileSync } from "fs";
+import { parse } from "@babel/parser";
+import { defaultAstParserOption } from './common';
 
 /**
  * 生成对象属性
@@ -64,3 +69,21 @@ export function astCallObjectMethod(
 }
 
 export const matchHTMLText = /[^><]+(?=<\/p>)/img;
+
+/**
+ * 创建一个AST对象
+ * @param tplPath 可选，根据本地模版文件直接创建AST对象
+ */
+ export function createBaseAst(tplPath?: string, exportFileName?: string): File {
+  let core = "";
+  if (tplPath) {
+    core = readFileSync(tplPath).toString("utf-8");
+  }
+  const ast = parse(core, defaultAstParserOption);
+  if(exportFileName) {
+    ast.extra = {
+      fileName: exportFileName
+    };
+  }
+  return ast;
+}

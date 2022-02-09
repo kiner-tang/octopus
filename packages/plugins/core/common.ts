@@ -1,6 +1,16 @@
-import { AppAPI, AppAPIKey, BuildInEventKey, BuildInEventName, BuildInLoadErrorEventName, BuildInLoadErrorEventNameKey, PageAPI, PageAPIKey } from '@kiner/octopus-shared';
+import {
+  AppAPI,
+  AppAPIKey,
+  BuildInEventKey,
+  BuildInEventName,
+  BuildInLoadErrorEventName,
+  BuildInLoadErrorEventNameKey,
+  PageAPI,
+  PageAPIKey,
+} from '@kiner/octopus-shared';
 import { ParserOptions } from '@babel/parser';
 
+export const version = "0.0.1";
 
 export const defaultAstParserOption: ParserOptions = {
   sourceType: 'module',
@@ -24,6 +34,7 @@ export const injectSymbol = `/////////inject/////////`;
 export const exportSymbol = `/////////exports/////////`;
 export const helpersSymbol = `/////////helpers/////////`;
 export const performanceSymbol = `/////////performance/////////`;
+export const injectDepsSymbol = `/////////injectDeps/////////`;
 
 export const buildInView =
   'cover-image,cover-view,match-media,movable-area,movable-view,page-container,scroll-view,share-element,swiper,swiper-item,view,icon,progress,rich-text,text,button,checkbox,checkbox-group,editor,form,input,keyboard-accessory,label,picker,picker-view,picker-view-column,radio,radio-groupslider,switch,textarea,navigator,audio,camera,image,live-player,live-pusher,video,voip-room,map,canvas,ad,ad-custom,official-account,open-data,web-view,aria-component';
@@ -64,8 +75,18 @@ export const needCatchLoadErrorComponents = 'b,c,f';
 export const needCatchLoadErrorComponentsList = needCatchLoadErrorComponents.split(',');
 
 export const componentReactPath = './node_modules/@tarojs/plugin-platform-weapp/dist/components-react.js';
+export const transformerPath = '../../transformer/dist/octopus-transformer.cjs.js';
+export const sharedPath = './octopus/shared';
+export const transporterPath = './octopus/transporter';
+
+export function replaceInnerDeps(code: string) {
+  return code
+    .replace(/require\("@kiner\/octopus-(transformer.*)"\)/g, 'require("../$1/index.js")')
+    .replace(/require\("@kiner\/octopus-(shared.*)"\)/g, 'require("../$1/index.js")')
+    .replace(/require\("@kiner\/octopus-(transporter.*)"\)/g, 'require("../$1/index.js")');
+}
 
 export const ignoreClassName = 'octopus-ignore';
 export const customParamsClassName = 'octopus-customData';
 
-export * from "@kiner/octopus-shared/inner";
+export * from '@kiner/octopus-shared/inner';

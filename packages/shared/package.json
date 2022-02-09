@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "章鱼埋点的公用分包,为其他分包提供公共的通用能力与配置",
   "main": "index.js",
+  "module": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

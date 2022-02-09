@@ -60,13 +60,24 @@ var BaseApp = /** @class */ (function () {
     function BaseApp(appName) {
         if (appName === void 0) { appName = "__DEFAULT_APP_NAME__"; }
         this.appName = appName;
-        this.showInnerLog = process.env.NODE_ENV === 'development' || false;
+        this._showInnerLog = false;
         /**
          * 注册的事件列表，用事件名加以管理
          */
         this.handlers = {};
         this.logger = new logger_1.Logger(appName);
     }
+    Object.defineProperty(BaseApp.prototype, "showInnerLog", {
+        get: function () {
+            return this._showInnerLog;
+        },
+        set: function (value) {
+            logger_1.Logger.showLog = value;
+            this._showInnerLog = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
     /**
      * 接受到数据后，使用 resolveData 处理获得新书局后，将新数据推送到下一节管道
      * @param data

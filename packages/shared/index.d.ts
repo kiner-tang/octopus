@@ -4,3 +4,4 @@ export * from './hooks';
 export * from './utils';
 export * from './logger';
 export * from './constant';
+export * from './queque';

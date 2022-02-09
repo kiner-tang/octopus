@@ -1,13 +1,31 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.injectLibFiles = exports.performanceCollectCode = exports.helpers = exports.utilWxsCode = exports.createUtilWxsCode = exports.wxsCodeFrame = exports.getFunctionStr = exports.injectLibInWxApi = exports.createWxModuleSourceFragment = exports.apiProxyEntry = exports.apiProxyList = exports.apiProxySourceList = exports.createExportObjectSource = exports.catchGlobalError = void 0;
+exports.injectLibFiles = exports.performanceCollectCode = exports.helpers = exports.utilWxsCode = exports.createUtilWxsCode = exports.wxsCodeFrame = exports.getObjectFn = exports.getFunctionStr = exports.injectLibInWxApi = exports.createWxModuleSourceFragment = exports.depsSource = exports.injectDeps = exports.apiProxyEntry = exports.apiProxyList = exports.apiProxySourceList = exports.createExportObjectSource = exports.depsTpl = exports.catchGlobalError = void 0;
 var octopus_shared_1 = require("@kiner/octopus-shared");
-var package_json_1 = __importDefault(require("../package.json"));
 var common_1 = require("./common");
 var _1 = require(".");
+var fs_1 = require("fs");
+var path_1 = require("path");
 /**
  * 监听全局报错
  */
@@ -15,11 +33,13 @@ exports.catchGlobalError = "\n wx.onError((e) => {\n   _es.".concat(common_1.inj
 /**
  * 模块代码模版
  */
-var fragment = "\n(wx[\"webpackJsonp\"] = wx[\"webpackJsonp\"] || []).push([\n[\"".concat(common_1.libName, "\"],\n{\n  \"").concat(common_1.libFilePath, "\": function(\n    module,\n    exports,\n    __webpack_require__\n  ) {\n    \"use strict\";\n    Object.defineProperty(exports, \"__esModule\", {\n      value: true\n    });\n    exports.throttleTime = 30;\n    exports.eventHelper = {};\n    exports.audioErrorCodeMap = {\n      '10001':\t'\u7CFB\u7EDF\u9519\u8BEF',\n      '10002':\t'\u7F51\u7EDC\u9519\u8BEF',\n      '10003':\t'\u6587\u4EF6\u9519\u8BEF',\n      '10004':\t'\u683C\u5F0F\u9519\u8BEF',\n      '-1':\t'\u672A\u77E5\u9519\u8BEF',\n    };\n    ").concat(exports.catchGlobalError, "\n    ").concat(common_1.helpersSymbol, "\n    ").concat(common_1.exportSymbol, "\n    ").concat(common_1.injectSymbol, "\n    ").concat(common_1.apiProxySymbol, "\n    ").concat(common_1.performanceSymbol, "\n    exports.debug = exports.config.pluginOptions.debug;\n  }\n}\n]);\n");
+var fragment = "\n(wx[\"webpackJsonp\"] = wx[\"webpackJsonp\"] || []).push([\n[\"".concat(common_1.libName, "\"],\n{\n  \"").concat(common_1.libFilePath, "\": function(\n    module,\n    exports,\n    __webpack_require__\n  ) {\n    \"use strict\";\n    Object.defineProperty(exports, \"__esModule\", {\n      value: true\n    });\n    exports.throttleTime = 30;\n    exports.eventHelper = {};\n    exports.audioErrorCodeMap = {\n      '10001':\t'\u7CFB\u7EDF\u9519\u8BEF',\n      '10002':\t'\u7F51\u7EDC\u9519\u8BEF',\n      '10003':\t'\u6587\u4EF6\u9519\u8BEF',\n      '10004':\t'\u683C\u5F0F\u9519\u8BEF',\n      '-1':\t'\u672A\u77E5\u9519\u8BEF',\n    };\n    ").concat(exports.catchGlobalError, "\n    ").concat(common_1.helpersSymbol, "\n    ").concat(common_1.exportSymbol, "\n    ").concat(common_1.injectSymbol, "\n    ").concat(common_1.apiProxySymbol, "\n    ").concat(common_1.performanceSymbol, "\n    exports.debug = exports.config.pluginOptions.debug;\n  },\n  ").concat(_1.injectDepsSymbol, "\n}\n]);\n");
+var depsTpl = function (name, content) { return "\"".concat(name, "\": function(module, exports, __webpack_require__){\n  ").concat(content, "\n}"); };
+exports.depsTpl = depsTpl;
 /**
  * 通用事件收集方法代码
  */
-var octopusEventCollectionCore = "\n    function(e) {\n       var _es = exports;\n       var type = e.type\n       var subType = e.subType || type;\n       var isManual = !!e.manual;\n       var errorMsg = \"\";\n       var { data } = _es.getActivePage();\n       var datasource = {\n         type,\n         subType,\n         isManual,\n         pageData: data,\n         oriEvent: e,\n         touchElem: {},\n         customData: e.customData || {}\n       };\n       if(!type && e.errMsg === \"MediaError\") {\n         type = \"error\",\n         subType = 'audioLoadError'\n         errorMsg = '['+e.errMsg+'] ' + _es.audioErrorCodeMap[String(e.errCode)];\n         datasource = [\n          {\n            ...datasource,\n            subType: subType,\n            errorMsg,\n          }\n         ]\n        _es.logger('\u89E6\u53D1\u76EE\u6807\u5143\u7D20\u4E8B\u4EF6['+type+': '+subType+']', datasource);\n       } else if(type === \"requestFail\") {\n        datasource = [\n          {\n            ...datasource,\n            errorMsg: e.errorMsg,\n          }\n         ]\n        _es.logger('\u7F51\u7EDC\u8BF7\u6C42\u5931\u8D25['+type+': '+e.subType+']', datasource);\n       } else if(type === \"performance\") {\n        datasource = [\n          {\n            ...datasource,\n            performance: e.performance\n          }\n         ]\n        _es.logger('\u5C0F\u7A0B\u5E8F\u6027\u80FD\u76D1\u63A7['+type+': '+e.subType+']', datasource);\n       } else if(type === \"globalCatchError\") {\n        datasource = [\n          {\n            ...datasource,\n            errorMsg: e.errorMsg,\n          }\n         ]\n        _es.logger('\u5168\u5C40\u62A5\u9519\u76D1\u542C['+type+': '+e.subType+']', datasource);\n       } else if(type === \"pageApi\" || type === \"appApi\") {\n        datasource = [\n          {\n            ...datasource,\n            detail: e.detail,\n          }\n         ]\n        _es.logger('\u9875\u9762\u65B9\u6CD5\u76D1\u542C['+type+': '+e.subType+']', datasource);\n       } else if(isManual && e.__inner_call__ === undefined){\n        if(".concat(JSON.stringify(common_1.buildInEventNameStr), ".includes(type) && e.oriEvent) {\n          _es.").concat(common_1.injectEventName, "({\n            ...e.oriEvent,\n            subType: e.subType,\n            __inner_call__: true\n          });\n        } else {\n          datasource = [\n            {\n              ...datasource,\n              customData: e.customData,\n            }\n           ]\n          _es.logger('\u624B\u52A8\u8C03\u7528api['+type+': '+e.subType+']', datasource);\n        }\n       } else {\n        var eventList = _es.config.pluginOptions.registerEventList;\n        var loadErrorEventList = _es.config.pluginOptions.loadErrorEventList;\n        var sid = e.mpEvent.target.dataset.sid;\n        var customData = _es.getCustomDataBySid(sid, data.root.cn);\n        var tag = _es.camelize(e.mpEvent.target.dataset.tag);\n        if(\n          !eventList.includes(type) &&\n          (!loadErrorEventList.includes(tag) || loadErrorEventList.includes(tag) && type !== \"error\")\n          ) return;\n        if(!_es.eventHelper[sid]) {\n         _es.eventHelper[sid] = {\n           [type]: 0\n         }\n        }\n        if(_es.eventHelper[sid][type] === undefined) {\n         _es.eventHelper[sid][type] = 0;\n        }\n        if(Math.abs(_es.eventHelper[sid][type] - e.mpEvent.timeStamp) <= _es.throttleTime) return;\n        _es.eventHelper[sid][type] = e.mpEvent.timeStamp;\n        if(loadErrorEventList.includes(tag) && type === \"error\") {\n          errorMsg = e.detail.errMsg;\n          switch(tag) {\n            case \"image\": {subType = \"imageLoadError\"} break;\n            case \"coverImage\": {subType = \"coverImageLoadError\"} break;\n            case \"video\": {subType = \"videoLoadError\"} break;\n          }\n        }\n        var hitTargets = [];\n        var detail = e.detail && e.detail.x !== undefined ? e.detail : {\n          x: e.mpEvent.target.offsetLeft,\n          y: e.mpEvent.target.offsetTop\n        }\n        var curEleData = _es.getViewDataBySid(sid, data.root.cn);\n        if(curEleData.cl === \"").concat(_1.ignoreClassName, "\" && !e.__inner_call__) return;\n        var text = _es.getTextBySid(sid, curEleData);\n        _es.getBoundingClientRect(\".").concat(common_1.injectClassName, "\").then(async (res) => {\n           res.boundingClientRect.forEach(async (item) => {\n             var isHit = _es.isClickTrackArea(detail, item, res.scrollOffset);\n             var dataset = item.dataset;\n             if(isHit){\n               var target = {\n                 ...datasource,\n                 touchElem: e._userTap ? item : {},\n                 dataset,\n                 elemData: curEleData,\n                 text: text,\n                 type: type,\n                 errorMsg,\n                 curEleSid: sid,\n                 customData\n               }\n               hitTargets.push(target);\n             }\n           });\n           datasource = hitTargets;\n           // \u4E0D\u662F\u7528\u6237\u89E6\u53D1\u7684,\u5C31\u6CA1\u6709\u6240\u8C13\u7684\u4E8B\u4EF6\u5192\u6CE1,\u56E0\u6B64\u53EA\u9700\u8981\u8FD4\u56DE\u5F53\u524D\u89E6\u53D1\u4E8B\u4EF6\u7684\u5143\u7D20\u5373\u53EF\n           if(!e._userTap) datasource = datasource.slice(hitTargets.length - 1);\n           _es.logger('\u89E6\u53D1\u76EE\u6807\u5143\u7D20\u4E8B\u4EF6['+e.type+': '+subType+']', datasource);\n         });\n       }\n    }\n");
+var octopusEventCollectionCore = "\n    function(e) {\n       var _es = exports;\n       var type = e.type\n       var subType = e.subType || type;\n       var isManual = !!e.manual;\n       var errorMsg = \"\";\n       var { data } = _es.getActivePage();\n       var datasource = {\n         type,\n         subType,\n         isManual,\n         pageData: data,\n         oriEvent: e,\n         touchElem: {},\n         customData: e.customData || {}\n       };\n       function collect(ds, ...log) {\n        _es.logger(...log);\n        _es.transformer(datasource, _es.config.pluginOptions);\n       }\n       if(!type && e.errMsg === \"MediaError\") {\n         type = \"error\",\n         subType = 'audioLoadError'\n         errorMsg = '['+e.errMsg+'] ' + _es.audioErrorCodeMap[String(e.errCode)];\n         datasource = [\n          {\n            ...datasource,\n            type,\n            subType: subType,\n            errorMsg,\n          }\n         ]\n         collect(datasource, '\u89E6\u53D1\u76EE\u6807\u5143\u7D20\u4E8B\u4EF6['+type+': '+subType+']', datasource);\n       } else if(type === \"requestFail\") {\n        datasource = [\n          {\n            ...datasource,\n            errorMsg: e.errorMsg,\n          }\n         ]\n         collect(datasource, '\u7F51\u7EDC\u8BF7\u6C42\u5931\u8D25['+type+': '+e.subType+']', datasource);\n       } else if(type === \"performance\") {\n        datasource = [\n          {\n            ...datasource,\n            performance: e.performance\n          }\n         ]\n         collect(datasource, '\u5C0F\u7A0B\u5E8F\u6027\u80FD\u76D1\u63A7['+type+': '+e.subType+']', datasource);\n       } else if(type === \"globalCatchError\") {\n        datasource = [\n          {\n            ...datasource,\n            errorMsg: e.errorMsg,\n          }\n         ]\n         collect(datasource, '\u5168\u5C40\u62A5\u9519\u76D1\u542C['+type+': '+e.subType+']', datasource);\n       } else if(type === \"pageApi\" || type === \"appApi\") {\n        datasource = [\n          {\n            ...datasource,\n            detail: e.detail,\n          }\n         ]\n         collect(datasource, '\u9875\u9762\u65B9\u6CD5\u76D1\u542C['+type+': '+e.subType+']', datasource);\n       } else if(isManual && e.__inner_call__ === undefined){\n        if(".concat(JSON.stringify(common_1.buildInEventNameStr), ".includes(type) && e.oriEvent) {\n          _es.").concat(common_1.injectEventName, "({\n            ...e.oriEvent,\n            subType: e.subType,\n            __inner_call__: true\n          });\n        } else {\n          datasource = [\n            {\n              ...datasource,\n              customData: e.customData,\n            }\n           ]\n           collect(datasource, '\u624B\u52A8\u8C03\u7528api['+type+': '+e.subType+']', datasource);\n        }\n       } else {\n        var eventList = _es.config.pluginOptions.registerEventList;\n        var loadErrorEventList = _es.config.pluginOptions.loadErrorEventList;\n        var sid = e.mpEvent.target.dataset.sid;\n        var customData = _es.getCustomDataBySid(sid, data.root.cn);\n        var tag = _es.camelize(e.mpEvent.target.dataset.tag);\n        if(\n          !eventList.includes(type) &&\n          (!loadErrorEventList.includes(tag) || loadErrorEventList.includes(tag) && type !== \"error\")\n          ) return;\n        if(!_es.eventHelper[sid]) {\n         _es.eventHelper[sid] = {\n           [type]: 0\n         }\n        }\n        if(_es.eventHelper[sid][type] === undefined) {\n         _es.eventHelper[sid][type] = 0;\n        }\n        if(Math.abs(_es.eventHelper[sid][type] - e.mpEvent.timeStamp) <= _es.throttleTime) return;\n        _es.eventHelper[sid][type] = e.mpEvent.timeStamp;\n        if(loadErrorEventList.includes(tag) && type === \"error\") {\n          errorMsg = e.detail.errMsg;\n          switch(tag) {\n            case \"image\": {subType = \"imageLoadError\"} break;\n            case \"coverImage\": {subType = \"coverImageLoadError\"} break;\n            case \"video\": {subType = \"videoLoadError\"} break;\n          }\n        }\n        var hitTargets = [];\n        var detail = e.detail && e.detail.x !== undefined ? e.detail : {\n          x: e.mpEvent.target.offsetLeft,\n          y: e.mpEvent.target.offsetTop\n        }\n        var curEleData = _es.getViewDataBySid(sid, data.root.cn);\n        if(curEleData.cl === \"").concat(_1.ignoreClassName, "\" && !e.__inner_call__) return;\n        var text = _es.getTextBySid(sid, curEleData);\n        _es.getBoundingClientRect(\".").concat(common_1.injectClassName, "\").then(async (res) => {\n           res.boundingClientRect.forEach(async (item) => {\n             var isHit = _es.isClickTrackArea(detail, item, res.scrollOffset);\n             var dataset = item.dataset;\n             if(isHit){\n               var target = {\n                 ...datasource,\n                 touchElem: e._userTap ? item : {},\n                 dataset,\n                 elemData: curEleData,\n                 text: text,\n                 type: type,\n                 errorMsg,\n                 curEleSid: sid,\n                 customData\n               }\n               hitTargets.push(target);\n             }\n           });\n           datasource = hitTargets;\n           // \u4E0D\u662F\u7528\u6237\u89E6\u53D1\u7684,\u5C31\u6CA1\u6709\u6240\u8C13\u7684\u4E8B\u4EF6\u5192\u6CE1,\u56E0\u6B64\u53EA\u9700\u8981\u8FD4\u56DE\u5F53\u524D\u89E6\u53D1\u4E8B\u4EF6\u7684\u5143\u7D20\u5373\u53EF\n           if(!e._userTap) datasource = datasource.slice(hitTargets.length - 1);\n           collect(datasource, '\u89E6\u53D1\u76EE\u6807\u5143\u7D20\u4E8B\u4EF6['+e.type+': '+subType+']', datasource);\n         });\n       }\n    }\n");
 /**
  * 生成导出代码
  * @param exportSources
@@ -68,6 +88,21 @@ function apiProxyEntry() {
         .join('\n'), "\n    }\n  })();\n");
 }
 exports.apiProxyEntry = apiProxyEntry;
+var fnMap = {};
+function injectDeps(name, content) {
+    return "\n  \"".concat(name, "\": function(\n    module,\n    exports,\n    __webpack_require__\n  ) {\n    ").concat(content, "\n  }\n  ");
+}
+exports.injectDeps = injectDeps;
+var depsSource = function () {
+    return __spreadArray([
+        injectDeps(_1.transformerPath, (0, fs_1.readFileSync)((0, path_1.resolve)(__dirname, _1.transformerPath), 'utf-8'))
+    ], Object.keys(fnMap).map(function (filePath) {
+        var keys = filePath.split('_');
+        var fnName = keys[keys.length - 1];
+        return injectDeps(filePath, "\n      \"use strict\";\n      Object.defineProperty(exports, \"__esModule\", {\n        value: true\n      });\n      exports.".concat(fnName, " = ").concat(fnMap[filePath].toString(), "\n      "));
+    }), true).join(',\n');
+};
+exports.depsSource = depsSource;
 /**
  * 模块代码框架
  * @param core
@@ -83,14 +118,16 @@ function createWxModuleSourceFragment(core, exportSources, helpers, apiProxyEntr
         .replace(common_1.exportSymbol, createExportObjectSource(exportSources))
         .replace(common_1.helpersSymbol, createExportObjectSource(helpers))
         .replace(common_1.apiProxySymbol, apiProxyEntryStr)
-        .replace(common_1.performanceSymbol, performanceStr);
+        .replace(common_1.performanceSymbol, performanceStr)
+        .replace(_1.injectDepsSymbol, (0, exports.depsSource)())
+        .replace(/'(__webpack_require__.*)'/g, '$1');
 }
 exports.createWxModuleSourceFragment = createWxModuleSourceFragment;
 /**
  * 注入微信开发者工具库，方便开发者在微信开发者工具中调用
  * @type {string}
  */
-exports.injectLibInWxApi = "\n\nconst timer = setInterval(()=>{\n\n  if(wx&&!".concat(common_1.wxLibName, "){\n    clearInterval(timer);\n\n    ").concat(common_1.wxLibName, " = {\n      version: '").concat(package_json_1.default.version, "',\n      ...exports\n    };\n  }\n\n},60);\n ");
+exports.injectLibInWxApi = "\n\nconst timer = setInterval(()=>{\n\n  if(wx){\n    clearInterval(timer);\n    if(!".concat(common_1.wxLibName, ") {\n      ").concat(common_1.wxLibName, " = {\n        version: '").concat(common_1.version, "',\n        ...exports\n      };\n    }\n  }\n\n},60);\n ");
 /**
  * 将函数转换成字符串
  * @param fn
@@ -100,14 +137,33 @@ function getFunctionStr(fn) {
     return fn.toString();
 }
 exports.getFunctionStr = getFunctionStr;
+function getObjectFn(obj, fnKeyPath, keypath) {
+    if (keypath === void 0) { keypath = []; }
+    Object.keys(obj).forEach(function (key) {
+        keypath.push(key);
+        if (typeof obj[key] === 'function') {
+            var curKeyPath = keypath.join('_');
+            fnKeyPath[curKeyPath] = obj[key];
+            obj[key] = curKeyPath;
+        }
+        else if (typeof obj[key] === 'object') {
+            obj[key] = getObjectFn(obj[key], fnKeyPath, keypath);
+        }
+        keypath.pop();
+    });
+}
+exports.getObjectFn = getObjectFn;
 /**
  * 对外导出的属性和方法
  */
 var initExportSources = function (config) {
     var _a;
-    return (_a = {
+    var pluginConfig = __assign({}, config);
+    getObjectFn(__assign({}, pluginConfig), fnMap);
+    // console.log(pluginConfig);
+    return _a = {
             config: {
-                version: package_json_1.default.version,
+                version: common_1.version,
                 libName: common_1.libName,
                 libFilePath: common_1.libFilePath,
                 loggerNamespace: 'OCTOPUS',
@@ -157,26 +213,29 @@ var initExportSources = function (config) {
                 });
                 console.groupEnd();
             }),
-            getViewDataBySid: "\n  function getViewDataBySid(sid, cn) {\n    // \u6839\u636E\u7EC4\u4EF6id\u83B7\u53D6\u6E32\u67D3\u7EC4\u4EF6\u7684\u76F8\u5173\u4FE1\u606F\n    var _es = exports;\n    var res = null;\n    var source = cn;\n    if(!source) {\n      var { data } = _es.getActivePage();\n      source = data.root.cn;\n    }\n    for(var i=0;i<source.length;i++) {\n      var item = source[i];\n      if(item.sid === sid) {\n        return item\n      }\n      if(item.cn) {\n        var ret = _es.getViewDataBySid(sid, item.cn);\n        if(ret) {\n          return ret;\n        }\n      }\n    }\n    return res;\n  }\n  ",
-            flatCn: "\n  function flatCn(cn) {\n    var res = [];\n    function _flatCn(_cn) {\n      _cn.forEach(item => {\n        item.sid && res.push(item);\n        if(item.cn) {\n          _flatCn(item.cn);\n        }\n      });\n    }\n    _flatCn(cn);\n    return res;\n  }\n  ",
-            getCustomDataBySid: "\n  function getCustomDataBySid(sid, cn) {\n    var _es = exports;\n    var { data } = _es.getActivePage();\n    var { customData } = data.root;\n    if(!cn) cn = data.root.cn;\n    var flatedCn = _es.flatCn(cn);\n    var targetIdx = flatedCn.findIndex(item => item.sid === sid);\n    if(targetIdx !== -1) {\n      // \u9700\u8981\u51CF\u53BB\u6839\u8282\u70B9\u7684\u6570\u91CF1\n      return customData[targetIdx - 1] || {};\n    }\n    return {};\n  }\n  ",
-            getTextBySid: "\n  function getTextBySid(sid, data) {\n    // \u6839\u636E\u7EC4\u4EF6id\u83B7\u53D6\u6E32\u67D3\u7EC4\u4EF6\u7684\u6587\u672C\n    var _es = exports;\n    var source = data;\n    if(!source) {\n      source = _es.getViewDataBySid(sid);\n    }\n    let target;\n    if(target = (source.cn||[]).filter(item => !!item.v).map(item => item.v)) {\n      if(target) return target.join(\"\u2518\");\n    };\n    return \"\";\n  }\n  ",
+            getViewDataBySid: "\n    function getViewDataBySid(sid, cn) {\n      // \u6839\u636E\u7EC4\u4EF6id\u83B7\u53D6\u6E32\u67D3\u7EC4\u4EF6\u7684\u76F8\u5173\u4FE1\u606F\n      var _es = exports;\n      var res = null;\n      var source = cn;\n      if(!source) {\n        var { data } = _es.getActivePage();\n        source = data.root.cn;\n      }\n      for(var i=0;i<source.length;i++) {\n        var item = source[i];\n        if(item.sid === sid) {\n          return item\n        }\n        if(item.cn) {\n          var ret = _es.getViewDataBySid(sid, item.cn);\n          if(ret) {\n            return ret;\n          }\n        }\n      }\n      return res;\n    }\n    ",
+            flatCn: "\n    function flatCn(cn) {\n      var res = [];\n      function _flatCn(_cn) {\n        _cn.forEach(item => {\n          item.sid && res.push(item);\n          if(item.cn) {\n            _flatCn(item.cn);\n          }\n        });\n      }\n      _flatCn(cn);\n      return res;\n    }\n    ",
+            getCustomDataBySid: "\n    function getCustomDataBySid(sid, cn) {\n      var _es = exports;\n      var { data } = _es.getActivePage();\n      var { customData } = data.root;\n      if(!cn) cn = data.root.cn;\n      var flatedCn = _es.flatCn(cn);\n      var targetIdx = flatedCn.findIndex(item => item.sid === sid);\n      if(targetIdx !== -1) {\n        // \u9700\u8981\u51CF\u53BB\u6839\u8282\u70B9\u7684\u6570\u91CF1\n        return customData[targetIdx - 1] || {};\n      }\n      return {};\n    }\n    ",
+            getTextBySid: "\n    function getTextBySid(sid, data) {\n      // \u6839\u636E\u7EC4\u4EF6id\u83B7\u53D6\u6E32\u67D3\u7EC4\u4EF6\u7684\u6587\u672C\n      var _es = exports;\n      var source = data;\n      if(!source) {\n        source = _es.getViewDataBySid(sid);\n      }\n      let target;\n      if(target = (source.cn||[]).filter(item => !!item.v).map(item => item.v)) {\n        if(target) return target.join(\"\u2518\");\n      };\n      return \"\";\n    }\n    ",
             // todo 通过 api 手动添加埋点事件
-            pushData: "\n  function pushData(data) {\n    var _es = exports;\n    var {type, oriEvent} = data;\n    if(".concat(JSON.stringify(common_1.buildInEventNameStr), ".includes(type) && !oriEvent) {\n      console.warn(\"\uD83D\uDC19 \u624B\u52A8\u7684\u89E6\u53D1\u4E8B\u4EF6\u7C7B\u578B: \"+type+\" \u4E3A\u5185\u90E8\u4E8B\u4EF6, \u4F60\u9700\u8981\u5728\u8C03\u7528\u65F6\u5C06\u539F\u59CB\u4E8B\u4EF6\u5BF9\u8C61\u901A\u8FC7 oriEvent \u5B57\u6BB5\u4F20\u5165\");\n      return;\n    }\n    _es.").concat(common_1.injectEventName, "({\n      ...data,\n      manual: true\n    });\n  }\n  ")
+            pushData: "\n    function pushData(data) {\n      var _es = exports;\n      var {type, oriEvent} = data;\n      if(".concat(JSON.stringify(common_1.buildInEventNameStr), ".includes(type) && !oriEvent) {\n        console.warn(\"\uD83D\uDC19 \u624B\u52A8\u7684\u89E6\u53D1\u4E8B\u4EF6\u7C7B\u578B: \"+type+\" \u4E3A\u5185\u90E8\u4E8B\u4EF6, \u4F60\u9700\u8981\u5728\u8C03\u7528\u65F6\u5C06\u539F\u59CB\u4E8B\u4EF6\u5BF9\u8C61\u901A\u8FC7 oriEvent \u5B57\u6BB5\u4F20\u5165\");\n        return;\n      }\n      _es.").concat(common_1.injectEventName, "({\n        ...data,\n        manual: true\n      });\n    }\n    ")
         },
         _a[common_1.injectEventName] = octopusEventCollectionCore,
-        _a);
+        _a.transformer = "\n      function transformer(datasource, pluginOptions) {\n        var {Transformer} = __webpack_require__(\"".concat(_1.transformerPath, "\");\n        return new Transformer(datasource[0], pluginOptions);\n      }\n    "),
+        _a;
 };
 exports.wxsCodeFrame = "\n  module.exports = {\n    ".concat(common_1.injectSymbol, "\n  };\n");
 function createUtilWxsCode(prop) {
-    var code = Object.keys(prop).map(function (item) { return "".concat(item, ": ").concat(getFunctionStr(prop[item])); }).join(',');
+    var code = Object.keys(prop)
+        .map(function (item) { return "".concat(item, ": ").concat(getFunctionStr(prop[item])); })
+        .join(',');
     return exports.wxsCodeFrame.replace(common_1.injectSymbol, code);
 }
 exports.createUtilWxsCode = createUtilWxsCode;
 exports.utilWxsCode = createUtilWxsCode({
     s: function (o) {
         return JSON.stringify(o);
-    }
+    },
 });
 /**
  * 注入到小程序中的辅助工具函数
@@ -199,7 +258,8 @@ exports.performanceCollectCode = "\n  var _es = exports;\n  var performance = wx
  * @returns
  */
 function createLibSource(config) {
-    return createWxModuleSourceFragment(exports.injectLibInWxApi, initExportSources(config), exports.helpers, apiProxyEntry(), exports.performanceCollectCode);
+    var source = initExportSources(config);
+    return createWxModuleSourceFragment(exports.injectLibInWxApi, source, exports.helpers, apiProxyEntry(), exports.performanceCollectCode);
 }
 /**
  * 需要注入的库文件

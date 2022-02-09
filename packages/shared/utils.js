@@ -64,7 +64,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.upperCamelize = exports.capitalize = exports.camelize = exports.camelizeRE = exports.obj2querystr = exports.deepMergeOptions = exports.getSourceCodeFromMap = exports.timeFormat = exports.fitNum = exports.filterObjectKey = exports.pathExcludeIgnore = exports.isPathValid = exports.runByFnNameWithPlatform = exports.shortid = exports.guid = exports.proxy = exports.isFunction = exports.noop = void 0;
+exports.readFileFromDir = exports.upperCamelize = exports.capitalize = exports.camelize = exports.camelizeRE = exports.obj2querystr = exports.deepMergeOptions = exports.getSourceCodeFromMap = exports.filterObjectKey = exports.pathExcludeIgnore = exports.isPathValid = exports.runByFnNameWithPlatform = exports.shortid = exports.guid = exports.proxy = exports.isFunction = exports.noop = void 0;
 var path_1 = require("path");
 var fs_extra_1 = require("fs-extra");
 var source_map_1 = require("source-map");
@@ -218,22 +218,6 @@ function filterObjectKey(obj, paths) {
     return res;
 }
 exports.filterObjectKey = filterObjectKey;
-function fitNum(num, len) {
-    if (len === void 0) { len = 2; }
-    return String(num).padStart(len, '0');
-}
-exports.fitNum = fitNum;
-function timeFormat(date) {
-    var y = date.getFullYear();
-    var m = date.getMonth() + 1;
-    var d = date.getDate();
-    var H = date.getHours();
-    var M = date.getMinutes();
-    var S = date.getSeconds();
-    var MS = date.getMilliseconds();
-    return "".concat(y, "-").concat(fitNum(m), "-").concat(fitNum(d), " ").concat(fitNum(H), ":").concat(fitNum(M), ":").concat(fitNum(S), ".").concat(fitNum(MS, 3));
-}
-exports.timeFormat = timeFormat;
 function getSourceCodeFromMap(map, fileName) {
     return __awaiter(this, void 0, void 0, function () {
         var consumer;
@@ -312,3 +296,21 @@ exports.capitalize = capitalize;
  */
 var upperCamelize = function (str) { return (0, exports.capitalize)((0, exports.camelize)(str.startsWith('-') ? str : "-".concat(str))); };
 exports.upperCamelize = upperCamelize;
+function readFileFromDir(path, callback, ext, include) {
+    if (ext === void 0) { ext = "js"; }
+    if (include === void 0) { include = []; }
+    var fileList = (0, fs_extra_1.readdirSync)(path);
+    fileList.filter(function (item) { return item.endsWith(ext); }).forEach(function (filePath) {
+        var fullPath = (0, path_1.join)(path, filePath);
+        var stat = (0, fs_extra_1.statSync)(fullPath);
+        if (stat.isDirectory()) {
+            readFileFromDir(fullPath, callback, ext);
+        }
+        else {
+            if (include.includes(filePath)) {
+                callback(fullPath);
+            }
+        }
+    });
+}
+exports.readFileFromDir = readFileFromDir;

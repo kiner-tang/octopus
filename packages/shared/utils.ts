@@ -1,6 +1,6 @@
-import { PlatformType } from '.';
+import { IncludeOrExclude, PlatformType } from './inner';
 import { join, dirname } from 'path';
-import { mkdirpSync, existsSync } from 'fs-extra';
+import { mkdirpSync, existsSync, readdirSync, statSync } from 'fs-extra';
 import { SourceMapConsumer } from 'source-map';
 import { merge } from 'lodash';
 
@@ -83,7 +83,6 @@ export async function runByFnNameWithPlatform(platform: PlatformType, fnName: st
   const platformPkg = await import(`@kiner/octopus-platform/${platform}`);
   return platformPkg[fnName](...rest);
 }
-export type IncludeOrExclude = (RegExp | string)[];
 export function isPathValid(path: string, include: IncludeOrExclude = [], exclude: IncludeOrExclude = []): boolean {
   let flag = false;
   // 首先将满足 exclude 的路径都排除掉
@@ -132,21 +131,6 @@ export function filterObjectKey(obj: Record<string, any>, paths: string[]): Reco
     res[key] = obj[key];
   });
   return res;
-}
-
-export function fitNum(num: number, len = 2): string {
-  return String(num).padStart(len, '0');
-}
-export function timeFormat(date: Date): string {
-  const y = date.getFullYear();
-  const m = date.getMonth() + 1;
-  const d = date.getDate();
-  const H = date.getHours();
-  const M = date.getMinutes();
-  const S = date.getSeconds();
-  const MS = date.getMilliseconds();
-
-  return `${y}-${fitNum(m)}-${fitNum(d)} ${fitNum(H)}:${fitNum(M)}:${fitNum(S)}.${fitNum(MS, 3)}`;
 }
 export type Source = { source: string; filePath: string };
 export async function getSourceCodeFromMap(map: string, fileName: string): Promise<Source[]> {
@@ -213,3 +197,18 @@ export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.sli
  * 将以-连接的字符串转化成大驼峰形式
  */
 export const upperCamelize = (str: string) => capitalize(camelize(str.startsWith('-') ? str : `-${str}`));
+
+export function readFileFromDir(path: string,callback: (path: string) => void, ext = "js", include: string[] = []) {
+  const fileList = readdirSync(path);
+  fileList.filter(item => item.endsWith(ext)).forEach(filePath => {
+    const fullPath = join(path, filePath);
+    const stat = statSync(fullPath);
+    if(stat.isDirectory()) {
+      readFileFromDir(fullPath, callback, ext);
+    } else {
+      if(include.includes(filePath)) {
+        callback(fullPath);
+      }
+    }
+  });
+}

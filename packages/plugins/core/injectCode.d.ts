@@ -3,6 +3,7 @@ import { CodeGenInfo, TaroOctopusPluginsOptions } from '@kiner/octopus-shared';
  * 监听全局报错
  */
 export declare const catchGlobalError: string;
+export declare const depsTpl: (name: string, content: string) => string;
 /**
  * 生成导出代码
  * @param exportSources
@@ -18,6 +19,8 @@ export declare const apiProxyList: string[];
  * api 代理入口代码
  */
 export declare function apiProxyEntry(): string;
+export declare function injectDeps(name: string, content: string): string;
+export declare const depsSource: () => string;
 /**
  * 模块代码框架
  * @param core
@@ -35,6 +38,7 @@ export declare const injectLibInWxApi: string;
  * @returns
  */
 export declare function getFunctionStr(fn: (...params: any[]) => any): string;
+export declare function getObjectFn(obj: Record<string, any>, fnKeyPath: Record<string, (...args: any[]) => any>, keypath?: string[]): void;
 export declare const wxsCodeFrame: string;
 export declare function createUtilWxsCode(prop: Record<string, (...args: any[]) => any>): string;
 export declare const utilWxsCode: string;

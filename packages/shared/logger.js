@@ -9,8 +9,23 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Logger = exports.LoggerLevel = void 0;
-var utils_1 = require("./utils");
+exports.Logger = exports.LoggerLevel = exports.timeFormat = exports.fitNum = void 0;
+function fitNum(num, len) {
+    if (len === void 0) { len = 2; }
+    return String(num).padStart(len, '0');
+}
+exports.fitNum = fitNum;
+function timeFormat(date) {
+    var y = date.getFullYear();
+    var m = date.getMonth() + 1;
+    var d = date.getDate();
+    var H = date.getHours();
+    var M = date.getMinutes();
+    var S = date.getSeconds();
+    var MS = date.getMilliseconds();
+    return "".concat(y, "-").concat(fitNum(m), "-").concat(fitNum(d), " ").concat(fitNum(H), ":").concat(fitNum(M), ":").concat(fitNum(S), ".").concat(fitNum(MS, 3));
+}
+exports.timeFormat = timeFormat;
 var LoggerLevel;
 (function (LoggerLevel) {
     LoggerLevel[LoggerLevel["all"] = 4] = "all";
@@ -20,7 +35,7 @@ var LoggerLevel;
 })(LoggerLevel = exports.LoggerLevel || (exports.LoggerLevel = {}));
 var Logger = /** @class */ (function () {
     function Logger(namespace) {
-        if (namespace === void 0) { namespace = "__DEFAULT_LOGGER_NAMESPACE__"; }
+        if (namespace === void 0) { namespace = '__DEFAULT_LOGGER_NAMESPACE__'; }
         this.namespace = namespace;
     }
     Logger.log = function (namespace, message) {
@@ -29,8 +44,8 @@ var Logger = /** @class */ (function () {
             args[_i - 2] = arguments[_i];
         }
         if (Logger.showLog && (Logger.showLevel === LoggerLevel.log || Logger.showLevel === LoggerLevel.all)) {
-            var time = Logger.showTime ? "<".concat((0, utils_1.timeFormat)(new Date()), ">") : '';
-            args.push("\n");
+            var time = Logger.showTime ? "<".concat(timeFormat(new Date()), ">") : '';
+            args.push('\n');
             console.log.apply(console, __spreadArray(["\n\uD83D\uDC19 ".concat(time, "[").concat(namespace, "] ").concat(message, "\n")], args, false));
         }
     };
@@ -40,8 +55,8 @@ var Logger = /** @class */ (function () {
             args[_i - 2] = arguments[_i];
         }
         if (Logger.showLog && (Logger.showLevel === LoggerLevel.warning || Logger.showLevel === LoggerLevel.all)) {
-            var time = Logger.showTime ? "<".concat((0, utils_1.timeFormat)(new Date()), ">") : '';
-            args.push("\n");
+            var time = Logger.showTime ? "<".concat(timeFormat(new Date()), ">") : '';
+            args.push('\n');
             console.warn.apply(console, __spreadArray(["\n\uD83D\uDC19 ".concat(time, "[").concat(namespace, "] ").concat(message, "\n")], args, false));
         }
     };
@@ -51,8 +66,8 @@ var Logger = /** @class */ (function () {
             args[_i - 2] = arguments[_i];
         }
         if (Logger.showLog && (Logger.showLevel === LoggerLevel.error || Logger.showLevel === LoggerLevel.all)) {
-            var time = Logger.showTime ? "<".concat((0, utils_1.timeFormat)(new Date()), ">") : '';
-            args.push("\n");
+            var time = Logger.showTime ? "<".concat(timeFormat(new Date()), ">") : '';
+            args.push('\n');
             console.error.apply(console, __spreadArray(["\n\uD83D\uDC19 ".concat(time, "[").concat(namespace, "] ").concat(message, "\n")], args, false));
         }
     };

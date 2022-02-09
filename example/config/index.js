@@ -1,4 +1,7 @@
 const { defineConfig } = require("@kiner/octopus-plugins");
+const { resolve } = require("path");
+
+console.log(resolve(__dirname, "../", "node_modules/@kiner/octopus-transformer/index.js"));
 
 const config = {
   projectName: 'example',
@@ -13,7 +16,14 @@ const config = {
   outputRoot: 'dist',
   plugins: [
     ['@kiner/octopus-plugins', defineConfig({
-      debug: true
+      debug: true,
+      transformerOptions: {
+        transformer(ds) {
+          console.log("=====>", ds);
+          ds.datasource.text = "哈哈哈哈";
+          return ds;
+        }
+      }
     })]
   ],
   defineConstants: {

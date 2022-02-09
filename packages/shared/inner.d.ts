@@ -1,8 +1,9 @@
-import { IPluginsObject } from '@tarojs/service/src/utils/types';
-import prettier from "prettier";
-import { Node, File } from "@babel/types";
+import type { IPluginsObject } from '@tarojs/service/src/utils/types';
+import type { Options } from "prettier";
+import type { Node, File } from "@babel/types";
 import { Logger } from "./logger";
-import { IncludeOrExclude } from "./utils";
+import { Queue } from './queque';
+export declare type IncludeOrExclude = (RegExp | string)[];
 /**
  * 基础管道数据流结构
  */
@@ -60,7 +61,9 @@ export declare type Emitter<T> = {
 export declare class BaseApp<P = any, K = any> implements Pipeline<P>, Emitter<K> {
     private appName;
     protected logger: Logger;
-    protected showInnerLog: boolean;
+    protected _showInnerLog: boolean;
+    set showInnerLog(value: boolean);
+    get showInnerLog(): boolean;
     constructor(appName?: string);
     /**
      * 注册的事件列表，用事件名加以管理
@@ -111,7 +114,7 @@ export declare type CodeGenInfo = {
     filePath: string;
     code: string;
     prettier?: boolean;
-    prettierOptions?: prettier.Options;
+    prettierOptions?: Options;
 };
 export declare type CodeGenOptionInfo = {
     filePath: string;
@@ -271,6 +274,15 @@ export declare type TaroOctopusPluginsOptions = {
         } | boolean;
     };
     /**
+     * 转换器选项
+     */
+    transformerOptions?: {
+        /**
+         * 数据转换器，所有收集上来的数据都会调用此方法进行数据转换
+         */
+        transformer: (datasource: Omit<Datasource, "eventQueue">) => NormalDatasource | Promise<NormalDatasource>;
+    };
+    /**
      * 上报通道选项
      */
     transporterOptions: {
@@ -289,4 +301,97 @@ export declare type PluginPipelineData = {
     ctx: IPluginsObject;
     codes: CodeGenInfo[];
     oriAssets: Record<string, any>;
+};
+/**
+ * 规范化数据源对象
+ */
+export declare type NormalDatasource = {
+    /**
+     * 类型
+     */
+    type: string;
+    /**
+     * 子类型
+     */
+    subType: string;
+    /**
+     * 原始事件对象
+     */
+    oriEvent: WechatMiniprogram.CustomEvent<any>;
+    /**
+     * 是否手动触发
+     */
+    isManual: boolean;
+    /**
+     * 页面数据
+     */
+    pageData: Record<string, any>;
+    /**
+     * 如果存在，事件额外信息
+     */
+    detail?: Record<string, any>;
+    /**
+     * 如果是输入类事件，则为当前输入框输入的内容
+     */
+    value?: string;
+    /**
+     * 目标元素相关信息
+     */
+    target?: {
+        /**
+         * 如果是触摸屏幕时触发的事件，则会收集当前触摸对象的包括 dataset,rect 等信息
+         */
+        touchElem: Record<string, any>;
+        /**
+         * 当前组件的 数据集
+         */
+        dataset: Record<string, any>;
+        /**
+         * 当前元素的渲染数据
+         */
+        elemData: Record<string, any>;
+        /**
+         * 当前元素的文本信息
+         */
+        text: string;
+        /**
+         * 当前元素的唯一id
+         */
+        curEleSid: string;
+    };
+    /**
+     * 如果是报错类事件，则为报错信息
+     */
+    errorMsg?: string;
+    /**
+     * 如果是性能监控类事件，则为小程序性能信息
+     */
+    performance?: Record<string, any>;
+    /**
+     * 如果是用户手动调用 api 触发或组件绑定了 data-octopus-customData 属性时，将会收集自定义事件信息
+     */
+    customData?: Record<string, any>;
+};
+/**
+ * 用于在管道流中传递信息的基础数据源
+ */
+export declare type Datasource = {
+    datasource: {
+        type: string;
+        subType: string;
+        isManual: boolean;
+        pageData: Record<string, any>;
+        oriEvent: WechatMiniprogram.CustomEvent<any>;
+        touchElem: Record<string, any>;
+        customData: Record<string, any>;
+        errorMsg?: string;
+        performance?: Record<string, any>;
+        detail: Record<string, any>;
+        dataset: Record<string, any>;
+        elemData: Record<string, any>;
+        text: string;
+        curEleSid: string;
+    };
+    pluginOptions: TaroOctopusPluginsOptions;
+    eventQueue: Queue<NormalDatasource>;
 };
