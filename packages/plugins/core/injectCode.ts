@@ -99,7 +99,7 @@ const octopusEventCollectionCore = `
        var errorMsg = "";
        var { data } = _es.getActivePage();
        var curPages = getCurrentPages();
-       var cur = curPages[curPages.length-1];
+       var cur = curPages[curPages.length-1] || {};
        var { route, config } = cur;
        var datasource = {
          type,
@@ -888,7 +888,7 @@ export const performanceCollectCode = `
     _es.${injectEventName}({
       type: "performance",
       subType: "performance",
-      performance: entryList
+      performance: entryList._list
     })
   })
   observer.observe({ entryTypes: ['render', 'script', 'navigation'] })
