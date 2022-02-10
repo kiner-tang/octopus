@@ -151,5 +151,5 @@ export default (ctx: IPluginContext, pluginOpts: TaroOctopusPluginsOptions) => {
   });
 };
 
-export * from '@kiner/octopus-shared/types';
+export * from '@kiner/octopus-shared/src/types';
 export * from './core';

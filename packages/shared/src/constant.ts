@@ -1,0 +1,1 @@
+export const eventQueueStorageKey = "__octopus_eq";

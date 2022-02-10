@@ -67,8 +67,8 @@ exports.taroModule2wxComponent = {
 exports.needCatchLoadErrorComponents = 'b,c,f';
 exports.needCatchLoadErrorComponentsList = exports.needCatchLoadErrorComponents.split(',');
 exports.componentReactPath = './node_modules/@tarojs/plugin-platform-weapp/dist/components-react.js';
-exports.transformerPath = '../../transformer/dist/octopus-transformer.cjs.js';
-exports.transporterPath = '../../transporter/dist/octopus-transporter.cjs.js';
+exports.transformerPath = '../../../transformer/dist/octopus-transformer.cjs.js';
+exports.transporterPath = '../../../transporter/dist/octopus-transporter.cjs.js';
 function replaceInnerDeps(code) {
     return code
         .replace(/require\("@kiner\/octopus-(transformer.*)"\)/g, 'require("../$1/index.js")')
@@ -78,4 +78,4 @@ function replaceInnerDeps(code) {
 exports.replaceInnerDeps = replaceInnerDeps;
 exports.ignoreClassName = 'octopus-ignore';
 exports.customParamsClassName = 'octopus-customData';
-__exportStar(require("@kiner/octopus-shared/inner"), exports);
+__exportStar(require("@kiner/octopus-shared/src/inner"), exports);

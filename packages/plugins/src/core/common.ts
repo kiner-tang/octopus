@@ -78,8 +78,8 @@ export const needCatchLoadErrorComponents = 'b,c,f';
 export const needCatchLoadErrorComponentsList = needCatchLoadErrorComponents.split(',');
 
 export const componentReactPath = './node_modules/@tarojs/plugin-platform-weapp/dist/components-react.js';
-export const transformerPath = '../../transformer/dist/octopus-transformer.cjs.js';
-export const transporterPath = '../../transporter/dist/octopus-transporter.cjs.js';
+export const transformerPath = '../../../transformer/dist/octopus-transformer.cjs.js';
+export const transporterPath = '../../../transporter/dist/octopus-transporter.cjs.js';
 
 export function replaceInnerDeps(code: string) {
   return code
@@ -91,4 +91,4 @@ export function replaceInnerDeps(code: string) {
 export const ignoreClassName = 'octopus-ignore';
 export const customParamsClassName = 'octopus-customData';
 
-export * from '@kiner/octopus-shared/inner';
+export * from '@kiner/octopus-shared/src/inner';

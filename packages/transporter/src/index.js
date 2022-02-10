@@ -53,7 +53,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Transporter = void 0;
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-var inner_1 = require("@kiner/octopus-shared/inner");
+var inner_1 = require("@kiner/octopus-shared/src/inner");
+var constant_1 = require("@kiner/octopus-shared/src/constant");
 var Transporter = /** @class */ (function (_super) {
     __extends(Transporter, _super);
     function Transporter() {
@@ -124,12 +125,12 @@ var Transporter = /** @class */ (function (_super) {
         });
     };
     Transporter.prototype.resolveData = function (data) {
-        for (var i = 0; i < data.length; i++) {
+        var _loop_1 = function (i) {
             var _a = data[i], eventQueue = _a.eventQueue, pluginOptions = _a.pluginOptions;
-            this.showInnerLog = pluginOptions.debug || false;
+            this_1.showInnerLog = pluginOptions.debug || false;
             var transporterOptions = pluginOptions.transporterOptions;
             if (!transporterOptions) {
-                continue;
+                return "continue";
             }
             var transformParams = transporterOptions.transformParams, mode = transporterOptions.mode, _b = transporterOptions.limit, limit = _b === void 0 ? 10 : _b;
             var transfromParamFnId = transformParams;
@@ -140,17 +141,26 @@ var Transporter = /** @class */ (function (_super) {
                 transfromParam = mod.transfromParam;
             }
             if (mode === inner_1.TransporterMode.none)
-                continue;
+                return "continue";
             else if (mode === inner_1.TransporterMode.console)
-                this.transporterConsole(eventQueue);
+                this_1.transporterConsole(eventQueue);
             else if (mode === inner_1.TransporterMode.sendWhenPush) {
-                this.transporterSendAll(data[i]);
+                this_1.transporterSendAll(data[i]);
             }
             else if (mode === inner_1.TransporterMode.sendAllOverflow) {
                 if (eventQueue.size() >= limit) {
-                    this.transporterSendAll(data[i]);
+                    this_1.transporterSendAll(data[i]).then(function (res) {
+                        if (!eventQueue.empty()) {
+                            console.log("\uD83D\uDC19 \u961F\u5217\u5269\u4F59".concat(eventQueue.size(), "\u6761\u6570\u636E\u672A\u8FBE\u5230\u53D1\u9001\u6761\u4EF6\uFF0C\u6682\u5B58\u5230\u672C\u5730\u5B58\u50A8"));
+                            wx.setStorageSync(constant_1.eventQueueStorageKey, eventQueue.all());
+                        }
+                    });
                 }
             }
+        };
+        var this_1 = this;
+        for (var i = 0; i < data.length; i++) {
+            _loop_1(i);
         }
         return _super.prototype.resolveData.call(this, data);
     };

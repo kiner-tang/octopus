@@ -153,5 +153,5 @@ exports.default = (function (ctx, pluginOpts) {
             .pipe(new octopus_shared_1.Output('文件输出到目标目录'));
     });
 });
-__exportStar(require("@kiner/octopus-shared/types"), exports);
+__exportStar(require("@kiner/octopus-shared/src/types"), exports);
 __exportStar(require("./core"), exports);

@@ -2,7 +2,7 @@
   "name": "@kiner/octopus-plugins",
   "version": "0.0.1",
   "description": "章鱼埋点的 taro 插件分包，通过此插件的功能将章鱼埋点与小程序连接起来，也为我们获取数据源提供了基础能力",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

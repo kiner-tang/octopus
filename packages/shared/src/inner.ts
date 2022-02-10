@@ -528,6 +528,10 @@ export type NormalDatasource = {
    * 页面基础配置
    */
   pageConfig: Record<string, any>;
+  /**
+   * 触发事件的时间戳
+   */
+  timeStamp: number;
 };
 /**
  * 用于在管道流中传递信息的基础数据源
@@ -549,7 +553,8 @@ export type Datasource = {
     text: string;
     curEleSid: string;
     route: string;
-    pageConfig: Record<string, any>
+    pageConfig: Record<string, any>,
+    timeStamp: number;
   };
   pluginOptions: TaroOctopusPluginsOptions;
   eventQueue: Queue<NormalDatasource>;

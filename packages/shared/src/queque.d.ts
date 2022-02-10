@@ -1,5 +1,6 @@
 export declare class Queue<T = unknown> {
     private readonly _queue;
+    constructor(init?: T[]);
     push(data: T): void;
     dequeue(): T | undefined;
     size(): number;

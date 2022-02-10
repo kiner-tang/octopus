@@ -16,5 +16,5 @@ export declare function createPluginOptions(updateOptions: (buildInOptions: Reco
 export declare const defineConfig: (options: Partial<TaroOctopusPluginsOptions>) => Partial<TaroOctopusPluginsOptions>;
 declare const _default: (ctx: IPluginContext, pluginOpts: TaroOctopusPluginsOptions) => void;
 export default _default;
-export * from '@kiner/octopus-shared/types';
+export * from '@kiner/octopus-shared/src/types';
 export * from './core';

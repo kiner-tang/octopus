@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/triple-slash-reference */
 
-/// <reference path="./wx-typings/types/index.d.ts" />
+/// <reference path="../wx-typings/types/index.d.ts" />
 
 import { TaroOctopusPluginsOptions, BuildInEventKey } from "./inner";
 

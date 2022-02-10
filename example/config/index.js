@@ -25,7 +25,7 @@ const config = {
           },
         },
         transporterOptions: {
-          mode: "console",
+          mode: "sendAllOverflow",
           limit: 5,
           isSendEventList: true,
           requestOptions: {

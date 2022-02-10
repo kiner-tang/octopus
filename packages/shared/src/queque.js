@@ -10,15 +10,22 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Queue = void 0;
+var constant_1 = require("./constant");
 var Queue = /** @class */ (function () {
-    function Queue() {
+    function Queue(init) {
+        var _a;
+        if (init === void 0) { init = []; }
         this._queue = [];
+        (_a = this._queue).push.apply(_a, init);
     }
     Queue.prototype.push = function (data) {
         this._queue.push(data);
+        wx.setStorageSync(constant_1.eventQueueStorageKey, this._queue);
     };
     Queue.prototype.dequeue = function () {
-        return this._queue.shift();
+        var cur = this._queue.shift();
+        wx.setStorageSync(constant_1.eventQueueStorageKey, this._queue);
+        return cur;
     };
     Queue.prototype.size = function () {
         return this._queue.length;

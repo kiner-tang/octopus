@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { BaseApp, Datasource, NormalDatasource } from '@kiner/octopus-shared/inner';
-import { Queue } from "@kiner/octopus-shared/queque";
+import { BaseApp, Datasource, NormalDatasource } from '@kiner/octopus-shared/src/inner';
+import { Queue } from "@kiner/octopus-shared/src/queque";
+import { eventQueueStorageKey } from "@kiner/octopus-shared/src/constant";
 
 export class Transformer extends BaseApp<Datasource> {
   eventQueue: Queue<NormalDatasource>;
   constructor(datasource: Datasource['datasource'], pluginOptions: Datasource['pluginOptions']) {
     super('Transformer');
     this.showInnerLog = pluginOptions.debug || false;
-    this.eventQueue = new Queue<NormalDatasource>();
+    const old = wx.getStorageSync<NormalDatasource[]>(eventQueueStorageKey) || [];
+    this.eventQueue = new Queue<NormalDatasource>(old);
     this.push([
       {
         datasource,
@@ -34,7 +36,8 @@ export class Transformer extends BaseApp<Datasource> {
         text,
         touchElem,
         route,
-        pageConfig
+        pageConfig,
+        timeStamp
       } = item.datasource;
       const { transformerOptions } = item.pluginOptions;
       let normalData: NormalDatasource = {
@@ -55,7 +58,8 @@ export class Transformer extends BaseApp<Datasource> {
         isManual,
         pageData,
         route,
-        pageConfig
+        pageConfig,
+        timeStamp
       };
       if (transformerOptions) {
         // 由于对象属性是方法时转换成字符串输出到代码中后会被过滤掉

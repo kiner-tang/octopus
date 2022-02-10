@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { BaseApp, Datasource, NormalDatasource, TransporterMode } from '@kiner/octopus-shared/inner';
-import { Queue } from '@kiner/octopus-shared/queque';
+import { BaseApp, Datasource, NormalDatasource, TransporterMode } from '@kiner/octopus-shared/src/inner';
+import { Queue } from '@kiner/octopus-shared/src/queque';
+import { eventQueueStorageKey } from '@kiner/octopus-shared/src/constant';
 
 export class Transporter extends BaseApp<Datasource> {
   constructor() {
@@ -70,7 +71,12 @@ export class Transporter extends BaseApp<Datasource> {
         this.transporterSendAll(data[i]);
       } else if (mode === TransporterMode.sendAllOverflow) {
         if (eventQueue.size() >= limit) {
-          this.transporterSendAll(data[i]);
+          this.transporterSendAll(data[i]).then(res => {
+            if(!eventQueue.empty()) {
+              console.log(`🐙 队列剩余${eventQueue.size()}条数据未达到发送条件，暂存到本地存储`);
+              wx.setStorageSync(eventQueueStorageKey, eventQueue.all());
+            }
+          });
         }
       }
     }

@@ -1,4 +1,4 @@
-import type { IPluginsObject } from '@tarojs/service/src/utils/types';
+import { IPluginsObject } from '@tarojs/service/src/utils/types';
 import type { Options } from 'prettier';
 import type { Node, File } from '@babel/types';
 import { Logger } from './logger';
@@ -433,6 +433,10 @@ export declare type NormalDatasource = {
      * 页面基础配置
      */
     pageConfig: Record<string, any>;
+    /**
+     * 触发事件的时间戳
+     */
+    timeStamp: number;
 };
 /**
  * 用于在管道流中传递信息的基础数据源
@@ -455,6 +459,7 @@ export declare type Datasource = {
         curEleSid: string;
         route: string;
         pageConfig: Record<string, any>;
+        timeStamp: number;
     };
     pluginOptions: TaroOctopusPluginsOptions;
     eventQueue: Queue<NormalDatasource>;

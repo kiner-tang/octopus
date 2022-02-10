@@ -5,7 +5,7 @@ import hashbang from "rollup-plugin-hashbang";
 export default [
     // CommonJS for Node and ES module for bundlers build
     {
-        input: 'packages/transformer/index.ts',
+        input: 'packages/transformer/src/index.ts',
         external: ['path', 'fs-extra', 'source-map', 'lodash'],
         plugins: [
             json(),
@@ -18,7 +18,7 @@ export default [
         ]
     },
     {
-        input: 'packages/transporter/index.ts',
+        input: 'packages/transporter/src/index.ts',
         external: ['path', 'fs-extra', 'source-map', 'lodash'],
         plugins: [
             json(),

@@ -110,7 +110,8 @@ const octopusEventCollectionCore = `
          touchElem: {},
          customData: e.customData || {},
          route,
-         pageConfig: config
+         pageConfig: config,
+         timeStamp: Date.now()
        };
        function collect(ds, ...log) {
         _es.logger(...log);

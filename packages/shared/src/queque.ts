@@ -1,10 +1,18 @@
+import { eventQueueStorageKey } from "./constant";
+
 export class Queue<T = unknown> {
     private readonly _queue: T[] = [];
+    constructor(init: T[] = []){
+        this._queue.push(...init);
+    }
     push(data: T): void {
         this._queue.push(data);
+        wx.setStorageSync(eventQueueStorageKey, this._queue);
     }
     dequeue(): T | undefined {
-        return this._queue.shift();
+        const cur = this._queue.shift();
+        wx.setStorageSync(eventQueueStorageKey, this._queue);
+        return cur;
     }
     size(): number {
         return this._queue.length;

@@ -64,14 +64,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Transformer = void 0;
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-var inner_1 = require("@kiner/octopus-shared/inner");
-var queque_1 = require("@kiner/octopus-shared/queque");
+var inner_1 = require("@kiner/octopus-shared/src/inner");
+var queque_1 = require("@kiner/octopus-shared/src/queque");
+var constant_1 = require("@kiner/octopus-shared/src/constant");
 var Transformer = /** @class */ (function (_super) {
     __extends(Transformer, _super);
     function Transformer(datasource, pluginOptions) {
         var _this = _super.call(this, 'Transformer') || this;
         _this.showInnerLog = pluginOptions.debug || false;
-        _this.eventQueue = new queque_1.Queue();
+        var old = wx.getStorageSync(constant_1.eventQueueStorageKey) || [];
+        _this.eventQueue = new queque_1.Queue(old);
         _this.push([
             {
                 datasource: datasource,
@@ -84,7 +86,7 @@ var Transformer = /** @class */ (function (_super) {
     Transformer.prototype.resolveData = function (data) {
         var _a;
         return __awaiter(this, void 0, void 0, function () {
-            var i, item, _b, type, subType, oriEvent, dataset, elemData, errorMsg, detail, pageData, customData, curEleSid, isManual, text, touchElem, route, pageConfig, transformerOptions, normalData, fnId, transformer;
+            var i, item, _b, type, subType, oriEvent, dataset, elemData, errorMsg, detail, pageData, customData, curEleSid, isManual, text, touchElem, route, pageConfig, timeStamp, transformerOptions, normalData, fnId, transformer;
             var _this = this;
             return __generator(this, function (_c) {
                 switch (_c.label) {
@@ -94,7 +96,7 @@ var Transformer = /** @class */ (function (_super) {
                     case 1:
                         if (!(i < data.length)) return [3 /*break*/, 5];
                         item = data[i];
-                        _b = item.datasource, type = _b.type, subType = _b.subType, oriEvent = _b.oriEvent, dataset = _b.dataset, elemData = _b.elemData, errorMsg = _b.errorMsg, detail = _b.detail, pageData = _b.pageData, customData = _b.customData, curEleSid = _b.curEleSid, isManual = _b.isManual, text = _b.text, touchElem = _b.touchElem, route = _b.route, pageConfig = _b.pageConfig;
+                        _b = item.datasource, type = _b.type, subType = _b.subType, oriEvent = _b.oriEvent, dataset = _b.dataset, elemData = _b.elemData, errorMsg = _b.errorMsg, detail = _b.detail, pageData = _b.pageData, customData = _b.customData, curEleSid = _b.curEleSid, isManual = _b.isManual, text = _b.text, touchElem = _b.touchElem, route = _b.route, pageConfig = _b.pageConfig, timeStamp = _b.timeStamp;
                         transformerOptions = item.pluginOptions.transformerOptions;
                         normalData = {
                             type: type,
@@ -114,7 +116,8 @@ var Transformer = /** @class */ (function (_super) {
                             isManual: isManual,
                             pageData: pageData,
                             route: route,
-                            pageConfig: pageConfig
+                            pageConfig: pageConfig,
+                            timeStamp: timeStamp
                         };
                         if (!transformerOptions) return [3 /*break*/, 3];
                         fnId = transformerOptions === null || transformerOptions === void 0 ? void 0 : transformerOptions.transformer;
