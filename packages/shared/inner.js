@@ -51,14 +51,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BuildInLoadErrorEventName = exports.AppAPI = exports.PageAPI = exports.BuildInEventName = exports.CollectMode = exports.Output = exports.PlatformType = exports.BaseApp = void 0;
+exports.TransporterMode = exports.BuildInLoadErrorEventName = exports.AppAPI = exports.PageAPI = exports.BuildInEventName = exports.CollectMode = exports.Output = exports.PlatformType = exports.BaseApp = void 0;
 var logger_1 = require("./logger");
 /**
  * 一个实现了管道数据流和时间的订阅发布接口的应用基础类，项目中其他类基本都需要集成此类
  */
 var BaseApp = /** @class */ (function () {
     function BaseApp(appName) {
-        if (appName === void 0) { appName = "__DEFAULT_APP_NAME__"; }
+        if (appName === void 0) { appName = '__DEFAULT_APP_NAME__'; }
         this.appName = appName;
         this._showInnerLog = false;
         /**
@@ -152,10 +152,10 @@ var PlatformType;
 var Output = /** @class */ (function (_super) {
     __extends(Output, _super);
     function Output(namespace) {
-        return _super.call(this, namespace || "OUTPUT") || this;
+        return _super.call(this, namespace || 'OUTPUT') || this;
     }
     Output.prototype.resolveData = function (data) {
-        this.logger.log("当前数据", data);
+        this.logger.log('当前数据', data);
         return data;
     };
     return Output;
@@ -229,3 +229,14 @@ var BuildInLoadErrorEventName;
     BuildInLoadErrorEventName["video"] = "video";
     BuildInLoadErrorEventName["audio"] = "audio";
 })(BuildInLoadErrorEventName = exports.BuildInLoadErrorEventName || (exports.BuildInLoadErrorEventName = {}));
+var TransporterMode;
+(function (TransporterMode) {
+    /** 什么也不错 */
+    TransporterMode["none"] = "none";
+    /** 仅输出到控制台，不发送到服务器 */
+    TransporterMode["console"] = "console";
+    /** 仅当队列中事件数量超过阈值时发送所有 */
+    TransporterMode["sendAllOverflow"] = "sendAllOverflow";
+    /** 来一条发一条，即实时发送 */
+    TransporterMode["sendWhenPush"] = "sendWhenPush";
+})(TransporterMode = exports.TransporterMode || (exports.TransporterMode = {}));

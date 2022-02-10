@@ -24,7 +24,7 @@ import {
   version,
   wxLibName,
 } from './common';
-import { ignoreClassName, injectDepsSymbol, transformerPath } from '.';
+import { ignoreClassName, injectDepsSymbol, transformerPath, transporterPath } from '.';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
@@ -60,6 +60,7 @@ const fragment = `
     });
     exports.throttleTime = 30;
     exports.eventHelper = {};
+    exports.${injectEventName} = function(){};
     exports.audioErrorCodeMap = {
       '10001':	'系统错误',
       '10002':	'网络错误',
@@ -106,7 +107,7 @@ const octopusEventCollectionCore = `
        };
        function collect(ds, ...log) {
         _es.logger(...log);
-        _es.transformer(datasource, _es.config.pluginOptions);
+        _es.transformer(ds[0], _es.config.pluginOptions).pipe(_es.transporter());
        }
        if(!type && e.errMsg === "MediaError") {
          type = "error",
@@ -152,7 +153,7 @@ const octopusEventCollectionCore = `
             detail: e.detail,
           }
          ]
-         collect(datasource, '页面方法监听['+type+': '+e.subType+']', datasource);
+         collect(datasource, 'App/Page方法监听['+type+': '+e.subType+']', datasource);
        } else if(isManual && e.__inner_call__ === undefined){
         if(${JSON.stringify(buildInEventNameStr)}.includes(type) && e.oriEvent) {
           _es.${injectEventName}({
@@ -260,7 +261,8 @@ export const apiProxySourceList: Record<string, any> = {
       var listen = !!config;
       var isSuccess = function (){return true};
       if(listen && config.isSuccess) {
-        isSuccess = config.isSuccess;
+        var res = __webpack_require__(config.isSuccess);
+        isSuccess = res.isSuccess;
       }
       var oriApi = wx.request;
       _es.request = function (options) {
@@ -299,9 +301,9 @@ export const apiProxySourceList: Record<string, any> = {
           oriSuccessFn(res);
         }
         oriApi(options);
-        return function destroy() {
-          _es.request = oriApi;
-        }
+      }
+      return function destroy() {
+        _es.request = oriApi;
       }
     }
   `,
@@ -313,7 +315,8 @@ export const apiProxySourceList: Record<string, any> = {
       var listen = !!config;
       var isSuccess = function (){return true};
       if(listen && config.isSuccess) {
-        isSuccess = config.isSuccess
+        var res = __webpack_require__(config.isSuccess);
+        isSuccess = res.isSuccess;
       }
       var oriApi = wx.uploadFile;
       _es.uploadFile = function (options) {
@@ -329,7 +332,7 @@ export const apiProxySourceList: Record<string, any> = {
           });
           oriFailFn(res);
         }
-        options.success = function(res) {
+        options.success = async function(res) {
           if(res.statusCode === 200) {
             if(!isSuccess(res.data, res, options)) {
               listen && _es.${injectEventName}({
@@ -352,9 +355,9 @@ export const apiProxySourceList: Record<string, any> = {
           oriSuccessFn(res);
         }
         oriApi(options);
-        return function destroy() {
-          _es.uploadFile = oriApi;
-        }
+      }
+      return function destroy() {
+        _es.uploadFile = oriApi;
       }
     }
   `,
@@ -366,7 +369,8 @@ export const apiProxySourceList: Record<string, any> = {
       var listen = !!config;
       var isSuccess = function (){return true};
       if(listen && config.isSuccess) {
-        isSuccess = config.isSuccess
+        var res = __webpack_require__(config.isSuccess);
+        isSuccess = res.isSuccess;
       }
       var oriApi = wx.downloadFile;
       _es.downloadFile = function (options) {
@@ -405,9 +409,9 @@ export const apiProxySourceList: Record<string, any> = {
           oriSuccessFn(res);
         }
         oriApi(options);
-        return function destroy() {
-          _es.downloadFile = oriApi;
-        }
+      }
+      return function destroy() {
+        _es.downloadFile = oriApi;
       }
     }
   `,
@@ -549,6 +553,7 @@ export function injectDeps(name: string, content: string) {
 export const depsSource = () =>
   [
     injectDeps(transformerPath, readFileSync(resolve(__dirname, transformerPath), 'utf-8')),
+    injectDeps(transporterPath, readFileSync(resolve(__dirname, transporterPath), 'utf-8')),
     ...Object.keys(fnMap).map((filePath) => {
       const keys = filePath.split('_');
       const fnName = keys[keys.length - 1];
@@ -628,19 +633,18 @@ export function getObjectFn(
       fnKeyPath[curKeyPath] = obj[key];
       obj[key] = curKeyPath;
     } else if (typeof obj[key] === 'object') {
-      obj[key] = getObjectFn(obj[key], fnKeyPath, keypath);
+      getObjectFn(obj[key], fnKeyPath, keypath);
     }
     keypath.pop();
   });
 }
+
 /**
  * 对外导出的属性和方法
  */
 const initExportSources = (config: TaroOctopusPluginsOptions) => {
-  const pluginConfig = { ...config };
 
-  getObjectFn({ ...pluginConfig }, fnMap);
-  // console.log(pluginConfig);
+  getObjectFn(config, fnMap);
   return {
     config: {
       version: version,
@@ -775,8 +779,28 @@ const initExportSources = (config: TaroOctopusPluginsOptions) => {
     [injectEventName]: octopusEventCollectionCore,
     transformer: `
       function transformer(datasource, pluginOptions) {
-        var {Transformer} = __webpack_require__("${transformerPath}");
-        return new Transformer(datasource[0], pluginOptions);
+        var _es = exports;
+        if(_es.curTransformer) {
+          _es.curTransformer.push([
+            {
+              datasource,
+              pluginOptions,
+            }
+          ])
+          return _es.curTransformer;
+        }
+        var { Transformer } = __webpack_require__("${transformerPath}");
+        return (_es.curTransformer = new Transformer(datasource, pluginOptions));
+      }
+    `,
+    transporter: `
+      function transporter() {
+        var _es = exports;
+        if(_es.curTransporter) {
+          return _es.curTransporter;
+        }
+        var { Transporter } = __webpack_require__("${transporterPath}");
+        return (_es.curTransporter = new Transporter());
       }
     `,
   };

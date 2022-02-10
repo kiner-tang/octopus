@@ -30,20 +30,6 @@ var FsManager = /** @class */ (function (_super) {
             codes.forEach(function (code) {
                 oriAssets[code.filePath] = new webpack_sources_1.ConcatSource(code.code);
             });
-            //   const transformerBasePath = resolve(__dirname, '../../transformer');
-            //   readFileFromDir(transformerBasePath, (filePath) => {
-            //     const source = readFileSync(filePath, 'utf-8');
-            //     oriAssets[`${transformerPath}/${relative(transformerBasePath, filePath)}`] = new ConcatSource(
-            //       replaceInnerDeps(source)
-            //     );
-            //   });
-            //   const sharedBasePath = resolve(__dirname, '../../shared');
-            //   readFileFromDir(sharedBasePath, (filePath) => {
-            //     const source = readFileSync(filePath, 'utf-8');
-            //     oriAssets[`${sharedPath}/${relative(transformerBasePath, filePath)}`] = new ConcatSource(
-            //       replaceInnerDeps(source)
-            //     );
-            //   },'js', ["inner.js", "queue.js"]);
         });
         return _super.prototype.resolveData.call(this, data);
     };

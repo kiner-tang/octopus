@@ -1,8 +1,5 @@
-import { BaseApp, PluginPipelineData, readFileFromDir } from '@kiner/octopus-shared';
+import { BaseApp, PluginPipelineData } from '@kiner/octopus-shared';
 import { ConcatSource } from 'webpack-sources';
-import { resolve, relative } from 'path';
-import { readFileSync } from 'fs';
-import { replaceInnerDeps, sharedPath, transformerPath } from './common';
 
 export class FsManager extends BaseApp<PluginPipelineData> {
   constructor() {
@@ -15,20 +12,6 @@ export class FsManager extends BaseApp<PluginPipelineData> {
       codes.forEach((code) => {
         oriAssets[code.filePath] = new ConcatSource(code.code);
       });
-    //   const transformerBasePath = resolve(__dirname, '../../transformer');
-    //   readFileFromDir(transformerBasePath, (filePath) => {
-    //     const source = readFileSync(filePath, 'utf-8');
-    //     oriAssets[`${transformerPath}/${relative(transformerBasePath, filePath)}`] = new ConcatSource(
-    //       replaceInnerDeps(source)
-    //     );
-    //   });
-    //   const sharedBasePath = resolve(__dirname, '../../shared');
-    //   readFileFromDir(sharedBasePath, (filePath) => {
-    //     const source = readFileSync(filePath, 'utf-8');
-    //     oriAssets[`${sharedPath}/${relative(transformerBasePath, filePath)}`] = new ConcatSource(
-    //       replaceInnerDeps(source)
-    //     );
-    //   },'js', ["inner.js", "queue.js"]);
     });
 
     return super.resolveData(data);

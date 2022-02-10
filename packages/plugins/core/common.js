@@ -10,7 +10,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.customParamsClassName = exports.ignoreClassName = exports.replaceInnerDeps = exports.transporterPath = exports.sharedPath = exports.transformerPath = exports.componentReactPath = exports.needCatchLoadErrorComponentsList = exports.needCatchLoadErrorComponents = exports.taroModule2wxComponent = exports.buildInLoadErrorEventNameStr = exports.appApiStr = exports.pageApiStr = exports.buildInEventNameStr = exports.wxLibName = exports.injectClassName = exports.buildInView = exports.injectDepsSymbol = exports.performanceSymbol = exports.helpersSymbol = exports.exportSymbol = exports.injectSymbol = exports.apiProxySymbol = exports.injectEventName = exports.libName = exports.utilModuleName = exports.utilFilePath = exports.libFilePath = exports.defaultAstParserOption = exports.version = void 0;
+exports.customParamsClassName = exports.ignoreClassName = exports.replaceInnerDeps = exports.transporterPath = exports.transformerPath = exports.componentReactPath = exports.needCatchLoadErrorComponentsList = exports.needCatchLoadErrorComponents = exports.taroModule2wxComponent = exports.buildInLoadErrorEventNameStr = exports.appApiStr = exports.pageApiStr = exports.buildInEventNameStr = exports.wxLibName = exports.injectClassName = exports.buildInView = exports.injectDepsSymbol = exports.performanceSymbol = exports.helpersSymbol = exports.exportSymbol = exports.injectSymbol = exports.apiProxySymbol = exports.injectEventName = exports.libName = exports.utilModuleName = exports.utilFilePath = exports.libFilePath = exports.defaultAstParserOption = exports.version = void 0;
 var octopus_shared_1 = require("@kiner/octopus-shared");
 exports.version = "0.0.1";
 exports.defaultAstParserOption = {
@@ -66,8 +66,7 @@ exports.needCatchLoadErrorComponents = 'b,c,f';
 exports.needCatchLoadErrorComponentsList = exports.needCatchLoadErrorComponents.split(',');
 exports.componentReactPath = './node_modules/@tarojs/plugin-platform-weapp/dist/components-react.js';
 exports.transformerPath = '../../transformer/dist/octopus-transformer.cjs.js';
-exports.sharedPath = './octopus/shared';
-exports.transporterPath = './octopus/transporter';
+exports.transporterPath = '../../transporter/dist/octopus-transporter.cjs.js';
 function replaceInnerDeps(code) {
     return code
         .replace(/require\("@kiner\/octopus-(transformer.*)"\)/g, 'require("../$1/index.js")')

@@ -17,16 +17,17 @@ export default [
             {  file: `packages/transformer/dist/octopus-transformer.esm.js`, format: 'es' }
         ]
     },
-    // {
-    //     input: 'package/transformer/index.ts',
-    //     external: ['ms'],
-    //     plugins: [
-    //         hashbang(),
-    //         typescript()
-    //     ],
-    //     output: [
-    //         {  file: pkg.main, format: 'cjs' },
-    //         {  file: pkg.module, format: 'es' }
-    //     ]
-    // }
+    {
+        input: 'packages/transporter/index.ts',
+        external: ['path', 'fs-extra', 'source-map', 'lodash'],
+        plugins: [
+            json(),
+            typescript(),
+            hashbang(),
+        ],
+        output: [
+            {  file: `packages/transporter/dist/octopus-transporter.cjs.js`, format: 'cjs' },
+            {  file: `packages/transporter/dist/octopus-transporter.esm.js`, format: 'es' }
+        ]
+    },
 ]

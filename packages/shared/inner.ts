@@ -1,7 +1,7 @@
 import type { IPluginsObject } from '@tarojs/service/src/utils/types';
-import type { Options } from "prettier";
-import type { Node, File } from "@babel/types";
-import { Logger } from "./logger";
+import type { Options } from 'prettier';
+import type { Node, File } from '@babel/types';
+import { Logger } from './logger';
 import { Queue } from './queque';
 
 export type IncludeOrExclude = (RegExp | string)[];
@@ -12,7 +12,7 @@ export type IncludeOrExclude = (RegExp | string)[];
 export type Pipeline<T = any> = {
   /**
    * 实现该方法可以将数据通过管道一层层传递下去
-   * @param data 
+   * @param data
    */
   push(data: T[]): Promise<void>;
   /**
@@ -20,12 +20,12 @@ export type Pipeline<T = any> = {
    * e.g.
    * const app = new BaseApp();
    * app.pipe(new TestApp1()).pipe(new TestApp2()).pipe(new TestApp3()).pipe(new Output()).pipe(new End())
-   * @param _next 
+   * @param _next
    */
   pipe(_next: Pipeline<T>): Pipeline<T>;
   /**
    * 用于接受从上一节管道传递下来的数据，可进行加工后传递到下一节管道
-   * @param data 
+   * @param data
    */
   resolveData(data: T[]): T[] | Promise<T[]>;
 };
@@ -62,9 +62,7 @@ export type Emitter<T> = {
 /**
  * 一个实现了管道数据流和时间的订阅发布接口的应用基础类，项目中其他类基本都需要集成此类
  */
-export class BaseApp<P = any, K = any>
-  implements Pipeline<P>, Emitter<K>
-{
+export class BaseApp<P = any, K = any> implements Pipeline<P>, Emitter<K> {
   protected logger: Logger;
   protected _showInnerLog = false;
   set showInnerLog(value) {
@@ -74,7 +72,7 @@ export class BaseApp<P = any, K = any>
   get showInnerLog() {
     return this._showInnerLog;
   }
-  constructor(private appName: string = "__DEFAULT_APP_NAME__") {
+  constructor(private appName: string = '__DEFAULT_APP_NAME__') {
     this.logger = new Logger(appName);
   }
   /**
@@ -87,7 +85,7 @@ export class BaseApp<P = any, K = any>
   protected next: Pipeline<P> | undefined;
   /**
    * 接受到数据后，使用 resolveData 处理获得新书局后，将新数据推送到下一节管道
-   * @param data 
+   * @param data
    */
   async push(data: P[]): Promise<void> {
     data = await this.resolveData(data);
@@ -96,8 +94,8 @@ export class BaseApp<P = any, K = any>
   /**
    * 链接管道
    * 让 pipe 的返回值始终是下一节管道的引用，这样就可以链式调用
-   * @param _next 
-   * @returns 
+   * @param _next
+   * @returns
    */
   pipe(_next: Pipeline<P>): Pipeline<P> {
     this.next = _next;
@@ -126,11 +124,11 @@ export class BaseApp<P = any, K = any>
   }
   /**
    * 数据处理，返回最新的数据对象
-   * @param data 
-   * @returns 
+   * @param data
+   * @returns
    */
   resolveData(data: P[]): P[] | Promise<P[]> {
-    if(this.showInnerLog) {
+    if (this.showInnerLog) {
       this.logger.log('数据处理完毕', data);
     }
     return data;
@@ -141,34 +139,30 @@ export class BaseApp<P = any, K = any>
  * 支持平台类型
  */
 export enum PlatformType {
-  wx = 'wx'
+  wx = 'wx',
 }
-
 
 export type CodeGenInfo = {
-  filePath: string,
-  code: string,
-  prettier?: boolean,
-  prettierOptions?: Options
-}
+  filePath: string;
+  code: string;
+  prettier?: boolean;
+  prettierOptions?: Options;
+};
 
 export type CodeGenOptionInfo = {
-  filePath: string,
-  ast: Node
-}
-
+  filePath: string;
+  ast: Node;
+};
 
 export class Output extends BaseApp<any> {
   constructor(namespace?: string) {
-      super(namespace || "OUTPUT");
+    super(namespace || 'OUTPUT');
   }
   resolveData(data: any[]): any[] | Promise<any[]> {
-      this.logger.log("当前数据", data);
-      return data;
+    this.logger.log('当前数据', data);
+    return data;
   }
 }
-
-
 
 export interface WxmlNode {
   tag: string;
@@ -200,14 +194,19 @@ export enum CollectMode {
    */
   custom = 'custom',
   /** 如果不希望称触发自动埋点，而是希望通过 api 手动提交，则使用此模式 */
-  manual = 'manual'
+  manual = 'manual',
 }
 
+export type CollectModeKey =
+| "default"
+| "all"
+| "custom"
+| "manual"
 
 /**
  * 内置监听事件列表
  */
- export enum BuildInEventName {
+export enum BuildInEventName {
   tap = 'tap',
   click = 'click',
   touchstart = 'touchstart',
@@ -224,81 +223,84 @@ export enum CollectMode {
 }
 
 export type BuildInEventKey =
-| "tap"
-| "click"
-| "touchstart"
-| "touchmove"
-| "touchend"
-| "touchcancel"
-| "scroll"
-| "input"
-| "change"
-| "focus"
-| "blur"
-| "longpress"
-| "longtap"
-
-
+  | 'tap'
+  | 'click'
+  | 'touchstart'
+  | 'touchmove'
+  | 'touchend'
+  | 'touchcancel'
+  | 'scroll'
+  | 'input'
+  | 'change'
+  | 'focus'
+  | 'blur'
+  | 'longpress'
+  | 'longtap';
 
 export enum PageAPI {
-  onPageScroll = "onPageScroll",
-  onShareAppMessage = "onShareAppMessage",
-  onShareTimeline = "onShareTimeline",
-  onAddToFavorites = "onAddToFavorites",
-  onTabItemTap = "onTabItemTap",
-  onShow = "onShow",
-  onHide = "onShow",
+  onPageScroll = 'onPageScroll',
+  onShareAppMessage = 'onShareAppMessage',
+  onShareTimeline = 'onShareTimeline',
+  onAddToFavorites = 'onAddToFavorites',
+  onTabItemTap = 'onTabItemTap',
+  onShow = 'onShow',
+  onHide = 'onShow',
 }
 
 export type PageAPIKey =
-| "onPageScroll"
-| "onShareAppMessage"
-| "onShareTimeline"
-| "onAddToFavorites"
-| "onTabItemTap"
-| "onHide"
-| "onShow";
-
+  | 'onPageScroll'
+  | 'onShareAppMessage'
+  | 'onShareTimeline'
+  | 'onAddToFavorites'
+  | 'onTabItemTap'
+  | 'onHide'
+  | 'onShow';
 
 export enum AppAPI {
-  onLaunch = "onLaunch",
-  onThemeChange = "onThemeChange",
-  onUnhandledRejection = "onUnhandledRejection",
-  onShow = "onShow",
-  onHide = "onHide",
-  onPageNotFound = "onPageNotFound",
+  onLaunch = 'onLaunch',
+  onThemeChange = 'onThemeChange',
+  onUnhandledRejection = 'onUnhandledRejection',
+  onShow = 'onShow',
+  onHide = 'onHide',
+  onPageNotFound = 'onPageNotFound',
 }
 
-export type AppAPIKey =
-| "onLaunch"
-| "onThemeChange"
-| "onUnhandledRejection"
-| "onShow"
-| "onHide"
-| "onPageNotFound"
-
+export type AppAPIKey = 'onLaunch' | 'onThemeChange' | 'onUnhandledRejection' | 'onShow' | 'onHide' | 'onPageNotFound';
 
 /**
  * 内置加载失败事件
  */
- export enum BuildInLoadErrorEventName {
+export enum BuildInLoadErrorEventName {
   'image' = 'image',
   'coverImage' = 'coverImage',
   'video' = 'video',
   'audio' = 'audio',
 }
-export type BuildInLoadErrorEventNameKey =
-| "image"
-| "coverImage"
-| "video"
-| "audio";
+export type BuildInLoadErrorEventNameKey = 'image' | 'coverImage' | 'video' | 'audio';
 
 export type WXMLInfo = { fileName: string; ast: Root };
+
+export enum TransporterMode {
+  /** 什么也不错 */
+  none = 'none',
+  /** 仅输出到控制台，不发送到服务器 */
+  console = 'console',
+  /** 仅当队列中事件数量超过阈值时发送所有 */
+  sendAllOverflow = 'sendAllOverflow',
+  /** 来一条发一条，即实时发送 */
+  sendWhenPush = 'sendWhenPush',
+}
+
+export type TransporterModeKey =
+| "none"
+| "console"
+| "sendAllOverflow"
+| "sendWhenPush"
 
 /**
  * Taro插件选项
  */
- export type TaroOctopusPluginsOptions = {
+export type TaroOctopusPluginsOptions = {
   /**
    * 是否开启调试模式，若开启则会显示内置日志打印输出
    */
@@ -313,7 +315,7 @@ export type WXMLInfo = { fileName: string; ast: Root };
   /**
    * 数据收集模式
    */
-  mode: CollectMode;
+  mode: CollectModeKey;
   /**
    * 需要收集数据的事件列表
    */
@@ -337,38 +339,44 @@ export type WXMLInfo = { fileName: string; ast: Root };
     /**
      * http 接口请求
      */
-    request?: {
-      /**
-       * 当接口调用成功，但业务异常时，
-       * 用这个方法判断接口是否请求成功，用户可以传入此方法对请求结果进行校验
-       */
-      isSuccess?: <T = unknown>(
-        responseData: T,
-        res: WechatMiniprogram.RequestSuccessCallbackResult<string | WechatMiniprogram.IAnyObject | ArrayBuffer>,
-        options: WechatMiniprogram.RequestOption<string | WechatMiniprogram.IAnyObject | ArrayBuffer>
-      ) => boolean | Promise<boolean>;
-    } | boolean;
-    uploadFile?: {
-      /**
-       * 当接口调用成功，但业务异常时，
-       * 用这个方法判断接口是否请求成功，用户可以传入此方法对请求结果进行校验
-       */
-      isSuccess?: <T = unknown>(
-        responseData: T,
-        res: WechatMiniprogram.UploadFileSuccessCallbackResult,
-        options: WechatMiniprogram.UploadFileOption
-      ) => boolean | Promise<boolean>;
-    } | boolean;
-    downloadFile?: {
-      /**
-       * 当接口调用成功，但业务异常时，
-       * 用这个方法判断接口是否请求成功，用户可以传入此方法对请求结果进行校验
-       */
-      isSuccess?: <T = unknown>(
-        responseData: T,
-        options: WechatMiniprogram.DownloadFileOption
-      ) => boolean | Promise<boolean>;
-    } | boolean;
+    request?:
+      | {
+          /**
+           * 当接口调用成功，但业务异常时，
+           * 用这个方法判断接口是否请求成功，用户可以传入此方法对请求结果进行校验
+           */
+          isSuccess?: <T = unknown>(
+            responseData: T,
+            res: WechatMiniprogram.RequestSuccessCallbackResult<string | WechatMiniprogram.IAnyObject | ArrayBuffer>,
+            options: WechatMiniprogram.RequestOption<string | WechatMiniprogram.IAnyObject | ArrayBuffer>
+          ) => boolean;
+        }
+      | boolean;
+    uploadFile?:
+      | {
+          /**
+           * 当接口调用成功，但业务异常时，
+           * 用这个方法判断接口是否请求成功，用户可以传入此方法对请求结果进行校验
+           */
+          isSuccess?: <T = unknown>(
+            responseData: T,
+            res: WechatMiniprogram.UploadFileSuccessCallbackResult,
+            options: WechatMiniprogram.UploadFileOption
+          ) => boolean;
+        }
+      | boolean;
+    downloadFile?:
+      | {
+          /**
+           * 当接口调用成功，但业务异常时，
+           * 用这个方法判断接口是否请求成功，用户可以传入此方法对请求结果进行校验
+           */
+          isSuccess?: <T = unknown>(
+            responseData: T,
+            options: WechatMiniprogram.DownloadFileOption
+          ) => boolean;
+        }
+      | boolean;
   };
   /**
    * 转换器选项
@@ -377,13 +385,54 @@ export type WXMLInfo = { fileName: string; ast: Root };
     /**
      * 数据转换器，所有收集上来的数据都会调用此方法进行数据转换
      */
-    transformer: (datasource: Omit<Datasource, "eventQueue">) => NormalDatasource | Promise<NormalDatasource>;
-  },
+    transformer: (datasource: Omit<Datasource, 'eventQueue'>) => NormalDatasource | Promise<NormalDatasource>;
+  };
   /**
    * 上报通道选项
    */
   transporterOptions: {
-    env: string;
+    /**
+     * 上报模式
+     */
+    mode: TransporterModeKey;
+    /**
+     * 当队列大小阈值，超过则立即全量发送
+     * 默认为：10
+     */
+    limit?: number,
+    /**
+     * 转换请求参数
+     */
+    transformParams?: (datasoureList: NormalDatasource[]) => any;
+    /**
+     * 当需要发送多条数据时，是否以数组方式发送
+     * 默认为：false
+     */
+    isSendEventList?: boolean;
+    /**
+     * 内置请求参数
+     */
+    requestOptions?: {
+      /**
+       * 上报服务端url
+       */
+      server: string;
+      /**
+       * 上报方法
+       */
+      method: string;
+      /**
+       * 请求头
+       */
+      header?: Record<string, string>;
+    };
+    /**
+     * 自定义请求
+     */
+    customRequest?: (options: {
+      pluginOptions: TaroOctopusPluginsOptions;
+      datasource: NormalDatasource;
+    }) => Promise<void>;
   };
 };
 
@@ -457,7 +506,7 @@ export type NormalDatasource = {
      * 当前元素的唯一id
      */
     curEleSid: string;
-  },
+  };
   /**
    * 如果是报错类事件，则为报错信息
    */

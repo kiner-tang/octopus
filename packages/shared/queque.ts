@@ -23,10 +23,16 @@ export class Queue<T = unknown> {
     clear(): void {
         this._queue.length = 0;
     }
+    all(): T[] {
+        return [...this._queue];
+    }
     flush(callback: (data: T) => void): void {
         while(!this.empty()) {
             const item = this.dequeue();
             item && callback(item);
         }
+    }
+    stringify() {
+        return JSON.stringify(this._queue);
     }
 }

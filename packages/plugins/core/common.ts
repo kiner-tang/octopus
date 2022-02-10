@@ -76,8 +76,7 @@ export const needCatchLoadErrorComponentsList = needCatchLoadErrorComponents.spl
 
 export const componentReactPath = './node_modules/@tarojs/plugin-platform-weapp/dist/components-react.js';
 export const transformerPath = '../../transformer/dist/octopus-transformer.cjs.js';
-export const sharedPath = './octopus/shared';
-export const transporterPath = './octopus/transporter';
+export const transporterPath = '../../transporter/dist/octopus-transporter.cjs.js';
 
 export function replaceInnerDeps(code: string) {
   return code

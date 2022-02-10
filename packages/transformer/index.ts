@@ -3,14 +3,16 @@ import { BaseApp, Datasource, NormalDatasource } from '@kiner/octopus-shared/inn
 import { Queue } from "@kiner/octopus-shared/queque";
 
 export class Transformer extends BaseApp<Datasource> {
+  eventQueue: Queue<NormalDatasource>;
   constructor(datasource: Datasource['datasource'], pluginOptions: Datasource['pluginOptions']) {
     super('Transformer');
     this.showInnerLog = true;
+    this.eventQueue = new Queue<NormalDatasource>();
     this.push([
       {
         datasource,
         pluginOptions,
-        eventQueue: new Queue<NormalDatasource>(),
+        eventQueue: this.eventQueue,
       },
     ]);
   }
@@ -64,8 +66,8 @@ export class Transformer extends BaseApp<Datasource> {
           pluginOptions: item.pluginOptions,
         });
       }
-      item.eventQueue.push(normalData);
+      this.eventQueue.push(normalData);
     }
-    return super.resolveData(data);
+    return super.resolveData(data.map(item => ({...item, eventQueue: this.eventQueue})));
   }
 }

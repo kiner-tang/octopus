@@ -7,5 +7,7 @@ export declare class Queue<T = unknown> {
     head(): T | undefined;
     empty(): boolean;
     clear(): void;
+    all(): T[];
     flush(callback: (data: T) => void): void;
+    stringify(): string;
 }

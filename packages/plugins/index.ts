@@ -1,5 +1,5 @@
 import { IPluginContext } from '@tarojs/service';
-import { deepMergeOptions, Logger, Output, TaroOctopusPluginsOptions } from '@kiner/octopus-shared';
+import { deepMergeOptions, Logger, Output, TaroOctopusPluginsOptions, TransporterMode } from '@kiner/octopus-shared';
 import { AstCreator } from './core/astCreator';
 import {
   AppAPI,
@@ -33,7 +33,7 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
     ],
     networkApi: {
       request: {
-        isSuccess: async (data) => {
+        isSuccess: (data) => {
           return !!data;
         },
       },
@@ -51,7 +51,7 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
     ],
     appLifecycleEventList: [AppAPI.onLaunch, AppAPI.onPageNotFound, AppAPI.onUnhandledRejection],
     transporterOptions: {
-      env: 'production',
+      mode: TransporterMode.console,
     },
   },
   [CollectMode.all]: {
@@ -67,7 +67,7 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
     loadErrorEventList: buildInLoadErrorEventNameStr,
     networkApi: {
       request: {
-        isSuccess: async (data) => {
+        isSuccess: (data) => {
           console.log('isSuccess: ', data);
           return !!data;
         },
@@ -76,7 +76,7 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
       downloadFile: true,
     },
     transporterOptions: {
-      env: 'production',
+      mode: TransporterMode.console
     },
   },
   [CollectMode.custom]: {
@@ -91,7 +91,7 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
     pageLifecycleEventList: [],
     appLifecycleEventList: [],
     transporterOptions: {
-      env: 'production',
+      mode: TransporterMode.console
     },
   },
   [CollectMode.manual]: {
@@ -106,7 +106,7 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
     pageLifecycleEventList: [],
     appLifecycleEventList: [],
     transporterOptions: {
-      env: 'production',
+      mode: TransporterMode.none
     },
   },
 };

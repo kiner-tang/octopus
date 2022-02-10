@@ -1,7 +1,7 @@
 import type { IPluginsObject } from '@tarojs/service/src/utils/types';
-import type { Options } from "prettier";
-import type { Node, File } from "@babel/types";
-import { Logger } from "./logger";
+import type { Options } from 'prettier';
+import type { Node, File } from '@babel/types';
+import { Logger } from './logger';
 import { Queue } from './queque';
 export declare type IncludeOrExclude = (RegExp | string)[];
 /**
@@ -157,6 +157,7 @@ export declare enum CollectMode {
     /** 如果不希望称触发自动埋点，而是希望通过 api 手动提交，则使用此模式 */
     manual = "manual"
 }
+export declare type CollectModeKey = "default" | "all" | "custom" | "manual";
 /**
  * 内置监听事件列表
  */
@@ -175,7 +176,7 @@ export declare enum BuildInEventName {
     longpress = "longpress",
     longtap = "longtap"
 }
-export declare type BuildInEventKey = "tap" | "click" | "touchstart" | "touchmove" | "touchend" | "touchcancel" | "scroll" | "input" | "change" | "focus" | "blur" | "longpress" | "longtap";
+export declare type BuildInEventKey = 'tap' | 'click' | 'touchstart' | 'touchmove' | 'touchend' | 'touchcancel' | 'scroll' | 'input' | 'change' | 'focus' | 'blur' | 'longpress' | 'longtap';
 export declare enum PageAPI {
     onPageScroll = "onPageScroll",
     onShareAppMessage = "onShareAppMessage",
@@ -185,7 +186,7 @@ export declare enum PageAPI {
     onShow = "onShow",
     onHide = "onShow"
 }
-export declare type PageAPIKey = "onPageScroll" | "onShareAppMessage" | "onShareTimeline" | "onAddToFavorites" | "onTabItemTap" | "onHide" | "onShow";
+export declare type PageAPIKey = 'onPageScroll' | 'onShareAppMessage' | 'onShareTimeline' | 'onAddToFavorites' | 'onTabItemTap' | 'onHide' | 'onShow';
 export declare enum AppAPI {
     onLaunch = "onLaunch",
     onThemeChange = "onThemeChange",
@@ -194,7 +195,7 @@ export declare enum AppAPI {
     onHide = "onHide",
     onPageNotFound = "onPageNotFound"
 }
-export declare type AppAPIKey = "onLaunch" | "onThemeChange" | "onUnhandledRejection" | "onShow" | "onHide" | "onPageNotFound";
+export declare type AppAPIKey = 'onLaunch' | 'onThemeChange' | 'onUnhandledRejection' | 'onShow' | 'onHide' | 'onPageNotFound';
 /**
  * 内置加载失败事件
  */
@@ -204,11 +205,22 @@ export declare enum BuildInLoadErrorEventName {
     'video' = "video",
     'audio' = "audio"
 }
-export declare type BuildInLoadErrorEventNameKey = "image" | "coverImage" | "video" | "audio";
+export declare type BuildInLoadErrorEventNameKey = 'image' | 'coverImage' | 'video' | 'audio';
 export declare type WXMLInfo = {
     fileName: string;
     ast: Root;
 };
+export declare enum TransporterMode {
+    /** 什么也不错 */
+    none = "none",
+    /** 仅输出到控制台，不发送到服务器 */
+    console = "console",
+    /** 仅当队列中事件数量超过阈值时发送所有 */
+    sendAllOverflow = "sendAllOverflow",
+    /** 来一条发一条，即实时发送 */
+    sendWhenPush = "sendWhenPush"
+}
+export declare type TransporterModeKey = "none" | "console" | "sendAllOverflow" | "sendWhenPush";
 /**
  * Taro插件选项
  */
@@ -227,7 +239,7 @@ export declare type TaroOctopusPluginsOptions = {
     /**
      * 数据收集模式
      */
-    mode: CollectMode;
+    mode: CollectModeKey;
     /**
      * 需要收集数据的事件列表
      */
@@ -256,21 +268,21 @@ export declare type TaroOctopusPluginsOptions = {
              * 当接口调用成功，但业务异常时，
              * 用这个方法判断接口是否请求成功，用户可以传入此方法对请求结果进行校验
              */
-            isSuccess?: <T = unknown>(responseData: T, res: WechatMiniprogram.RequestSuccessCallbackResult<string | WechatMiniprogram.IAnyObject | ArrayBuffer>, options: WechatMiniprogram.RequestOption<string | WechatMiniprogram.IAnyObject | ArrayBuffer>) => boolean | Promise<boolean>;
+            isSuccess?: <T = unknown>(responseData: T, res: WechatMiniprogram.RequestSuccessCallbackResult<string | WechatMiniprogram.IAnyObject | ArrayBuffer>, options: WechatMiniprogram.RequestOption<string | WechatMiniprogram.IAnyObject | ArrayBuffer>) => boolean;
         } | boolean;
         uploadFile?: {
             /**
              * 当接口调用成功，但业务异常时，
              * 用这个方法判断接口是否请求成功，用户可以传入此方法对请求结果进行校验
              */
-            isSuccess?: <T = unknown>(responseData: T, res: WechatMiniprogram.UploadFileSuccessCallbackResult, options: WechatMiniprogram.UploadFileOption) => boolean | Promise<boolean>;
+            isSuccess?: <T = unknown>(responseData: T, res: WechatMiniprogram.UploadFileSuccessCallbackResult, options: WechatMiniprogram.UploadFileOption) => boolean;
         } | boolean;
         downloadFile?: {
             /**
              * 当接口调用成功，但业务异常时，
              * 用这个方法判断接口是否请求成功，用户可以传入此方法对请求结果进行校验
              */
-            isSuccess?: <T = unknown>(responseData: T, options: WechatMiniprogram.DownloadFileOption) => boolean | Promise<boolean>;
+            isSuccess?: <T = unknown>(responseData: T, options: WechatMiniprogram.DownloadFileOption) => boolean;
         } | boolean;
     };
     /**
@@ -280,13 +292,54 @@ export declare type TaroOctopusPluginsOptions = {
         /**
          * 数据转换器，所有收集上来的数据都会调用此方法进行数据转换
          */
-        transformer: (datasource: Omit<Datasource, "eventQueue">) => NormalDatasource | Promise<NormalDatasource>;
+        transformer: (datasource: Omit<Datasource, 'eventQueue'>) => NormalDatasource | Promise<NormalDatasource>;
     };
     /**
      * 上报通道选项
      */
     transporterOptions: {
-        env: string;
+        /**
+         * 上报模式
+         */
+        mode: TransporterModeKey;
+        /**
+         * 当队列大小阈值，超过则立即全量发送
+         * 默认为：10
+         */
+        limit?: number;
+        /**
+         * 转换请求参数
+         */
+        transformParams?: (datasoureList: NormalDatasource[]) => any;
+        /**
+         * 当需要发送多条数据时，是否以数组方式发送
+         * 默认为：false
+         */
+        isSendEventList?: boolean;
+        /**
+         * 内置请求参数
+         */
+        requestOptions?: {
+            /**
+             * 上报服务端url
+             */
+            server: string;
+            /**
+             * 上报方法
+             */
+            method: string;
+            /**
+             * 请求头
+             */
+            header?: Record<string, string>;
+        };
+        /**
+         * 自定义请求
+         */
+        customRequest?: (options: {
+            pluginOptions: TaroOctopusPluginsOptions;
+            datasource: NormalDatasource;
+        }) => Promise<void>;
     };
 };
 /**
