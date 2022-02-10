@@ -1,4 +1,4 @@
-import type { IPluginsObject } from '@tarojs/service/src/utils/types';
+import { IPluginsObject } from '@tarojs/service/src/utils/types';
 import type { Options } from 'prettier';
 import type { Node, File } from '@babel/types';
 import { Logger } from './logger';

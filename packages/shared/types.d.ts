@@ -1,4 +1,4 @@
-/// <reference path="wx-typings/types/index.d.ts" />
+/// <reference types="@kiner/octopus-shared/wx-typings/types" />
 import { TaroOctopusPluginsOptions, BuildInEventKey } from "./inner";
 declare global {
     export interface GetBoundingClientRect {

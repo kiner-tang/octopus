@@ -1,6 +1,4 @@
-import { BaseApp, guid, shortid } from "@kiner/octopus-shared";
-
-
+import { BaseApp } from "@kiner/octopus-shared";
 describe("🪛 [packages/shared/baseData] 公共分包基类", () => {
   it("🔩 [baseData/BaseApp] 管道数据流 Pipeline 数据流向与处理", (done) => {
     type UserInfo = {
