@@ -6,7 +6,7 @@ export class Transformer extends BaseApp<Datasource> {
   eventQueue: Queue<NormalDatasource>;
   constructor(datasource: Datasource['datasource'], pluginOptions: Datasource['pluginOptions']) {
     super('Transformer');
-    this.showInnerLog = true;
+    this.showInnerLog = pluginOptions.debug || false;
     this.eventQueue = new Queue<NormalDatasource>();
     this.push([
       {

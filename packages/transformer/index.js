@@ -70,7 +70,7 @@ var Transformer = /** @class */ (function (_super) {
     __extends(Transformer, _super);
     function Transformer(datasource, pluginOptions) {
         var _this = _super.call(this, 'Transformer') || this;
-        _this.showInnerLog = true;
+        _this.showInnerLog = pluginOptions.debug || false;
         _this.eventQueue = new queque_1.Queue();
         _this.push([
             {

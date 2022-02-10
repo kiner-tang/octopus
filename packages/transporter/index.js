@@ -126,6 +126,7 @@ var Transporter = /** @class */ (function (_super) {
     Transporter.prototype.resolveData = function (data) {
         for (var i = 0; i < data.length; i++) {
             var _a = data[i], eventQueue = _a.eventQueue, pluginOptions = _a.pluginOptions;
+            this.showInnerLog = pluginOptions.debug || false;
             var transporterOptions = pluginOptions.transporterOptions;
             if (!transporterOptions) {
                 continue;

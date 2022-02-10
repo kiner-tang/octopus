@@ -50,6 +50,7 @@ export class Transporter extends BaseApp<Datasource> {
   resolveData(data: Datasource[]): Datasource[] | Promise<Datasource[]> {
     for (let i = 0; i < data.length; i++) {
       const { eventQueue, pluginOptions } = data[i];
+      this.showInnerLog = pluginOptions.debug|| false;
       const { transporterOptions } = pluginOptions;
       if (!transporterOptions) {
         continue;
