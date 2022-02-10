@@ -115,6 +115,7 @@ export declare type CodeGenInfo = {
     code: string;
     prettier?: boolean;
     prettierOptions?: Options;
+    isAppend?: boolean;
 };
 export declare type CodeGenOptionInfo = {
     filePath: string;
@@ -424,6 +425,14 @@ export declare type NormalDatasource = {
      * 如果是用户手动调用 api 触发或组件绑定了 data-octopus-customData 属性时，将会收集自定义事件信息
      */
     customData?: Record<string, any>;
+    /**
+     * 触发事件页面路由
+     */
+    route: string;
+    /**
+     * 页面基础配置
+     */
+    pageConfig: Record<string, any>;
 };
 /**
  * 用于在管道流中传递信息的基础数据源
@@ -444,6 +453,8 @@ export declare type Datasource = {
         elemData: Record<string, any>;
         text: string;
         curEleSid: string;
+        route: string;
+        pageConfig: Record<string, any>;
     };
     pluginOptions: TaroOctopusPluginsOptions;
     eventQueue: Queue<NormalDatasource>;

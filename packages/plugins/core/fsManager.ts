@@ -10,7 +10,11 @@ export class FsManager extends BaseApp<PluginPipelineData> {
     data.forEach((item) => {
       const { codes, oriAssets } = item;
       codes.forEach((code) => {
-        oriAssets[code.filePath] = new ConcatSource(code.code);
+        if(code.isAppend) {
+          oriAssets[code.filePath] = new ConcatSource(oriAssets[code.filePath], code.code);
+        } else {
+          oriAssets[code.filePath] = new ConcatSource(code.code);
+        }
       });
     });
 

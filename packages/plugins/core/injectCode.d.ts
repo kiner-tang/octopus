@@ -50,6 +50,7 @@ export declare const helpers: Record<string, any>;
  * 收集和监听页面性能指标相关代码
  */
 export declare const performanceCollectCode: string;
+export declare const injectWxss: string;
 /**
  * 需要注入的库文件
  */

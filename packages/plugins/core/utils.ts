@@ -87,3 +87,9 @@ export const matchHTMLText = /[^><]+(?=<\/p>)/img;
   }
   return ast;
 }
+
+const wxAttrReg = /\{\{(.*)\}\}/g;
+export function getAttrValue(attr: string) {
+  if(!attr) return attr;
+  return attr.replace(wxAttrReg, '$1');
+}

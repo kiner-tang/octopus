@@ -28,7 +28,12 @@ var FsManager = /** @class */ (function (_super) {
         data.forEach(function (item) {
             var codes = item.codes, oriAssets = item.oriAssets;
             codes.forEach(function (code) {
-                oriAssets[code.filePath] = new webpack_sources_1.ConcatSource(code.code);
+                if (code.isAppend) {
+                    oriAssets[code.filePath] = new webpack_sources_1.ConcatSource(oriAssets[code.filePath], code.code);
+                }
+                else {
+                    oriAssets[code.filePath] = new webpack_sources_1.ConcatSource(code.code);
+                }
             });
         });
         return _super.prototype.resolveData.call(this, data);

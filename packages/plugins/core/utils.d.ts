@@ -25,3 +25,4 @@ export declare const matchHTMLText: RegExp;
  * @param tplPath 可选，根据本地模版文件直接创建AST对象
  */
 export declare function createBaseAst(tplPath?: string, exportFileName?: string): File;
+export declare function getAttrValue(attr: string): string;

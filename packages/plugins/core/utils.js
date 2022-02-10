@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createBaseAst = exports.matchHTMLText = exports.astCallObjectMethod = exports.astObjectPropertyFn = void 0;
+exports.getAttrValue = exports.createBaseAst = exports.matchHTMLText = exports.astCallObjectMethod = exports.astObjectPropertyFn = void 0;
 var types_1 = require("@babel/types");
 var fs_1 = require("fs");
 var parser_1 = require("@babel/parser");
@@ -40,3 +40,10 @@ function createBaseAst(tplPath, exportFileName) {
     return ast;
 }
 exports.createBaseAst = createBaseAst;
+var wxAttrReg = /\{\{(.*)\}\}/g;
+function getAttrValue(attr) {
+    if (!attr)
+        return attr;
+    return attr.replace(wxAttrReg, '$1');
+}
+exports.getAttrValue = getAttrValue;

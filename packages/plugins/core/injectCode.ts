@@ -19,7 +19,9 @@ import {
   injectSymbol,
   libFilePath,
   libName,
+  octopusActiveElemSelector,
   performanceSymbol,
+  styleFilePath,
   utilFilePath,
   version,
   wxLibName,
@@ -96,14 +98,19 @@ const octopusEventCollectionCore = `
        var isManual = !!e.manual;
        var errorMsg = "";
        var { data } = _es.getActivePage();
+       var curPages = getCurrentPages();
+       var cur = curPages[curPages.length-1];
+       var { route, config } = cur;
        var datasource = {
          type,
          subType,
          isManual,
-         pageData: data,
+         pageData: cur.data,
          oriEvent: e,
          touchElem: {},
-         customData: e.customData || {}
+         customData: e.customData || {},
+         route,
+         pageConfig: config
        };
        function collect(ds, ...log) {
         _es.logger(...log);
@@ -691,6 +698,37 @@ const initExportSources = (config: TaroOctopusPluginsOptions) => {
       });
       console.groupEnd();
     }),
+    showViewBySid: `
+    function showViewBySid(sid){
+      const query = wx.createSelectorQuery();
+      const nodes = query.selectAll('.'+sid)
+      nodes.boundingClientRect();
+      query.selectViewport().scrollOffset();
+      nodes.fields({
+        dataset: true,
+        size: true,
+        scrollOffset: true,
+        properties: ['scrollX', 'scrollY'],
+        computedStyle: ['margin', 'backgroundColor'],
+        context: true,
+      });
+      query.exec(function(res){
+        exports.logger('选中元素相关信息[分别为：元素的rect信息（boundingClientRect）、视窗信息（selectViewport）、元素详细字段信息（fields）]:',...res);
+      });
+      const curPages = getCurrentPages();
+      const cur = curPages[curPages.length-1];
+      cur.setData({root: {...cur.data.root, ${octopusActiveElemSelector}: sid}});
+      wx.pageScrollTo({selector: '.'+sid});
+      return "[${wxLibName}.showViewBySid] 选中元素【"+sid+"】执行成功";
+    }
+    `,
+    cancelShowView: `
+    function cancelShowView(){
+      const curPages = getCurrentPages();
+      const cur = curPages[curPages.length-1];
+      cur.setData({root: {...cur.data.root, ${octopusActiveElemSelector}: ''}});
+    }
+    `,
     getViewDataBySid: `
     function getViewDataBySid(sid, cn) {
       // 根据组件id获取渲染组件的相关信息
@@ -823,6 +861,9 @@ export const utilWxsCode = createUtilWxsCode({
   s: function (o: Record<string, any>) {
     return JSON.stringify(o);
   },
+  c: function (activeElemSid, curSid, selector) {
+    return activeElemSid === curSid ? selector : '';
+  }
 });
 
 /**
@@ -853,6 +894,12 @@ export const performanceCollectCode = `
   observer.observe({ entryTypes: ['render', 'script', 'navigation'] })
 `;
 
+export const injectWxss = `
+.${octopusActiveElemSelector} {
+  box-shadow: 0 0 10px #333;
+}
+`;
+
 /**
  * 生成库文件代码
  * @returns
@@ -877,6 +924,13 @@ export const injectLibFiles = function initLibFiles(config: TaroOctopusPluginsOp
       code: utilWxsCode,
       prettier: true,
       prettierOptions: { semi: true, parser: 'babel' },
+    },
+    {
+      filePath: styleFilePath.substring(2),
+      code: injectWxss,
+      prettier: true,
+      prettierOptions: { semi: true, parser: 'css' },
+      isAppend: true
     },
   ];
 };

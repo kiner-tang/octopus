@@ -84,7 +84,7 @@ var Transformer = /** @class */ (function (_super) {
     Transformer.prototype.resolveData = function (data) {
         var _a;
         return __awaiter(this, void 0, void 0, function () {
-            var i, item, _b, type, subType, oriEvent, dataset, elemData, errorMsg, detail, pageData, customData, curEleSid, isManual, text, touchElem, transformerOptions, normalData, fnId, transformer;
+            var i, item, _b, type, subType, oriEvent, dataset, elemData, errorMsg, detail, pageData, customData, curEleSid, isManual, text, touchElem, route, pageConfig, transformerOptions, normalData, fnId, transformer;
             var _this = this;
             return __generator(this, function (_c) {
                 switch (_c.label) {
@@ -94,7 +94,7 @@ var Transformer = /** @class */ (function (_super) {
                     case 1:
                         if (!(i < data.length)) return [3 /*break*/, 5];
                         item = data[i];
-                        _b = item.datasource, type = _b.type, subType = _b.subType, oriEvent = _b.oriEvent, dataset = _b.dataset, elemData = _b.elemData, errorMsg = _b.errorMsg, detail = _b.detail, pageData = _b.pageData, customData = _b.customData, curEleSid = _b.curEleSid, isManual = _b.isManual, text = _b.text, touchElem = _b.touchElem;
+                        _b = item.datasource, type = _b.type, subType = _b.subType, oriEvent = _b.oriEvent, dataset = _b.dataset, elemData = _b.elemData, errorMsg = _b.errorMsg, detail = _b.detail, pageData = _b.pageData, customData = _b.customData, curEleSid = _b.curEleSid, isManual = _b.isManual, text = _b.text, touchElem = _b.touchElem, route = _b.route, pageConfig = _b.pageConfig;
                         transformerOptions = item.pluginOptions.transformerOptions;
                         normalData = {
                             type: type,
@@ -113,6 +113,8 @@ var Transformer = /** @class */ (function (_super) {
                             customData: customData,
                             isManual: isManual,
                             pageData: pageData,
+                            route: route,
+                            pageConfig: pageConfig
                         };
                         if (!transformerOptions) return [3 /*break*/, 3];
                         fnId = transformerOptions === null || transformerOptions === void 0 ? void 0 : transformerOptions.transformer;

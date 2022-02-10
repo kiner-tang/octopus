@@ -34,7 +34,8 @@
     "lint": "eslint ./packages",
     "lint:fix": "eslint ./packages --fix",
     "pretty": "prettier",
-    "precommit": "yarn lint:fix && prettier --staged"
+    "precommit": "yarn lint:fix && prettier --staged",
+    "alias": ". ./scripts/alias.sh"
   },
   "dependencies": {
     "@kiner/octopus-platform": "file:packages/platform",

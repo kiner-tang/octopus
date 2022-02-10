@@ -42,9 +42,16 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
         $(common_1.buildInView)
             .addClass(common_1.injectClassName)
             .map(function (idx, item) {
+            item.attribs['class'] = "".concat(item.attribs['class'], " {{octopus.c(").concat(_1.octopusActiveElemSelector, ",").concat((0, utils_1.getAttrValue)(item.attribs['data-sid']), ", '").concat(_1.octopusActiveElemSelector, "')}} ").concat(item.attribs['data-sid']);
             item.attribs['data-tag'] = item.tagName;
             item.attribs['data-attrs'] = (0, octopus_shared_1.obj2querystr)(item.attribs);
             return item;
+        });
+        $('[data]:not([is="tmpl_0_container"])').map(function (idx, item) {
+            item.attribs['data'] = item.attribs['data'].substring(0, item.attribs['data'].length - 2) + ",".concat(_1.octopusActiveElemSelector, ": ").concat(_1.octopusActiveElemSelector, "}}");
+        });
+        $('[is="tmpl_0_container"]').map(function (idx, item) {
+            item.attribs['data'] = item.attribs['data'].substring(0, item.attribs['data'].length - 2) + ",".concat(_1.octopusActiveElemSelector, ": root.").concat(_1.octopusActiveElemSelector, "}}");
         });
     };
     /**
@@ -124,13 +131,13 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
                                         var onError = (_a = imageComp.properties.find(function (item) {
                                             return item.key.name === 'onError';
                                         })) === null || _a === void 0 ? void 0 : _a.value;
-                                        var eventObjName = "e";
+                                        var eventObjName = 'e';
                                         if (onError) {
                                             if (onError.params.length === 0) {
                                                 onError.params.push((0, types_1.identifier)('e'));
                                             }
                                             else {
-                                                eventObjName = onError.params[0].type === "Identifier" ? onError.params[0].name : "e";
+                                                eventObjName = onError.params[0].type === 'Identifier' ? onError.params[0].name : 'e';
                                             }
                                             loadErrorHandler(onError.body.body, eventObjName);
                                         }
@@ -158,20 +165,18 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
                             (0, traverse_1.default)(appJs === null || appJs === void 0 ? void 0 : appJs[0], {
                                 enter: function (_path) {
                                     var _a, _b;
-                                    if (_path.isIdentifier() && _path.node.name === "cn") {
+                                    if (_path.isIdentifier() && _path.node.name === 'cn') {
                                         if ((_b = (_a = _path === null || _path === void 0 ? void 0 : _path.parentPath) === null || _a === void 0 ? void 0 : _a.parentPath) === null || _b === void 0 ? void 0 : _b.isObjectExpression()) {
                                             var properties = _path.parentPath.parentPath.node.properties;
-                                            var customDataProp = properties.find(function (item) { return item.type === "ObjectProperty" && item.key.name === "customData"; });
+                                            var customDataProp = properties.find(function (item) { return item.type === 'ObjectProperty' && item.key.name === 'customData'; });
                                             if (!customDataProp) {
-                                                customDataProp = (0, types_1.objectProperty)((0, types_1.identifier)("customData"), (0, types_2.objectExpression)([
-                                                    (0, types_1.objectProperty)((0, types_1.identifier)(String(curIdx_1)), value_1)
-                                                ]));
+                                                customDataProp = (0, types_1.objectProperty)((0, types_1.identifier)('customData'), (0, types_2.objectExpression)([(0, types_1.objectProperty)((0, types_1.identifier)(String(curIdx_1)), value_1)]));
                                                 properties.push(customDataProp);
                                             }
                                             else {
-                                                if (customDataProp.type === "ObjectProperty") {
-                                                    if (customDataProp.value.type === "ObjectExpression") {
-                                                        if (customDataProp.value.properties.find(function (item) { return item.type === "ObjectProperty" && item.key.name === String(curIdx_1); }))
+                                                if (customDataProp.type === 'ObjectProperty') {
+                                                    if (customDataProp.value.type === 'ObjectExpression') {
+                                                        if (customDataProp.value.properties.find(function (item) { return item.type === 'ObjectProperty' && item.key.name === String(curIdx_1); }))
                                                             return;
                                                         customDataProp.value.properties.push((0, types_1.objectProperty)((0, types_1.identifier)(String(curIdx_1)), value_1));
                                                     }
@@ -180,7 +185,7 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
                                             // console.log("页面数据", );
                                         }
                                     }
-                                }
+                                },
                             });
                             // customData((new Function(`return ${code.code.replace(/\\n/g, '')}`))())
                         }
@@ -227,7 +232,14 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
             callDepCb: function (body) {
                 body.unshift((0, types_1.variableDeclaration)('var', [
                     (0, types_1.variableDeclarator)((0, types_1.identifier)(common_1.libName), (0, types_1.callExpression)((0, types_1.identifier)('__webpack_require__'), [(0, types_1.stringLiteral)(common_1.libFilePath)])),
-                ]));
+                ])
+                // variableDeclaration('var', [
+                //   variableDeclarator(
+                //     identifier('octopus_inject_code'),
+                //     callExpression(identifier('__webpack_require__'), [stringLiteral('octopus_inject_code')])
+                //   ),
+                // ])
+                );
             },
         });
         // 注入通用事件监听代码

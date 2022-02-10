@@ -10,7 +10,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.customParamsClassName = exports.ignoreClassName = exports.replaceInnerDeps = exports.transporterPath = exports.transformerPath = exports.componentReactPath = exports.needCatchLoadErrorComponentsList = exports.needCatchLoadErrorComponents = exports.taroModule2wxComponent = exports.buildInLoadErrorEventNameStr = exports.appApiStr = exports.pageApiStr = exports.buildInEventNameStr = exports.wxLibName = exports.injectClassName = exports.buildInView = exports.injectDepsSymbol = exports.performanceSymbol = exports.helpersSymbol = exports.exportSymbol = exports.injectSymbol = exports.apiProxySymbol = exports.injectEventName = exports.libName = exports.utilModuleName = exports.utilFilePath = exports.libFilePath = exports.defaultAstParserOption = exports.version = void 0;
+exports.customParamsClassName = exports.ignoreClassName = exports.replaceInnerDeps = exports.transporterPath = exports.transformerPath = exports.componentReactPath = exports.needCatchLoadErrorComponentsList = exports.needCatchLoadErrorComponents = exports.taroModule2wxComponent = exports.buildInLoadErrorEventNameStr = exports.appApiStr = exports.pageApiStr = exports.buildInEventNameStr = exports.wxLibName = exports.injectClassName = exports.buildInView = exports.octopusActiveElemSelector = exports.injectDepsSymbol = exports.performanceSymbol = exports.helpersSymbol = exports.exportSymbol = exports.injectSymbol = exports.apiProxySymbol = exports.injectEventName = exports.libName = exports.utilModuleName = exports.styleFilePath = exports.utilFilePath = exports.libFilePath = exports.defaultAstParserOption = exports.version = void 0;
 var octopus_shared_1 = require("@kiner/octopus-shared");
 exports.version = "0.0.1";
 exports.defaultAstParserOption = {
@@ -25,6 +25,7 @@ exports.defaultAstParserOption = {
 };
 exports.libFilePath = './octopusLib.js';
 exports.utilFilePath = './octopusUtil.wxs';
+exports.styleFilePath = './app.wxss';
 exports.utilModuleName = 'octopus';
 exports.libName = 'octopusLib';
 exports.injectEventName = 'collectDataEvent';
@@ -34,6 +35,7 @@ exports.exportSymbol = "/////////exports/////////";
 exports.helpersSymbol = "/////////helpers/////////";
 exports.performanceSymbol = "/////////performance/////////";
 exports.injectDepsSymbol = "/////////injectDeps/////////";
+exports.octopusActiveElemSelector = "octopusActiveElem";
 exports.buildInView = 'cover-image,cover-view,match-media,movable-area,movable-view,page-container,scroll-view,share-element,swiper,swiper-item,view,icon,progress,rich-text,text,button,checkbox,checkbox-group,editor,form,input,keyboard-accessory,label,picker,picker-view,picker-view-column,radio,radio-groupslider,switch,textarea,navigator,audio,camera,image,live-player,live-pusher,video,voip-room,map,canvas,ad,ad-custom,official-account,open-data,web-view,aria-component';
 exports.injectClassName = "".concat(exports.libName, "-inject-class");
 exports.wxLibName = "wx.".concat(exports.libName);

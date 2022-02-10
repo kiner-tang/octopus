@@ -29,10 +29,10 @@ import {
   utilModuleName,
   wxLibName,
 } from './common';
-import { astObjectPropertyFn, astCallObjectMethod } from './utils';
+import { astObjectPropertyFn, astCallObjectMethod, getAttrValue } from './utils';
 import { injectLibFiles } from './injectCode';
 import { objectExpression } from '@babel/types';
-import { utilFilePath } from '.';
+import { octopusActiveElemSelector, utilFilePath } from '.';
 
 export class InjectCodeToCollectDatasource extends BaseApp<PluginPipelineData> {
   constructor() {
@@ -47,10 +47,19 @@ export class InjectCodeToCollectDatasource extends BaseApp<PluginPipelineData> {
     $(buildInView)
       .addClass(injectClassName)
       .map((idx: number, item: Element) => {
+        item.attribs[
+          'class'
+        ] = `${item.attribs['class']} {{octopus.c(${octopusActiveElemSelector},${getAttrValue(item.attribs['data-sid'])}, '${octopusActiveElemSelector}')}} ${item.attribs['data-sid']}`;
         item.attribs['data-tag'] = item.tagName;
         item.attribs['data-attrs'] = obj2querystr(item.attribs);
         return item;
       });
+    $('[data]:not([is="tmpl_0_container"])').map((idx, item) => {
+      item.attribs['data']= item.attribs['data'].substring(0, item.attribs['data'].length-2)+`,${octopusActiveElemSelector}: ${octopusActiveElemSelector}}}`
+    });
+    $('[is="tmpl_0_container"]').map((idx, item) => {
+      item.attribs['data']= item.attribs['data'].substring(0, item.attribs['data'].length-2)+`,${octopusActiveElemSelector}: root.${octopusActiveElemSelector}}}`
+    });
   }
   /**
    * 由于 cheerio 输出的属性字符串会将 ' 转换成 &apos; ，因此再完成补丁输出源码前需要转换回来
@@ -150,12 +159,12 @@ export class InjectCodeToCollectDatasource extends BaseApp<PluginPipelineData> {
                         return (item.key as Identifier).name === 'onError';
                       }) as ObjectProperty
                     )?.value as FunctionExpression;
-                    let eventObjName = "e";
+                    let eventObjName = 'e';
                     if (onError) {
-                      if(onError.params.length === 0) {
+                      if (onError.params.length === 0) {
                         onError.params.push(identifier('e'));
                       } else {
-                        eventObjName = onError.params[0].type === "Identifier" ? onError.params[0].name : "e";
+                        eventObjName = onError.params[0].type === 'Identifier' ? onError.params[0].name : 'e';
                       }
                       loadErrorHandler(onError.body.body, eventObjName);
                     } else {
@@ -172,30 +181,38 @@ export class InjectCodeToCollectDatasource extends BaseApp<PluginPipelineData> {
           });
         }
         // 查找指定 class 类名的组件属性
-        if(path.isStringLiteral() && path.node.value.includes(customParamsClassName)) {
-          if(path.parentPath.isObjectProperty()) {
+        if (path.isStringLiteral() && path.node.value.includes(customParamsClassName)) {
+          if (path.parentPath.isObjectProperty()) {
             const value = path.parentPath.node.value as ObjectExpression;
             const parentChildren = path.parentPath?.parentPath?.parentPath?.parentPath;
-            if(parentChildren?.isArrayExpression()) {
-              const arrContainer = (parentChildren.node.elements as object[]);
+            if (parentChildren?.isArrayExpression()) {
+              const arrContainer = parentChildren.node.elements as object[];
               // const itemCnt = arrContainer.length;
-              const curIdx = arrContainer.findIndex(item => item === path?.parentPath?.parentPath?.parentPath?.node);
+              const curIdx = arrContainer.findIndex((item) => item === path?.parentPath?.parentPath?.parentPath?.node);
               // console.log(`总共有${itemCnt}个元素,当前索引为: ${curIdx}`);
               traverse(appJs?.[0], {
                 enter(_path) {
-                  if(_path.isIdentifier() && _path.node.name === "cn") {
-                    if(_path?.parentPath?.parentPath?.isObjectExpression()) {
+                  if (_path.isIdentifier() && _path.node.name === 'cn') {
+                    if (_path?.parentPath?.parentPath?.isObjectExpression()) {
                       const properties = _path.parentPath.parentPath.node.properties;
-                      let customDataProp = properties.find(item => item.type === "ObjectProperty" && (item.key as any).name === "customData");
-                      if(!customDataProp) {
-                        customDataProp = objectProperty(identifier("customData"), objectExpression([
-                          objectProperty(identifier(String(curIdx)), value)
-                        ]));
+                      let customDataProp = properties.find(
+                        (item) => item.type === 'ObjectProperty' && (item.key as any).name === 'customData'
+                      );
+                      if (!customDataProp) {
+                        customDataProp = objectProperty(
+                          identifier('customData'),
+                          objectExpression([objectProperty(identifier(String(curIdx)), value)])
+                        );
                         properties.push(customDataProp);
                       } else {
-                        if(customDataProp.type === "ObjectProperty") {
-                          if(customDataProp.value.type === "ObjectExpression") {
-                            if(customDataProp.value.properties.find(item => item.type === "ObjectProperty" && (item.key as any).name === String(curIdx))) return;
+                        if (customDataProp.type === 'ObjectProperty') {
+                          if (customDataProp.value.type === 'ObjectExpression') {
+                            if (
+                              customDataProp.value.properties.find(
+                                (item) => item.type === 'ObjectProperty' && (item.key as any).name === String(curIdx)
+                              )
+                            )
+                              return;
                             customDataProp.value.properties.push(objectProperty(identifier(String(curIdx)), value));
                           }
                         }
@@ -203,7 +220,7 @@ export class InjectCodeToCollectDatasource extends BaseApp<PluginPipelineData> {
                       // console.log("页面数据", );
                     }
                   }
-                }
+                },
               });
               // customData((new Function(`return ${code.code.replace(/\\n/g, '')}`))())
             }
@@ -255,7 +272,7 @@ export class InjectCodeToCollectDatasource extends BaseApp<PluginPipelineData> {
               identifier(libName),
               callExpression(identifier('__webpack_require__'), [stringLiteral(libFilePath)])
             ),
-          ]),
+          ])
           // variableDeclaration('var', [
           //   variableDeclarator(
           //     identifier('octopus_inject_code'),
@@ -279,7 +296,9 @@ export class InjectCodeToCollectDatasource extends BaseApp<PluginPipelineData> {
         code,
         filePath: filePath,
         loadErrorHandler(body: Statement[], eventObjName: string) {
-          body.unshift(expressionStatement(astCallObjectMethod(wxLibName, injectEventName, [identifier(eventObjName)])));
+          body.unshift(
+            expressionStatement(astCallObjectMethod(wxLibName, injectEventName, [identifier(eventObjName)]))
+          );
         },
       });
     });
