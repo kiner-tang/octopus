@@ -54,14 +54,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.readFileFromDir = exports.upperCamelize = exports.capitalize = exports.camelize = exports.camelizeRE = exports.obj2querystr = exports.deepMergeOptions = exports.getSourceCodeFromMap = exports.filterObjectKey = exports.pathExcludeIgnore = exports.isPathValid = exports.runByFnNameWithPlatform = exports.shortid = exports.guid = exports.proxy = exports.isFunction = exports.noop = void 0;
@@ -93,7 +89,7 @@ function proxy(target, inject, propNameList) {
     if (propNameList === void 0) { propNameList = Object.keys(target); }
     propNameList.forEach(function (propName) {
         var val = target[propName];
-        if ((0, exports.isFunction)(val)) {
+        if (exports.isFunction(val)) {
             target[propName] = function () {
                 var args = [];
                 for (var _i = 0; _i < arguments.length; _i++) {
@@ -154,7 +150,7 @@ function runByFnNameWithPlatform(platform, fnName) {
         var platformPkg;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, Promise.resolve().then(function () { return __importStar(require("@kiner/octopus-platform/".concat(platform))); })];
+                case 0: return [4 /*yield*/, Promise.resolve().then(function () { return __importStar(require("@kiner/octopus-platform/" + platform)); })];
                 case 1:
                     platformPkg = _a.sent();
                     return [2 /*return*/, platformPkg[fnName].apply(platformPkg, rest)];
@@ -233,10 +229,10 @@ function getSourceCodeFromMap(map, fileName) {
                             };
                         })
                             .filter(function (item) { return !!item.source; });
-                        var outputFileName = (0, path_1.join)(__dirname, 'test', fileName);
-                        var outputFilePath = (0, path_1.dirname)(outputFileName);
-                        if (!(0, fs_extra_1.existsSync)(outputFilePath)) {
-                            (0, fs_extra_1.mkdirpSync)(outputFilePath);
+                        var outputFileName = path_1.join(__dirname, 'test', fileName);
+                        var outputFilePath = path_1.dirname(outputFileName);
+                        if (!fs_extra_1.existsSync(outputFilePath)) {
+                            fs_extra_1.mkdirpSync(outputFilePath);
                         }
                         // writeFileSync(outputFileName, sources.slice(0,1)!.join('\n'));
                         resolve(sources);
@@ -258,7 +254,7 @@ function deepMergeOptions(target) {
     for (var _i = 1; _i < arguments.length; _i++) {
         source[_i - 1] = arguments[_i];
     }
-    return lodash_1.merge.apply(void 0, __spreadArray([target], source, false));
+    return lodash_1.merge.apply(void 0, __spreadArray([target], source));
 }
 exports.deepMergeOptions = deepMergeOptions;
 /**
@@ -269,7 +265,7 @@ exports.deepMergeOptions = deepMergeOptions;
 function obj2querystr(obj, char) {
     if (char === void 0) { char = '|'; }
     return Object.keys(obj)
-        .map(function (key) { return "".concat(key, "='").concat(obj[key], "'"); })
+        .map(function (key) { return key + "='" + obj[key] + "'"; })
         .join(char);
 }
 exports.obj2querystr = obj2querystr;
@@ -294,15 +290,15 @@ exports.capitalize = capitalize;
 /**
  * 将以-连接的字符串转化成大驼峰形式
  */
-var upperCamelize = function (str) { return (0, exports.capitalize)((0, exports.camelize)(str.startsWith('-') ? str : "-".concat(str))); };
+var upperCamelize = function (str) { return exports.capitalize(exports.camelize(str.startsWith('-') ? str : "-" + str)); };
 exports.upperCamelize = upperCamelize;
 function readFileFromDir(path, callback, ext, include) {
     if (ext === void 0) { ext = "js"; }
     if (include === void 0) { include = []; }
-    var fileList = (0, fs_extra_1.readdirSync)(path);
+    var fileList = fs_extra_1.readdirSync(path);
     fileList.filter(function (item) { return item.endsWith(ext); }).forEach(function (filePath) {
-        var fullPath = (0, path_1.join)(path, filePath);
-        var stat = (0, fs_extra_1.statSync)(fullPath);
+        var fullPath = path_1.join(path, filePath);
+        var stat = fs_extra_1.statSync(fullPath);
         if (stat.isDirectory()) {
             readFileFromDir(fullPath, callback, ext);
         }

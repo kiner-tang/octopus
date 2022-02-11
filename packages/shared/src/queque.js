@@ -1,12 +1,8 @@
 "use strict";
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Queue = void 0;
@@ -47,7 +43,7 @@ var Queue = /** @class */ (function () {
         this._queue.length = 0;
     };
     Queue.prototype.all = function () {
-        return __spreadArray([], this._queue, true);
+        return __spreadArray([], this._queue);
     };
     Queue.prototype.flush = function (callback) {
         while (!this.empty()) {

@@ -37,7 +37,8 @@ export class Transformer extends BaseApp<Datasource> {
         touchElem,
         route,
         pageConfig,
-        timeStamp
+        timeStamp,
+        baseDeviceInfo
       } = item.datasource;
       const { transformerOptions } = item.pluginOptions;
       let normalData: NormalDatasource = {
@@ -59,7 +60,8 @@ export class Transformer extends BaseApp<Datasource> {
         pageData,
         route,
         pageConfig,
-        timeStamp
+        timeStamp,
+        baseDeviceInfo
       };
       if (transformerOptions) {
         // 由于对象属性是方法时转换成字符串输出到代码中后会被过滤掉

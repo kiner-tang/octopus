@@ -80,7 +80,7 @@ function getAstFromJsCode(fileName, code, extra) {
     return __awaiter(this, void 0, void 0, function () {
         var ast;
         return __generator(this, function (_a) {
-            ast = (0, parser_1.parse)(code.source, common_1.defaultAstParserOption);
+            ast = parser_1.parse(code.source, common_1.defaultAstParserOption);
             ast.extra = __assign({ fileName: fileName }, extra);
             return [2 /*return*/, [ast]];
         });
@@ -113,7 +113,7 @@ function transformJsCodeToAsts(codes, extra) {
                     _b = fileName;
                     return [4 /*yield*/, getAstFromJsCode(fileName, {
                             source: codes[fileName].children.map(function (item) { return item._value; }).join('\n'),
-                            map: codes["".concat(fileName, ".map")]._value,
+                            map: codes[fileName + ".map"]._value,
                         }, extra)];
                 case 2:
                     _a[_b] = _c.sent();
@@ -164,7 +164,7 @@ function transformCodeToAsts(assets, pluginOpts, ctx) {
             switch (_d.label) {
                 case 0:
                     _a = pluginOpts.complieOptions, _b = _a.include, include = _b === void 0 ? [] : _b, _c = _a.exclude, exclude = _c === void 0 ? [] : _c;
-                    allowAssets = (0, octopus_shared_1.filterObjectKey)(assets, (0, octopus_shared_1.pathExcludeIgnore)(Object.keys(assets), include, exclude));
+                    allowAssets = octopus_shared_1.filterObjectKey(assets, octopus_shared_1.pathExcludeIgnore(Object.keys(assets), include, exclude));
                     return [4 /*yield*/, transformJsCodeToAsts(allowAssets, {
                             pluginOpts: pluginOpts,
                             ctx: ctx,

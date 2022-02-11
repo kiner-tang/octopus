@@ -7,7 +7,7 @@ var parser_1 = require("@babel/parser");
 var common_1 = require("./common");
 function astObjectPropertyFn(_a) {
     var name = _a.name, _b = _a.id, id = _b === void 0 ? name : _b, _c = _a.params, params = _c === void 0 ? [] : _c, body = _a.body, _d = _a.generator, generator = _d === void 0 ? false : _d, _e = _a.async, async = _e === void 0 ? false : _e;
-    return (0, types_1.objectProperty)((0, types_1.stringLiteral)(name), (0, types_1.functionExpression)((0, types_1.identifier)(id), params, (0, types_1.blockStatement)(body), async, generator));
+    return types_1.objectProperty(types_1.stringLiteral(name), types_1.functionExpression(types_1.identifier(id), params, types_1.blockStatement(body), async, generator));
 }
 exports.astObjectPropertyFn = astObjectPropertyFn;
 /**
@@ -18,7 +18,7 @@ exports.astObjectPropertyFn = astObjectPropertyFn;
  * @returns
  */
 function astCallObjectMethod(objName, methodName, params) {
-    return (0, types_1.callExpression)((0, types_1.memberExpression)((0, types_1.identifier)(objName), (0, types_1.identifier)(methodName)), params);
+    return types_1.callExpression(types_1.memberExpression(types_1.identifier(objName), types_1.identifier(methodName)), params);
 }
 exports.astCallObjectMethod = astCallObjectMethod;
 exports.matchHTMLText = /[^><]+(?=<\/p>)/img;
@@ -29,9 +29,9 @@ exports.matchHTMLText = /[^><]+(?=<\/p>)/img;
 function createBaseAst(tplPath, exportFileName) {
     var core = "";
     if (tplPath) {
-        core = (0, fs_1.readFileSync)(tplPath).toString("utf-8");
+        core = fs_1.readFileSync(tplPath).toString("utf-8");
     }
-    var ast = (0, parser_1.parse)(core, common_1.defaultAstParserOption);
+    var ast = parser_1.parse(core, common_1.defaultAstParserOption);
     if (exportFileName) {
         ast.extra = {
             fileName: exportFileName

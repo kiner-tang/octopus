@@ -48,10 +48,11 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
       PageAPI.onAddToFavorites,
       PageAPI.onShow,
       PageAPI.onHide,
+      PageAPI.onReady,
     ],
     appLifecycleEventList: [AppAPI.onLaunch, AppAPI.onPageNotFound, AppAPI.onUnhandledRejection],
     transporterOptions: {
-      mode: TransporterMode.console,
+      mode: TransporterMode.sendWhenPush
     },
   },
   [CollectMode.all]: {
@@ -68,7 +69,6 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
     networkApi: {
       request: {
         isSuccess: (data) => {
-          console.log('isSuccess: ', data);
           return !!data;
         },
       },
@@ -76,7 +76,22 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
       downloadFile: true,
     },
     transporterOptions: {
-      mode: TransporterMode.console
+      mode: TransporterMode.sendWhenPush
+    },
+  },
+  [CollectMode.manual]: {
+    debug: false,
+    complieOptions: {
+      include: [/pages\/.*\.(js|js\.map)$/, /app\.(js|js\.map)$/, 'base.wxml', 'taro.js'],
+      exclude: [],
+    },
+    mode: CollectMode.manual,
+    registerEventList: [],
+    loadErrorEventList: [],
+    pageLifecycleEventList: [],
+    appLifecycleEventList: [],
+    transporterOptions: {
+      mode: TransporterMode.none
     },
   },
   [CollectMode.custom]: {
@@ -85,22 +100,7 @@ const taroOctopusPluginsDefaultOptions: Record<CollectMode, TaroOctopusPluginsOp
       include: [],
       exclude: [],
     },
-    mode: CollectMode.default,
-    registerEventList: [],
-    loadErrorEventList: [],
-    pageLifecycleEventList: [],
-    appLifecycleEventList: [],
-    transporterOptions: {
-      mode: TransporterMode.console
-    },
-  },
-  [CollectMode.manual]: {
-    debug: false,
-    complieOptions: {
-      include: [],
-      exclude: [],
-    },
-    mode: CollectMode.default,
+    mode: CollectMode.custom,
     registerEventList: [],
     loadErrorEventList: [],
     pageLifecycleEventList: [],

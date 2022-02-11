@@ -42,16 +42,16 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
         $(common_1.buildInView)
             .addClass(common_1.injectClassName)
             .map(function (idx, item) {
-            item.attribs['class'] = "".concat(item.attribs['class'], " {{octopus.c(").concat(_1.octopusActiveElemSelector, ",").concat((0, utils_1.getAttrValue)(item.attribs['data-sid']), ", '").concat(_1.octopusActiveElemSelector, "')}} ").concat(item.attribs['data-sid']);
+            item.attribs['class'] = item.attribs['class'] + " {{octopus.c(" + _1.octopusActiveElemSelector + "," + utils_1.getAttrValue(item.attribs['data-sid']) + ", '" + _1.octopusActiveElemSelector + "')}} " + item.attribs['data-sid'];
             item.attribs['data-tag'] = item.tagName;
-            item.attribs['data-attrs'] = (0, octopus_shared_1.obj2querystr)(item.attribs);
+            item.attribs['data-attrs'] = octopus_shared_1.obj2querystr(item.attribs);
             return item;
         });
         $('[data]:not([is="tmpl_0_container"])').map(function (idx, item) {
-            item.attribs['data'] = item.attribs['data'].substring(0, item.attribs['data'].length - 2) + ",".concat(_1.octopusActiveElemSelector, ": ").concat(_1.octopusActiveElemSelector, "}}");
+            item.attribs['data'] = item.attribs['data'].substring(0, item.attribs['data'].length - 2) + ("," + _1.octopusActiveElemSelector + ": " + _1.octopusActiveElemSelector + "}}");
         });
         $('[is="tmpl_0_container"]').map(function (idx, item) {
-            item.attribs['data'] = item.attribs['data'].substring(0, item.attribs['data'].length - 2) + ",".concat(_1.octopusActiveElemSelector, ": root.").concat(_1.octopusActiveElemSelector, "}}");
+            item.attribs['data'] = item.attribs['data'].substring(0, item.attribs['data'].length - 2) + ("," + _1.octopusActiveElemSelector + ": root." + _1.octopusActiveElemSelector + "}}");
         });
     };
     /**
@@ -71,7 +71,7 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
         var filePaths = Object.keys(code);
         filePaths.forEach(function (path) {
             var wxml = code[path];
-            var $ = (0, cheerio_1.load)("<view id=\"wxmlWrapper\"><wxs module=\"".concat(common_1.utilModuleName, "\" src=\"").concat(_1.utilFilePath, "\"/>\n").concat(wxml, "</view>"), {
+            var $ = cheerio_1.load("<view id=\"wxmlWrapper\"><wxs module=\"" + common_1.utilModuleName + "\" src=\"" + _1.utilFilePath + "\"/>\n" + wxml + "</view>", {
                 xml: true,
                 xmlMode: true,
             });
@@ -83,7 +83,7 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
         var code = _a.code, filePath = _a.filePath, _b = _a.injectDepCb, injectDepCb = _b === void 0 ? octopus_shared_1.noop : _b, _c = _a.callDepCb, callDepCb = _c === void 0 ? octopus_shared_1.noop : _c, _d = _a.eventHandler, eventHandler = _d === void 0 ? octopus_shared_1.noop : _d, _e = _a.loadErrorHandler, loadErrorHandler = _e === void 0 ? octopus_shared_1.noop : _e, _f = _a.customData, customData = _f === void 0 ? octopus_shared_1.noop : _f;
         var appJs = code[filePath];
         var flag = 0;
-        (0, traverse_1.default)(appJs === null || appJs === void 0 ? void 0 : appJs[0], {
+        traverse_1.default(appJs === null || appJs === void 0 ? void 0 : appJs[0], {
             enter: function (path) {
                 var _a, _b, _c, _d, _e;
                 // 依赖注入
@@ -117,7 +117,7 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
                     path.node.id.type === 'Identifier') {
                     // 先根据条件获取 component-react 的模块 id,
                     var componentReactModuleId_1 = path.node.id.name;
-                    (0, traverse_1.default)(appJs === null || appJs === void 0 ? void 0 : appJs[0], {
+                    traverse_1.default(appJs === null || appJs === void 0 ? void 0 : appJs[0], {
                         enter: function (_path) {
                             var _a;
                             if (_path.isMemberExpression() &&
@@ -134,7 +134,7 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
                                         var eventObjName = 'e';
                                         if (onError) {
                                             if (onError.params.length === 0) {
-                                                onError.params.push((0, types_1.identifier)('e'));
+                                                onError.params.push(types_1.identifier('e'));
                                             }
                                             else {
                                                 eventObjName = onError.params[0].type === 'Identifier' ? onError.params[0].name : 'e';
@@ -143,7 +143,7 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
                                         }
                                         else {
                                             var body = [];
-                                            imageComp.properties.push((0, utils_1.astObjectPropertyFn)({ name: 'onError', params: [(0, types_1.identifier)('e')], body: body }));
+                                            imageComp.properties.push(utils_1.astObjectPropertyFn({ name: 'onError', params: [types_1.identifier('e')], body: body }));
                                             loadErrorHandler(body, eventObjName);
                                         }
                                     }
@@ -162,7 +162,7 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
                             // const itemCnt = arrContainer.length;
                             var curIdx_1 = arrContainer.findIndex(function (item) { var _a, _b, _c; return item === ((_c = (_b = (_a = path === null || path === void 0 ? void 0 : path.parentPath) === null || _a === void 0 ? void 0 : _a.parentPath) === null || _b === void 0 ? void 0 : _b.parentPath) === null || _c === void 0 ? void 0 : _c.node); });
                             // console.log(`总共有${itemCnt}个元素,当前索引为: ${curIdx}`);
-                            (0, traverse_1.default)(appJs === null || appJs === void 0 ? void 0 : appJs[0], {
+                            traverse_1.default(appJs === null || appJs === void 0 ? void 0 : appJs[0], {
                                 enter: function (_path) {
                                     var _a, _b;
                                     if (_path.isIdentifier() && _path.node.name === 'cn') {
@@ -170,7 +170,7 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
                                             var properties = _path.parentPath.parentPath.node.properties;
                                             var customDataProp = properties.find(function (item) { return item.type === 'ObjectProperty' && item.key.name === 'customData'; });
                                             if (!customDataProp) {
-                                                customDataProp = (0, types_1.objectProperty)((0, types_1.identifier)('customData'), (0, types_2.objectExpression)([(0, types_1.objectProperty)((0, types_1.identifier)(String(curIdx_1)), value_1)]));
+                                                customDataProp = types_1.objectProperty(types_1.identifier('customData'), types_2.objectExpression([types_1.objectProperty(types_1.identifier(String(curIdx_1)), value_1)]));
                                                 properties.push(customDataProp);
                                             }
                                             else {
@@ -178,7 +178,7 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
                                                     if (customDataProp.value.type === 'ObjectExpression') {
                                                         if (customDataProp.value.properties.find(function (item) { return item.type === 'ObjectProperty' && item.key.name === String(curIdx_1); }))
                                                             return;
-                                                        customDataProp.value.properties.push((0, types_1.objectProperty)((0, types_1.identifier)(String(curIdx_1)), value_1));
+                                                        customDataProp.value.properties.push(types_1.objectProperty(types_1.identifier(String(curIdx_1)), value_1));
                                                     }
                                                 }
                                             }
@@ -202,7 +202,7 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
      */
     InjectCodeToCollectDatasource.prototype._injectRequire = function (code, filePath, injectFilePath) {
         var appJs = code[filePath];
-        appJs[0].program.body.unshift((0, types_1.expressionStatement)((0, types_1.callExpression)((0, types_1.identifier)('require'), [(0, types_1.stringLiteral)(injectFilePath)])));
+        appJs[0].program.body.unshift(types_1.expressionStatement(types_1.callExpression(types_1.identifier('require'), [types_1.stringLiteral(injectFilePath)])));
     };
     /**
      * 在 js 中注入代码
@@ -230,8 +230,8 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
                 // );
             },
             callDepCb: function (body) {
-                body.unshift((0, types_1.variableDeclaration)('var', [
-                    (0, types_1.variableDeclarator)((0, types_1.identifier)(common_1.libName), (0, types_1.callExpression)((0, types_1.identifier)('__webpack_require__'), [(0, types_1.stringLiteral)(common_1.libFilePath)])),
+                body.unshift(types_1.variableDeclaration('var', [
+                    types_1.variableDeclarator(types_1.identifier(common_1.libName), types_1.callExpression(types_1.identifier('__webpack_require__'), [types_1.stringLiteral(common_1.libFilePath)])),
                 ])
                 // variableDeclaration('var', [
                 //   variableDeclarator(
@@ -247,7 +247,7 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
             code: code,
             filePath: 'taro.js',
             eventHandler: function (body) {
-                body.push((0, types_1.expressionStatement)((0, utils_1.astCallObjectMethod)(common_1.wxLibName, common_1.injectEventName, [(0, types_1.identifier)('e')])));
+                body.push(types_1.expressionStatement(utils_1.astCallObjectMethod(common_1.wxLibName, common_1.injectEventName, [types_1.identifier('e')])));
             },
         });
         // 注入 image 加载失败监听代码
@@ -256,7 +256,7 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
                 code: code,
                 filePath: filePath,
                 loadErrorHandler: function (body, eventObjName) {
-                    body.unshift((0, types_1.expressionStatement)((0, utils_1.astCallObjectMethod)(common_1.wxLibName, common_1.injectEventName, [(0, types_1.identifier)(eventObjName)])));
+                    body.unshift(types_1.expressionStatement(utils_1.astCallObjectMethod(common_1.wxLibName, common_1.injectEventName, [types_1.identifier(eventObjName)])));
                 },
             });
         });
@@ -287,7 +287,7 @@ var InjectCodeToCollectDatasource = /** @class */ (function (_super) {
     InjectCodeToCollectDatasource.prototype.injectCode = function (asts, config) {
         this.injectCodeIntoJs(asts.js);
         this.injectCodeIntoWxml(asts.wxml);
-        this.injectCodeLib((0, injectCode_1.injectLibFiles)(config.pluginOptions), config);
+        this.injectCodeLib(injectCode_1.injectLibFiles(config.pluginOptions), config);
     };
     /**
      * 处理数据

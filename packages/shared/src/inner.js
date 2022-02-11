@@ -209,6 +209,7 @@ var PageAPI;
     PageAPI["onTabItemTap"] = "onTabItemTap";
     PageAPI["onShow"] = "onShow";
     PageAPI["onHide"] = "onShow";
+    PageAPI["onReady"] = "onReady";
 })(PageAPI = exports.PageAPI || (exports.PageAPI = {}));
 var AppAPI;
 (function (AppAPI) {

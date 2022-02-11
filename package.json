@@ -28,8 +28,10 @@
   },
   "scripts": {
     "dev": "yarn dev:plugin && yarn dev:transformer",
+    "dev:doc": "cd ./docs && yarn start",
     "dev:plugin": "cross-env NODE_ENV=development tsc --watch",
     "dev:transformer": "rollup -c -w ",
+    "build:doc": "cd ./docs && yarn build",
     "test": "jest",
     "lint": "eslint ./packages",
     "lint:fix": "eslint ./packages --fix",
@@ -38,7 +40,6 @@
     "alias": ". ./scripts/alias.sh"
   },
   "dependencies": {
-    "@kiner/octopus-platform": "file:packages/platform",
     "@kiner/octopus-shared": "file:packages/shared",
     "@kiner/octopus-transformer": "file:packages/transformer",
     "@kiner/octopus-transporter": "file:packages/transporter"

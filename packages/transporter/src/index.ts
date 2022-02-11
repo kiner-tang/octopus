@@ -14,7 +14,7 @@ export class Transporter extends BaseApp<Datasource> {
     }
   }
   async transporterSendAll({ eventQueue, pluginOptions: { transporterOptions } }: Datasource) {
-    const { transformParams, customRequest, requestOptions, isSendEventList } = transporterOptions;
+    const { transformParams, customRequest, requestOptions, isSendEventList = false } = transporterOptions;
     const transfromParamFnId = transformParams as unknown as string;
     const customRequestFnId = customRequest as unknown as string;
     let transfromParam = (data: NormalDatasource) => JSON.stringify(data);

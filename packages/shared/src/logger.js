@@ -1,12 +1,8 @@
 "use strict";
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Logger = exports.LoggerLevel = exports.timeFormat = exports.fitNum = void 0;
@@ -23,7 +19,7 @@ function timeFormat(date) {
     var M = date.getMinutes();
     var S = date.getSeconds();
     var MS = date.getMilliseconds();
-    return "".concat(y, "-").concat(fitNum(m), "-").concat(fitNum(d), " ").concat(fitNum(H), ":").concat(fitNum(M), ":").concat(fitNum(S), ".").concat(fitNum(MS, 3));
+    return y + "-" + fitNum(m) + "-" + fitNum(d) + " " + fitNum(H) + ":" + fitNum(M) + ":" + fitNum(S) + "." + fitNum(MS, 3);
 }
 exports.timeFormat = timeFormat;
 var LoggerLevel;
@@ -44,9 +40,9 @@ var Logger = /** @class */ (function () {
             args[_i - 2] = arguments[_i];
         }
         if (Logger.showLog && (Logger.showLevel === LoggerLevel.log || Logger.showLevel === LoggerLevel.all)) {
-            var time = Logger.showTime ? "<".concat(timeFormat(new Date()), ">") : '';
+            var time = Logger.showTime ? "<" + timeFormat(new Date()) + ">" : '';
             args.push('\n');
-            console.log.apply(console, __spreadArray(["\n\uD83D\uDC19 ".concat(time, "[").concat(namespace, "] ").concat(message, "\n")], args, false));
+            console.log.apply(console, __spreadArray(["\n\uD83D\uDC19 " + time + "[" + namespace + "] " + message + "\n"], args));
         }
     };
     Logger.warning = function (namespace, message) {
@@ -55,9 +51,9 @@ var Logger = /** @class */ (function () {
             args[_i - 2] = arguments[_i];
         }
         if (Logger.showLog && (Logger.showLevel === LoggerLevel.warning || Logger.showLevel === LoggerLevel.all)) {
-            var time = Logger.showTime ? "<".concat(timeFormat(new Date()), ">") : '';
+            var time = Logger.showTime ? "<" + timeFormat(new Date()) + ">" : '';
             args.push('\n');
-            console.warn.apply(console, __spreadArray(["\n\uD83D\uDC19 ".concat(time, "[").concat(namespace, "] ").concat(message, "\n")], args, false));
+            console.warn.apply(console, __spreadArray(["\n\uD83D\uDC19 " + time + "[" + namespace + "] " + message + "\n"], args));
         }
     };
     Logger.error = function (namespace, message) {
@@ -66,9 +62,9 @@ var Logger = /** @class */ (function () {
             args[_i - 2] = arguments[_i];
         }
         if (Logger.showLog && (Logger.showLevel === LoggerLevel.error || Logger.showLevel === LoggerLevel.all)) {
-            var time = Logger.showTime ? "<".concat(timeFormat(new Date()), ">") : '';
+            var time = Logger.showTime ? "<" + timeFormat(new Date()) + ">" : '';
             args.push('\n');
-            console.error.apply(console, __spreadArray(["\n\uD83D\uDC19 ".concat(time, "[").concat(namespace, "] ").concat(message, "\n")], args, false));
+            console.error.apply(console, __spreadArray(["\n\uD83D\uDC19 " + time + "[" + namespace + "] " + message + "\n"], args));
         }
     };
     Logger.prototype.log = function (message) {
@@ -76,21 +72,21 @@ var Logger = /** @class */ (function () {
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
-        Logger.log.apply(Logger, __spreadArray([this.namespace, message], args, false));
+        Logger.log.apply(Logger, __spreadArray([this.namespace, message], args));
     };
     Logger.prototype.warning = function (message) {
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
-        Logger.warning.apply(Logger, __spreadArray([this.namespace, message], args, false));
+        Logger.warning.apply(Logger, __spreadArray([this.namespace, message], args));
     };
     Logger.prototype.error = function (message) {
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
-        Logger.error.apply(Logger, __spreadArray([this.namespace, message], args, false));
+        Logger.error.apply(Logger, __spreadArray([this.namespace, message], args));
     };
     Logger.showLog = false;
     Logger.showTime = true;

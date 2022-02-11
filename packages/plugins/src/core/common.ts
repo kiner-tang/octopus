@@ -9,6 +9,7 @@ import {
   PageAPIKey,
 } from '@kiner/octopus-shared';
 import { ParserOptions } from '@babel/parser';
+import { resolve } from 'path';
 
 export const version = "0.0.1";
 
@@ -78,8 +79,8 @@ export const needCatchLoadErrorComponents = 'b,c,f';
 export const needCatchLoadErrorComponentsList = needCatchLoadErrorComponents.split(',');
 
 export const componentReactPath = './node_modules/@tarojs/plugin-platform-weapp/dist/components-react.js';
-export const transformerPath = '../../../transformer/dist/octopus-transformer.cjs.js';
-export const transporterPath = '../../../transporter/dist/octopus-transporter.cjs.js';
+export const transformerPath = resolve(process.cwd(), './node_modules/@kiner/octopus-transformer/dist/octopus-transformer.cjs.js');
+export const transporterPath = resolve(process.cwd(), './node_modules/@kiner/octopus-transporter/dist/octopus-transporter.cjs.js');
 
 export function replaceInnerDeps(code: string) {
   return code

@@ -60,6 +60,7 @@ const fragment = `
     Object.defineProperty(exports, "__esModule", {
       value: true
     });
+    exports.baseDeviceInfo = wx.getSystemInfoSync();
     exports.throttleTime = 30;
     exports.eventHelper = {};
     exports.${injectEventName} = function(){};
@@ -111,7 +112,8 @@ const octopusEventCollectionCore = `
          customData: e.customData || {},
          route,
          pageConfig: config,
-         timeStamp: Date.now()
+         timeStamp: Date.now(),
+         baseDeviceInfo: _es.baseDeviceInfo
        };
        function collect(ds, ...log) {
         _es.logger(...log);
@@ -396,7 +398,7 @@ export const apiProxySourceList: Record<string, any> = {
         }
         options.success = function(res) {
           if(res.statusCode === 200) {
-            if(!isSuccess(res.data, res, options)) {
+            if(!isSuccess(options)) {
               listen && _es.${injectEventName}({
                 detail: res,
                 type: "requestFail",
@@ -454,14 +456,14 @@ export const apiProxySourceList: Record<string, any> = {
     }
   }
   `,
-  // page onPageScroll,onShareAppMessage,onShareTimeline,onAddToFavorites,onTabItemTap,onShow,onHide
+  // page onReady onPageScroll,onShareAppMessage,onShareTimeline,onAddToFavorites,onTabItemTap,onShow,onHide
   proxyPage: `
     function proxyPage() {
       var _es = exports;
       var eventList = _es.config.pluginOptions.pageLifecycleEventList;
       var oriApi = Page;
       Page = function(options) {
-        ["onShow","onHide","onPageScroll","onTabItemTap"].forEach(method => {
+        ["onReady", "onShow","onHide","onPageScroll","onTabItemTap"].forEach(method => {
           var oriFn = options[method];
           options[method] = function(opt) {
             eventList.includes(method) && _es.${injectEventName}({

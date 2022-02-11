@@ -51,10 +51,11 @@ var taroOctopusPluginsDefaultOptions = (_a = {},
             common_1.PageAPI.onAddToFavorites,
             common_1.PageAPI.onShow,
             common_1.PageAPI.onHide,
+            common_1.PageAPI.onReady,
         ],
         appLifecycleEventList: [common_1.AppAPI.onLaunch, common_1.AppAPI.onPageNotFound, common_1.AppAPI.onUnhandledRejection],
         transporterOptions: {
-            mode: octopus_shared_1.TransporterMode.console,
+            mode: octopus_shared_1.TransporterMode.sendWhenPush
         },
     },
     _a[common_1.CollectMode.all] = {
@@ -71,7 +72,6 @@ var taroOctopusPluginsDefaultOptions = (_a = {},
         networkApi: {
             request: {
                 isSuccess: function (data) {
-                    console.log('isSuccess: ', data);
                     return !!data;
                 },
             },
@@ -79,7 +79,22 @@ var taroOctopusPluginsDefaultOptions = (_a = {},
             downloadFile: true,
         },
         transporterOptions: {
-            mode: octopus_shared_1.TransporterMode.console
+            mode: octopus_shared_1.TransporterMode.sendWhenPush
+        },
+    },
+    _a[common_1.CollectMode.manual] = {
+        debug: false,
+        complieOptions: {
+            include: [/pages\/.*\.(js|js\.map)$/, /app\.(js|js\.map)$/, 'base.wxml', 'taro.js'],
+            exclude: [],
+        },
+        mode: common_1.CollectMode.manual,
+        registerEventList: [],
+        loadErrorEventList: [],
+        pageLifecycleEventList: [],
+        appLifecycleEventList: [],
+        transporterOptions: {
+            mode: octopus_shared_1.TransporterMode.none
         },
     },
     _a[common_1.CollectMode.custom] = {
@@ -88,22 +103,7 @@ var taroOctopusPluginsDefaultOptions = (_a = {},
             include: [],
             exclude: [],
         },
-        mode: common_1.CollectMode.default,
-        registerEventList: [],
-        loadErrorEventList: [],
-        pageLifecycleEventList: [],
-        appLifecycleEventList: [],
-        transporterOptions: {
-            mode: octopus_shared_1.TransporterMode.console
-        },
-    },
-    _a[common_1.CollectMode.manual] = {
-        debug: false,
-        complieOptions: {
-            include: [],
-            exclude: [],
-        },
-        mode: common_1.CollectMode.default,
+        mode: common_1.CollectMode.custom,
         registerEventList: [],
         loadErrorEventList: [],
         pageLifecycleEventList: [],
@@ -134,7 +134,7 @@ var defineConfig = function (options) {
 exports.defineConfig = defineConfig;
 exports.default = (function (ctx, pluginOpts) {
     var logger = new octopus_shared_1.Logger('TaroPlugin');
-    pluginOpts = (0, octopus_shared_1.deepMergeOptions)(taroOctopusPluginsDefaultOptions[(pluginOpts.mode || common_1.CollectMode.default)], pluginOpts);
+    pluginOpts = octopus_shared_1.deepMergeOptions(taroOctopusPluginsDefaultOptions[(pluginOpts.mode || common_1.CollectMode.default)], pluginOpts);
     octopus_shared_1.Logger.showLog = pluginOpts.debug;
     logger.log('当前插件选项', pluginOpts);
     ctx.modifyBuildAssets(function (_a) {

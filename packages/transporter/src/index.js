@@ -69,12 +69,12 @@ var Transporter = /** @class */ (function (_super) {
     Transporter.prototype.transporterSendAll = function (_a) {
         var eventQueue = _a.eventQueue, transporterOptions = _a.pluginOptions.transporterOptions;
         return __awaiter(this, void 0, void 0, function () {
-            var transformParams, customRequest, requestOptions, isSendEventList, transfromParamFnId, customRequestFnId, transfromParam, customRequestFn, mod, mod, all, params;
+            var transformParams, customRequest, requestOptions, _b, isSendEventList, transfromParamFnId, customRequestFnId, transfromParam, customRequestFn, mod, mod, all, params;
             var _this = this;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
-                        transformParams = transporterOptions.transformParams, customRequest = transporterOptions.customRequest, requestOptions = transporterOptions.requestOptions, isSendEventList = transporterOptions.isSendEventList;
+                        transformParams = transporterOptions.transformParams, customRequest = transporterOptions.customRequest, requestOptions = transporterOptions.requestOptions, _b = transporterOptions.isSendEventList, isSendEventList = _b === void 0 ? false : _b;
                         transfromParamFnId = transformParams;
                         customRequestFnId = customRequest;
                         transfromParam = function (data) { return JSON.stringify(data); };
@@ -105,7 +105,7 @@ var Transporter = /** @class */ (function (_super) {
                         params = all.map(function (item) { return transfromParam(item); });
                         return [4 /*yield*/, customRequestFn(params)];
                     case 1:
-                        _b.sent();
+                        _c.sent();
                         return [3 /*break*/, 3];
                     case 2:
                         eventQueue.flush(function (data) { return __awaiter(_this, void 0, void 0, function () {
@@ -118,7 +118,7 @@ var Transporter = /** @class */ (function (_super) {
                                 }
                             });
                         }); });
-                        _b.label = 3;
+                        _c.label = 3;
                     case 3: return [2 /*return*/];
                 }
             });
@@ -151,7 +151,7 @@ var Transporter = /** @class */ (function (_super) {
                 if (eventQueue.size() >= limit) {
                     this_1.transporterSendAll(data[i]).then(function (res) {
                         if (!eventQueue.empty()) {
-                            console.log("\uD83D\uDC19 \u961F\u5217\u5269\u4F59".concat(eventQueue.size(), "\u6761\u6570\u636E\u672A\u8FBE\u5230\u53D1\u9001\u6761\u4EF6\uFF0C\u6682\u5B58\u5230\u672C\u5730\u5B58\u50A8"));
+                            console.log("\uD83D\uDC19 \u961F\u5217\u5269\u4F59" + eventQueue.size() + "\u6761\u6570\u636E\u672A\u8FBE\u5230\u53D1\u9001\u6761\u4EF6\uFF0C\u6682\u5B58\u5230\u672C\u5730\u5B58\u50A8");
                             wx.setStorageSync(constant_1.eventQueueStorageKey, eventQueue.all());
                         }
                     });

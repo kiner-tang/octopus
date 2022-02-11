@@ -37,7 +37,7 @@ var baseOption = function (info) { return ({
 }); };
 exports.baseOption = baseOption;
 function genJSCodeFromAst(ast, filePath) {
-    var tsCode = (0, generator_1.default)(ast, (0, exports.baseOption)({
+    var tsCode = generator_1.default(ast, exports.baseOption({
         filePath: filePath,
         ast: ast
     }));

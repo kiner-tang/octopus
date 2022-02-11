@@ -86,7 +86,7 @@ var Transformer = /** @class */ (function (_super) {
     Transformer.prototype.resolveData = function (data) {
         var _a;
         return __awaiter(this, void 0, void 0, function () {
-            var i, item, _b, type, subType, oriEvent, dataset, elemData, errorMsg, detail, pageData, customData, curEleSid, isManual, text, touchElem, route, pageConfig, timeStamp, transformerOptions, normalData, fnId, transformer;
+            var i, item, _b, type, subType, oriEvent, dataset, elemData, errorMsg, detail, pageData, customData, curEleSid, isManual, text, touchElem, route, pageConfig, timeStamp, baseDeviceInfo, transformerOptions, normalData, fnId, transformer;
             var _this = this;
             return __generator(this, function (_c) {
                 switch (_c.label) {
@@ -96,7 +96,7 @@ var Transformer = /** @class */ (function (_super) {
                     case 1:
                         if (!(i < data.length)) return [3 /*break*/, 5];
                         item = data[i];
-                        _b = item.datasource, type = _b.type, subType = _b.subType, oriEvent = _b.oriEvent, dataset = _b.dataset, elemData = _b.elemData, errorMsg = _b.errorMsg, detail = _b.detail, pageData = _b.pageData, customData = _b.customData, curEleSid = _b.curEleSid, isManual = _b.isManual, text = _b.text, touchElem = _b.touchElem, route = _b.route, pageConfig = _b.pageConfig, timeStamp = _b.timeStamp;
+                        _b = item.datasource, type = _b.type, subType = _b.subType, oriEvent = _b.oriEvent, dataset = _b.dataset, elemData = _b.elemData, errorMsg = _b.errorMsg, detail = _b.detail, pageData = _b.pageData, customData = _b.customData, curEleSid = _b.curEleSid, isManual = _b.isManual, text = _b.text, touchElem = _b.touchElem, route = _b.route, pageConfig = _b.pageConfig, timeStamp = _b.timeStamp, baseDeviceInfo = _b.baseDeviceInfo;
                         transformerOptions = item.pluginOptions.transformerOptions;
                         normalData = {
                             type: type,
@@ -117,7 +117,8 @@ var Transformer = /** @class */ (function (_super) {
                             pageData: pageData,
                             route: route,
                             pageConfig: pageConfig,
-                            timeStamp: timeStamp
+                            timeStamp: timeStamp,
+                            baseDeviceInfo: baseDeviceInfo
                         };
                         if (!transformerOptions) return [3 /*break*/, 3];
                         fnId = transformerOptions === null || transformerOptions === void 0 ? void 0 : transformerOptions.transformer;

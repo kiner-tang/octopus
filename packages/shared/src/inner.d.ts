@@ -158,7 +158,7 @@ export declare enum CollectMode {
     /** 如果不希望称触发自动埋点，而是希望通过 api 手动提交，则使用此模式 */
     manual = "manual"
 }
-export declare type CollectModeKey = "default" | "all" | "custom" | "manual";
+export declare type CollectModeKey = 'default' | 'all' | 'custom' | 'manual';
 /**
  * 内置监听事件列表
  */
@@ -185,9 +185,10 @@ export declare enum PageAPI {
     onAddToFavorites = "onAddToFavorites",
     onTabItemTap = "onTabItemTap",
     onShow = "onShow",
-    onHide = "onShow"
+    onHide = "onShow",
+    onReady = "onReady"
 }
-export declare type PageAPIKey = 'onPageScroll' | 'onShareAppMessage' | 'onShareTimeline' | 'onAddToFavorites' | 'onTabItemTap' | 'onHide' | 'onShow';
+export declare type PageAPIKey = 'onPageScroll' | 'onShareAppMessage' | 'onShareTimeline' | 'onAddToFavorites' | 'onTabItemTap' | 'onReady' | 'onHide' | 'onShow';
 export declare enum AppAPI {
     onLaunch = "onLaunch",
     onThemeChange = "onThemeChange",
@@ -221,7 +222,7 @@ export declare enum TransporterMode {
     /** 来一条发一条，即实时发送 */
     sendWhenPush = "sendWhenPush"
 }
-export declare type TransporterModeKey = "none" | "console" | "sendAllOverflow" | "sendWhenPush";
+export declare type TransporterModeKey = 'none' | 'console' | 'sendAllOverflow' | 'sendWhenPush';
 /**
  * Taro插件选项
  */
@@ -283,7 +284,7 @@ export declare type TaroOctopusPluginsOptions = {
              * 当接口调用成功，但业务异常时，
              * 用这个方法判断接口是否请求成功，用户可以传入此方法对请求结果进行校验
              */
-            isSuccess?: <T = unknown>(responseData: T, options: WechatMiniprogram.DownloadFileOption) => boolean;
+            isSuccess?: <T = unknown>(options: WechatMiniprogram.DownloadFileOption) => boolean;
         } | boolean;
     };
     /**
@@ -437,6 +438,109 @@ export declare type NormalDatasource = {
      * 触发事件的时间戳
      */
     timeStamp: number;
+    /**
+     * 设备信息
+     */
+    baseDeviceInfo: {
+        /** 设备品牌 */
+        brand: string;
+        /** 设备型号。新机型刚推出一段时间会显示unknown，微信会尽快进行适配。 */
+        model: string;
+        /** 设备像素比 */
+        pixelRatio: number;
+        /** 屏幕宽度，单位px */
+        screenWidth: number;
+        /** 屏幕高度，单位px */
+        screenHeight: number;
+        /** 可使用窗口宽度，单位px */
+        windowWidth: number;
+        /** 可使用窗口高度，单位px */
+        windowHeight: number;
+        /** 状态栏高度，单位px */
+        statusBarHeight: number;
+        /** 微信设置的语言 */
+        language: string;
+        /** 微信版本号 */
+        version: string;
+        /** 操作系统及版本 */
+        system: string;
+        /** 客户端平台 */
+        platform: string;
+        /** 用户字体大小（单位px）。以微信客户端「我-设置-通用-字体大小」中的设置为准 */
+        fontSizeSetting: number;
+        /** 客户端基础库版本 */
+        SDKVersion: string;
+        /** 设备性能等级（仅 Android）。取值为：-2 或 0（该设备无法运行小游戏），-1（性能未知），>=1（设备性能值，该值越高，设备性能越好，目前最高不到50） */
+        benchmarkLevel: number;
+        /** 允许微信使用相册的开关（仅 iOS 有效） */
+        albumAuthorized: boolean;
+        /** 允许微信使用摄像头的开关 */
+        cameraAuthorized: boolean;
+        /** 允许微信使用定位的开关 */
+        locationAuthorized: boolean;
+        /** 允许微信使用麦克风的开关 */
+        microphoneAuthorized: boolean;
+        /** 允许微信通知的开关 */
+        notificationAuthorized: boolean;
+        /** 允许微信通知带有提醒的开关（仅 iOS 有效） */
+        notificationAlertAuthorized: boolean;
+        /** 允许微信通知带有标记的开关（仅 iOS 有效） */
+        notificationBadgeAuthorized: boolean;
+        /** 允许微信通知带有声音的开关（仅 iOS 有效） */
+        notificationSoundAuthorized: boolean;
+        /** 允许微信使用日历的开关 */
+        phoneCalendarAuthorized: boolean;
+        /** 蓝牙的系统开关 */
+        bluetoothEnabled: boolean;
+        /** 地理位置的系统开关 */
+        locationEnabled: boolean;
+        /** Wi-Fi 的系统开关 */
+        wifiEnabled: boolean;
+        /** 在竖屏正方向下的安全区域 */
+        safeArea: {
+            /**
+             * 	安全区域左上角横坐标
+             */
+            left: number;
+            /**
+             * 	安全区域右下角横坐标
+             */
+            right: number;
+            /**
+             * 	安全区域左上角纵坐标
+             */
+            top: number;
+            /**
+             * 	安全区域右下角纵坐标
+             */
+            bottom: number;
+            /**
+             * 	安全区域的宽度，单位逻辑像素
+             */
+            width: number;
+            /**
+             * 	安全区域的高度，单位逻辑像素
+             */
+            height: number;
+        };
+        /**
+         * `true` 表示模糊定位，`false` 表示精确定位，仅 iOS 支持
+         */
+        locationReducedAccuracy: boolean;
+        /**
+         * 系统当前主题，取值为`light`或`dark`，全局配置`"darkmode":true`时才能获取，否则为 undefined （不支持小游戏）
+         */
+        theme: "dark" | "light";
+        /** 当前小程序运行的宿主环境 */
+        host: {
+            /** 宿主 app 对应的 appId */
+            appId: string;
+        };
+        /** 是否已打开调试。可通过右上角菜单或 wx.setEnableDebug 打开调试。 */
+        enableDebug: boolean;
+        /** 设备方向: portrait-竖屏；landscape：横屏 */
+        deviceOrientation: "portrait" | "landscape";
+    };
 };
 /**
  * 用于在管道流中传递信息的基础数据源
@@ -460,6 +564,106 @@ export declare type Datasource = {
         route: string;
         pageConfig: Record<string, any>;
         timeStamp: number;
+        baseDeviceInfo: {
+            /** 设备品牌 */
+            brand: string;
+            /** 设备型号。新机型刚推出一段时间会显示unknown，微信会尽快进行适配。 */
+            model: string;
+            /** 设备像素比 */
+            pixelRatio: number;
+            /** 屏幕宽度，单位px */
+            screenWidth: number;
+            /** 屏幕高度，单位px */
+            screenHeight: number;
+            /** 可使用窗口宽度，单位px */
+            windowWidth: number;
+            /** 可使用窗口高度，单位px */
+            windowHeight: number;
+            /** 状态栏高度，单位px */
+            statusBarHeight: number;
+            /** 微信设置的语言 */
+            language: string;
+            /** 微信版本号 */
+            version: string;
+            /** 操作系统及版本 */
+            system: string;
+            /** 客户端平台 */
+            platform: string;
+            /** 用户字体大小（单位px）。以微信客户端「我-设置-通用-字体大小」中的设置为准 */
+            fontSizeSetting: number;
+            /** 客户端基础库版本 */
+            SDKVersion: string;
+            /** 设备性能等级（仅 Android）。取值为：-2 或 0（该设备无法运行小游戏），-1（性能未知），>=1（设备性能值，该值越高，设备性能越好，目前最高不到50） */
+            benchmarkLevel: number;
+            /** 允许微信使用相册的开关（仅 iOS 有效） */
+            albumAuthorized: boolean;
+            /** 允许微信使用摄像头的开关 */
+            cameraAuthorized: boolean;
+            /** 允许微信使用定位的开关 */
+            locationAuthorized: boolean;
+            /** 允许微信使用麦克风的开关 */
+            microphoneAuthorized: boolean;
+            /** 允许微信通知的开关 */
+            notificationAuthorized: boolean;
+            /** 允许微信通知带有提醒的开关（仅 iOS 有效） */
+            notificationAlertAuthorized: boolean;
+            /** 允许微信通知带有标记的开关（仅 iOS 有效） */
+            notificationBadgeAuthorized: boolean;
+            /** 允许微信通知带有声音的开关（仅 iOS 有效） */
+            notificationSoundAuthorized: boolean;
+            /** 允许微信使用日历的开关 */
+            phoneCalendarAuthorized: boolean;
+            /** 蓝牙的系统开关 */
+            bluetoothEnabled: boolean;
+            /** 地理位置的系统开关 */
+            locationEnabled: boolean;
+            /** Wi-Fi 的系统开关 */
+            wifiEnabled: boolean;
+            /** 在竖屏正方向下的安全区域 */
+            safeArea: {
+                /**
+                 * 	安全区域左上角横坐标
+                 */
+                left: number;
+                /**
+                 * 	安全区域右下角横坐标
+                 */
+                right: number;
+                /**
+                 * 	安全区域左上角纵坐标
+                 */
+                top: number;
+                /**
+                 * 	安全区域右下角纵坐标
+                 */
+                bottom: number;
+                /**
+                 * 	安全区域的宽度，单位逻辑像素
+                 */
+                width: number;
+                /**
+                 * 	安全区域的高度，单位逻辑像素
+                 */
+                height: number;
+            };
+            /**
+             * `true` 表示模糊定位，`false` 表示精确定位，仅 iOS 支持
+             */
+            locationReducedAccuracy: boolean;
+            /**
+             * 系统当前主题，取值为`light`或`dark`，全局配置`"darkmode":true`时才能获取，否则为 undefined （不支持小游戏）
+             */
+            theme: "dark" | "light";
+            /** 当前小程序运行的宿主环境 */
+            host: {
+                /** 宿主 app 对应的 appId */
+                appId: string;
+            };
+            /** 是否已打开调试。可通过右上角菜单或 wx.setEnableDebug 打开调试。 */
+            enableDebug: boolean;
+            /** 设备方向: portrait-竖屏；landscape：横屏 */
+            deviceOrientation: "portrait" | "landscape";
+        };
     };
     pluginOptions: TaroOctopusPluginsOptions;
     eventQueue: Queue<NormalDatasource>;

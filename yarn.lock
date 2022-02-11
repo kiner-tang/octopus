@@ -497,9 +497,6 @@
     "@types/yargs" "^16.0.0"
     chalk "^4.0.0"
 
-"@kiner/octopus-platform@file:packages/platform":
-  version "0.0.1"
-
 "@kiner/octopus-shared@file:packages/shared":
   version "0.0.1"
   dependencies:
