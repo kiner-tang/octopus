@@ -28,10 +28,10 @@
   },
   "scripts": {
     "dev": "yarn dev:plugin && yarn dev:transformer",
-    "dev:doc": "cd ./docs && yarn start",
+    "dev:doc": "cd ./project-docs && yarn start",
     "dev:plugin": "cross-env NODE_ENV=development tsc --watch",
     "dev:transformer": "rollup -c -w ",
-    "build:doc": "cd ./docs && yarn build",
+    "build:doc": "cd ./project-docs && yarn build",
     "test": "jest",
     "lint": "eslint ./packages",
     "lint:fix": "eslint ./packages --fix",

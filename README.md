@@ -4,4 +4,4 @@
 
 ## 详细文档
 
-- [详细文档](./docs/docs/index.md)
+- [详细文档](./project-docs/docs/index.md)
