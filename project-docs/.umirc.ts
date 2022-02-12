@@ -3,7 +3,7 @@ import { defineConfig } from 'dumi';
 export default defineConfig({
   title: '章鱼埋点',
   mode: 'site',
-  logo: '/octopus-logo.png',
+  logo: '/octopus/octopus-logo.png',
   locales: [['zh-CN', '中文']],
   favicon: '/octopus-logo.png',
   outputPath: '../docs',
