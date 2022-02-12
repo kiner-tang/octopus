@@ -8,6 +8,13 @@ export default defineConfig({
   favicon: '/octopus-logo.png',
   outputPath: '../docs',
   publicPath: '/octopus/',
-  base: '/octopus'
+  base: '/octopus',
+  navs: [
+    null,
+    {
+      title: 'GitHub',
+      path: 'https://github.com/kiner-tang/octopus',
+    },
+  ]
   // more config: https://d.umijs.org/config
 });

@@ -1,6 +1,7 @@
 {
   "name": "root",
   "private": true,
+  "homepage": "https://kiner-tang.github.io/octopus/",
   "devDependencies": {
     "@rollup/plugin-json": "4.1.0",
     "@rollup/plugin-node-resolve": "11.1.1",

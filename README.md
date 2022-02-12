@@ -4,4 +4,4 @@
 
 ## 详细文档
 
-- [详细文档](./project-docs/docs/index.md)
+- [官方首页](https://kiner-tang.github.io/octopus/)
