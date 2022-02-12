@@ -7,6 +7,7 @@ export default defineConfig({
   locales: [['zh-CN', '中文']],
   favicon: '/octopus-logo.png',
   outputPath: '../docs',
-  publicPath: '/octopus/'
+  publicPath: '/octopus/',
+  base: '/octopus'
   // more config: https://d.umijs.org/config
 });
