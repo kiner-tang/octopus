@@ -15,7 +15,6 @@ type PageStateProps = {
     }
   }
 }
-
 interface Index {
   props: PageStateProps;
 }
@@ -124,6 +123,13 @@ class Index extends Component {
         }
       }
     });
+  }
+
+  onShareAppMessage (res) {
+    return {
+      title: '自定义转发标题',
+      path: '/page/user?id=123'
+    }
   }
 
   doError() {

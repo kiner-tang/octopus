@@ -17,6 +17,10 @@ const config = {
       '@kiner/octopus-plugins',
       defineConfig({
         debug: true,
+        complieOptions: {},
+        networkApi: [],
+        pageLifecycleEventList: [],
+        appLifecycleEventList: [],
         transformerOptions: {
           transformer(ds) {
             // console.log("=====>", ds);

@@ -35,6 +35,7 @@ import { resolve } from 'path';
  */
 export const catchGlobalError = `
  wx.onError((e) => {
+   console.warn('🐙 这是一个严重的运行时错误，你必须解决了这个问题才能保证小程序正常运行', e);
    _es.${injectEventName}({
      type: "globalCatchError",
      subType: "globalCatchError",
@@ -481,12 +482,16 @@ export const apiProxySourceList: Record<string, any> = {
             return;
           }
           options[method] = function(opt) {
+            var ret = oriFn.call(this, opt);
             eventList.includes(method) && _es.${injectEventName}({
               type: "pageApi",
               subType: method,
-              detail: opt
+              detail: {
+                options: opt,
+                shareConfig: ret
+              }
             });
-            return oriFn.call(this, opt);
+            return ret;
           }
         });
         oriApi(options);

@@ -163,7 +163,6 @@ nav:
       mode: "sendWhenPush"
     },
 }
-
 ```
 
 - `manual模式`
@@ -186,7 +185,6 @@ nav:
       mode: "console"
     },
 }
-
 ```
 
 - `custom模式`
@@ -209,7 +207,6 @@ nav:
       mode: "none"
     },
 }
-
 ```
 
 ### registerEventList - 用户触发类事件列表
@@ -414,3 +411,237 @@ nav:
 - **默认:** `无`
 
 如果是比较复杂的上报，无法使用默认的上报方法，可以使用此方法进行自定已上报
+
+## 扩展API
+
+### 基础调用方法
+
+`octopus`会在`wx`这个命名空间下面增加一个子命名空间`octopusLib`的命名空间，我们的扩展工具都放在这个命名空间下。
+
+```typescript
+wx.octopusLib.xxxx
+```
+
+### config - 配置信息
+
+这里存放着包括版本号、插件选项等基础信息
+
+| 属性                | 描述         |
+|:-----------------:|:----------:|
+| `version`         | 当前插件的版本号   |
+| `libName`         | 工具库名称      |
+| `libFilePath`     | 当前工具库的文件地址 |
+| `loggerNamespace` | 日志打印的命名空间  |
+| `pluginOptions`   | 插件配置，同上    |
+
+### getBoundingClientRect
+
+根据元素选择器获取元素的边界信息的工具方法
+
+```typescript
+const rect = await wx.octopusLib.getBoundingClientRect('._n_17');
+console.log(rect);
+// {
+//     "boundingClientRect": [
+//         {
+//             "id": "_n_13",
+//             "dataset": {
+//                 "attrs": "size='default'|type=''|plain='false'|disabled=''|loading='false'|form-type=''|open-type=''|hover-class='button-hover'|hover-stop-propagation='false'|hover-start-time='20'|hover-stay-time='70'|name=''|bindtouchstart='eh'|bindtouchmove='eh'|bindtouchend='eh'|bindtouchcancel='eh'|bindlongpress='eh'|lang=''|session-from=''|send-message-title=''|send-message-path=''|send-message-img=''|app-parameter=''|show-message-card='false'|business-id=''|bindgetuserinfo='eh'|bindcontact='eh'|bindgetphonenumber='eh'|binderror='eh'|bindopensetting='eh'|bindlaunchapp='eh'|style=''|class=' octopusLib-inject-class  _n_13'|bindtap='eh'|id='_n_13'|data-sid='_n_13'|data-tag='button'",
+//                 "sid": "_n_13",
+//                 "tag": "button"
+//             },
+//             "left": 12,
+//             "right": 308,
+//             "top": 186,
+//             "bottom": 232,
+//             "width": 296,
+//             "height": 46
+//         }
+//     ],
+//     "scrollOffset": {
+//         "id": "",
+//         "dataset": {},
+//         "scrollLeft": 0,
+//         "scrollTop": 0,
+//         "scrollWidth": 320,
+//         "scrollHeight": 1269
+//     }
+// }
+```
+
+### isClickTrackArea
+
+根据点击位置和页面元素的`rect`判断是否点中某个元素
+
+```typescript
+const [boundingClientRect, scrollOffset] = await wx.octopusLib.getBoundingClientRect('._n_17');
+const isHit = wx.octopusLib.isClickTrackArea({x: 0, y: 0}, boundingClientRect, scrollOffset);
+
+console.log(isHit);
+// true
+```
+
+### getPrevPage
+
+获取当前页面的上一个页面实例
+
+```typescript
+const prevPage = wx.octopusLib.getPrevPage();
+```
+
+### getActivePage
+
+获取当前正打开的页面
+
+```typescript
+const prevPage = wx.octopusLib.getActivePage();
+```
+
+### logger
+
+内部日志打印方法，传入的第一个参数为字符串，作为日志标题，后面的所有参数类型不限，将会被折叠起来，方便查看。
+
+```typescript
+wx.octopusLib.logger('测试消息', {userInfo: {name: "kiner"}});
+```
+
+### getViewDataBySid
+
+根据`sid`获取组件数据
+
+- params
+
+  - `sid` - 目标组件的`sid`
+
+  - [可选] `cn` - 组件数据树，默认为根节点数据树
+
+```typescript
+const data1 = wx.octopusLib.getViewDataBySid('_n_17');
+// 或
+const { data } = wx.octopusLib.getActivePage();
+const data2 = wx.octopusLib.getViewDataBySid(sid, data.root.cn);
+```
+
+### flatCn
+
+将组件数据树拍平成一维数组
+
+```typescript
+const { data } = wx.octopusLib.getActivePage();
+console.log(wx.octopusLib.flatCn(data.root.cn));
+```
+
+### getCustomDataBySid
+
+工具方法，根据 sid 获取该元素的自定义埋点字段对象
+
+```typescript
+// <Button data-octopus-customData={{name: "kiner", age: 18}}>自定义用户参数</Button>
+// 设当前组件的内部 sid 为 "_n_12"
+wx.octopusLib.getCustomDataBySid("_n_12"); // {name: "kiner", age: 18}
+```
+
+### getTextBySid
+
+工具方法，根据 sid 获取该元素的文本内容
+
+```typescript
+// 由于 sid 是在编译过程中自动生成的，因此，下面的代码是通过 taro 编译后生成的 wxml 代码：
+// <view id="_n_17">这是文本内容</view>
+
+wx.octopusLib.getTextBySid('_n_17');// 这是文本内容
+```
+
+### collectDataEvent
+
+内部统一的用于收集数据的事件，内部所有事件收集都是用这个方法
+
+```typescript
+wx.octopusLib.collectDataEvent({
+    type: "customEvent",
+    subType: "loadError",
+    detail: {
+        // ....
+    }
+})
+```
+
+### pushData
+
+手动往事件队列里面添加事件，当自动埋点无法完全满足需求时，可以辅助此方法将要埋点的事件手动添加到事件队列中。
+
+```typescript
+wx.octopusLib.pushData({
+  type: "custom",
+  subType: "customEvent",
+  customData: {
+    userInfo: {
+      name: "kiner",
+      age: 18
+    }
+  }
+});
+```
+
+### request
+
+重载微信接口请求的方法，如果想要监控`request`请求失败的事件，请用这个方法替代`wx.request`，调用方式和返回结果跟原`API`相同
+
+```typescript
+wx.octopusLib.request({
+    url: "https://www.baidu.com/xxx.png",
+    fail: (options) => {
+      console.log('请求失败---->', options, options.errMsg)
+    },
+    success: (res => {
+      console.log('请求成功---->', res);
+    })
+});
+```
+
+### createInnerAudioContext
+
+重载微信创建内部音频上下文方法，如果想要监控音频加载失败事件，请使用这个方法替代`wx.createInnerAudioContext`，调用方式与返回结果跟原`API`相同
+
+```typescript
+const audio = wx.octopusLib.createInnerAudioContext();
+audio.src = "https://www.baidu.com/1.mp3";
+audio.play();
+audio.onError((err) => {
+console.log("播放背景音乐失败", err);
+});
+```
+
+### uploadFile
+
+重载微信上传文件方法，如果想监控文件上传失败事件，请使用此方法替代`wx.uploadFile`，调用方式与返回结果跟原`API`相同
+
+```typescript
+wx.chooseImage({
+  count: 1,
+  sourceType: ["album"],
+  success: res => {
+    wx.octopusLib.uploadFile({
+      filePath: res.tempFilePaths[0],
+      name: "file",
+      url: "https://www.xxx.com/upload.json",
+      fail: res => {
+        console.log("上传失败：", res);
+      }
+    })
+  }
+})
+```
+
+### downloadFile
+
+冲债微信下载文件的方法，如果想监控文件下载失败事件，请使用此方法替代`wx.downloadFile`，调用方式与返回结果跟原`API`相同
+
+```typescript
+wx.octopusLib.downloadFile({
+  url: "https://www.baidu.com/xxx.png",
+  fail: res => {
+    console.log("下载失败：", res)
+  }
+});
+```
